@@ -1,10 +1,14 @@
+import React, { useState } from "react";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
+
 import RightSection from "./RightSection";
+import { removeToken, setToken, setUserDetails } from "../../redux/action/authAction";
 
 const Login = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [loginDetails, setLoginDetails] = useState({
     email: "",
@@ -19,41 +23,32 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    navigate("/admin-dashboard");
-    return;
+
     setLoading(true);
     try {
-      const response = await axios.post("/api/auth/adminlogin", loginDetails, {
+      const res = await axios.post("/api/auth/adminLogin", loginDetails, {
         headers: {
           "Content-Type": "application/json",
         },
       });
-      console.log(response);
-      if (response.status === 200) {
-        toast.success("Login successful!");
+      // console.log(res);
+      if (res?.data?.success) {
+        toast.success("Login successfully!");
         setLoading(false);
-        sessionStorage.setItem(
-          "sessionToken",
-          JSON.stringify(response.data.token)
-        );
-        navigate("/admindashboard");
+        dispatch(setToken(res?.data?.user?.token));
+        navigate("/admin-dashboard");
       } else {
-        toast.error(response?.data);
-        sessionStorage.removeItem("sessionToken");
+        toast.error("Login failed please try later!");
+        dispatch(removeToken());
         setLoading(false);
       }
     } catch (error) {
       console.error("Error during login:", error);
-      toast.error("Login failed please try again!");
-      sessionStorage.removeItem("sessionToken");
-
+      toast.error(error?.response?.data?.error || "server error !");
+      dispatch(removeToken());
       setLoading(false);
     }
   };
-
-  // useEffect(() => {
-  //   sessionStorage.removeItem("sessionToken");
-  // }, []);
 
   return (
     <>

@@ -1,14 +1,18 @@
 import { useEffect } from "react";
 import React, { Fragment, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { sideMenus } from "../config/data";
+import { removeToken,setUserDetails } from "../redux/action/authAction";
 
 const AdminDashboard = () => {
+  const dispatch = useDispatch();
   const [ComponentId, setComponentId] = useState(0);
 
   const [showDrawer, setShowDrawer] = useState(false);
+  const { token } = useSelector((state) => state?.auth);
   const navigate = useNavigate();
 
   const handleClick = (id, url) => {
@@ -16,37 +20,30 @@ const AdminDashboard = () => {
     setShowDrawer(false);
     navigate(url);
   };
-  const handleSignout = () => {
-    sessionStorage.removeItem("sessionToken");
-    navigate("/");
+  const handleSignout = async () => {
+    try {
+      const res = await axios.get(`/api/auth/logout`, {
+        headers: {
+          Authorization: token,
+          "Content-Type": "application/json",
+        },
+      });
+      // console.log(res);
+      if (res?.data?.success) {
+        dispatch(removeToken());
+        toast.success("Logout successfully !");
+        navigate("/login");
+      } else {
+        toast.error("Logout failed try again !");
+      }
+    } catch (error) {
+      // dispatch(removeToken());
+      console.error("Error occurred:", error);
+      toast.error( error?.response?.data?.message || "Invalid token !");
+    }
   };
 
-  // const verify = async () => {
-  //   try {
-  //     const res = await axios.get(`/api/auth/verifyToken/${token}`);
-  //     //   console.log(res);
-  //     if (res.status === 200) {
-  //       return; // Do whatever you need after successful verification
-  //     } else {
-  //       navigate("/");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error occurred:", error);
-  //     toast.error("Something went wrong.");
-  //     navigate("/");
-  //     // Handle the error, maybe navigate somewhere or show an error message
-  //   }
-  // };
-  
-  useEffect(() => {
-    // if (token) {
-    //     verify()
-    // }
-    // else {
-    //     navigate("/")
-    // }
-  }, []);
-  
+ 
   return (
     <section className="">
       <div className="flex min-h-screen relative lg:static">
