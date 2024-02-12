@@ -48,6 +48,9 @@ const UserSchema = new mongoose.Schema(
     PetPrefer:{
       type: String,
     },    
+    provinces:{
+      type: String,
+    },
     refreshToken: {
       type: String,
     },

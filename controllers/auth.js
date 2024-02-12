@@ -51,7 +51,8 @@ exports.register = async (req, res, next) => {
       gender:req?.body?.gender,
       eatPrefer:req?.body?.eatPrefer,
       smoke_drinkPrefer:req?.body?.smoke_drinkPrefer,
-      PetPrefer:req?.body?.PetPrefer
+      PetPrefer:req?.body?.PetPrefer,
+      provinces:req?.body?.provinces
     };
 
     const newUser = await User.create(userData);
@@ -354,7 +355,8 @@ exports.updatedUser = async (req, res) => {
         gender: req?.body?.gender,
         eatPrefer: req?.body?.eatPrefer,
         smoke_drinkPrefer: req?.body?.smoke_drinkPrefer,
-        PetPrefer: req?.body?.PetPrefer
+        PetPrefer: req?.body?.PetPrefer,
+        provinces:req?.body?.provinces
       },
       {
         new: true,
@@ -375,8 +377,9 @@ exports.getAllUser = async (req, res) => {
     const currentPage = parseInt(page, 10);
     const itemsPerPage = parseInt(limit, 10);
 
-    const userQuery = User.find();
-
+    // const userQuery = User.find();
+    //not including admin role
+    let userQuery = User.find({ role: { $ne: "admin" } })
     if (searchQuery) {
       userQuery.or([
         { fullname: { $regex: new RegExp(searchQuery, "i") } },
@@ -422,7 +425,7 @@ exports.getaUser = async (req, res) => {
 };
 
 exports.getUserById = async (req, res) => {
-  const { _id } = req.user._id;
+  const  _id  = req.params.id;
   validateMongoDbId(_id);
 
   try {
