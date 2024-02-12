@@ -1,16 +1,19 @@
-// store.js
-import { createStore } from 'redux';
-import { combineReducers } from 'redux';
-import { authReducer } from './reducer';
+// Import necessary modules
+import { createStore, applyMiddleware } from 'redux';
+import { persistStore, persistReducer } from 'redux-persist';
+import storage from 'redux-persist/lib/storage'; 
+import rootReducer from './reducer/rootReducer';
 
+const persistConfig = {
+  key: 'root',
+  storage,
+};
 
+const persistedReducer = persistReducer(persistConfig, rootReducer);
 
-// Combine reducers
-const rootReducer = combineReducers({
-  auth: authReducer
-});
+export const store = createStore(
+  persistedReducer,
+  applyMiddleware()
+);
 
-// Create the Redux store
-const store = createStore(rootReducer);
-
-export default store;
+export const persistor = persistStore(store);
