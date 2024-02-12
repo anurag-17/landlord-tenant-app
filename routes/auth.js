@@ -46,7 +46,7 @@ router.get("/all-users", isAuthenticatedUser, authorizeRoles("admin"), getAllUse
 router.route("/getaUser").get(isAuthenticatedUser, getaUser);
 
 // Get user by ID 
-router.route("/getUserById").post(isAuthenticatedUser, getUserById);
+router.route("/getUserById/:id").get(isAuthenticatedUser,authorizeRoles("admin"), getUserById);
 
 // Delete a user
 router.delete("/deleteaUser/:id",isAuthenticatedUser, authorizeRoles("admin"), deleteUser);
@@ -54,6 +54,6 @@ router.delete("/deleteaUser/:id",isAuthenticatedUser, authorizeRoles("admin"), d
 router.route("/forgotpassword").post(forgotPassword);
 router.route("/resetpassword/:resetToken").put(resetPassword);
 
-router.route("/uploadImage").post(isAuthenticatedUser, authorizeRoles("admin"), upload.single('file'),uploadImage)
+router.route("/uploadImage").post(isAuthenticatedUser, upload.single('file'),uploadImage)
 
 module.exports = router;
