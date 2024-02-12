@@ -1,23 +1,57 @@
-import logo from './logo.svg';
+import { Route, Routes, BrowserRouter, Navigate } from "react-router-dom";
+import { ToastContainer } from 'react-toastify';
+
+import "react-toastify/dist/ReactToastify.css";
 import './App.css';
 
+import Login from "./components/auth/Login";
+import AdminDashboard from "./components/AdminDashboard";
+import ChangePassword from "./components/auth/ChangePassword";
+import ForgotPassword from "./components/auth/ForgotPassword";
+import ResetPassword from "./components/auth/ResetPassword";
+
+
 function App() {
+
+  function PrivateRoute({ path, element }) {
+
+    const isAuthenticated = JSON.parse(sessionStorage.getItem("sessionToken")) !== null;
+  
+    return isAuthenticated ? (
+      element
+    ) : (
+      element
+      // <Navigate to="/login" />
+    );
+  }
+ 
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+
+    <div>
+      
+      <BrowserRouter>
+        <Routes>
+
+          <Route path="/login" element={<Login />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/change-password" element={<ChangePassword />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
+
+          <Route
+            path="/admin-dashboard"
+            element={<PrivateRoute element={<AdminDashboard />} />}
+          />
+          <Route
+            path="/"
+            element={<PrivateRoute element={<AdminDashboard />} />}
+          />
+
+        </Routes>
+      </BrowserRouter>
+      <ToastContainer
+
+      />
+    
     </div>
   );
 }
