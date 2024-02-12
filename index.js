@@ -17,6 +17,7 @@ const FacebookStrategy = require('passport-facebook').Strategy;
 connectDB();
 
 const app = express();
+
 if (process.env.NODE_ENV === "dev") {
   //replaced "production" with "dev"
   app.use(express.static("./client/build"));
@@ -29,6 +30,8 @@ if (process.env.NODE_ENV === "dev") {
     res.send("API is running..");
   });
 }
+
+
 
 
 const corsOptions = {
