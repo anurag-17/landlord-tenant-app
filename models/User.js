@@ -5,13 +5,9 @@ const jwt = require("jsonwebtoken");
 
 const UserSchema = new mongoose.Schema(
   {
-    firstname: {
+    fullname: {
       type: String,
       required: [true, "Please Enter Firstname"],
-    },
-    lastname: {
-      type: String,
-      // required: [true, "Please Enter Lastname"],
     },
     email: {
       type: String,
@@ -21,15 +17,39 @@ const UserSchema = new mongoose.Schema(
     mobile: {
       type: String,
     },
+    profilePicture: {
+      type: String,
+    },
     password: {
       type: String,
       // required: [true, "Please Enter Password"],
-      minlength: 8,
+      // minlength: 8,
       select: false,
     },
     role: {
       type: String,
       default: "user",
+    },
+    age:{
+      type: String,
+    },
+    university:{
+      type: String,
+    },
+    gender:{
+      type: String,
+    },
+    eatPrefer:{
+      type: String,
+    },
+    smoke_drinkPrefer:{
+      type: String,
+    },
+    PetPrefer:{
+      type: String,
+    },    
+    provinces:{
+      type: String,
     },
     refreshToken: {
       type: String,
