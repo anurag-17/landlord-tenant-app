@@ -13,15 +13,11 @@ const passport = require('passport');
 const User = require("./models/User");
 const OAuth2Strategy = require('passport-google-oauth20').Strategy;
 const FacebookStrategy = require('passport-facebook').Strategy;
+const socketModule = require('./utils/socketio');
 // Connect Database
 connectDB();
 
 const app = express();
-
-
-
-
-
 
 
 const corsOptions = {
@@ -171,7 +167,12 @@ app.get("/", (req, res) => {
 
 // Auth and User 
 app.use("/api/auth", require("./routes/auth"));
+
 app.use("/api/listing", require("./routes/propertyRoute"));
+
+
+
+app.use("/api/message", require("./routes/message"));
 
 app.use("/api/auth/upload", require("./routes/auth"));
 
@@ -196,6 +197,7 @@ const PORT = process.env.PORT || 4000;
 const server = app.listen(PORT, () =>
   console.log(`Server running on port ${PORT}`)
 );
+socketModule.init(server);
 // DB error handler
 process.on("unhandledRejection", (err, promise) => {
   console.log(`Log Error: ${err}`);
