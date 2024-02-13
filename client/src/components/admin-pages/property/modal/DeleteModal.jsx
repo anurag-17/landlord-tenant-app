@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 import axios from "axios";
 
 
-const DeleteUser = ({ deleteId, closeModal, refreshdata,token}) => {
+const DeleteModal = ({ deleteId, closeModal, refreshdata,token}) => {
 
   const [isLoading, setLoading] = useState(false);
 
@@ -14,7 +14,7 @@ const DeleteUser = ({ deleteId, closeModal, refreshdata,token}) => {
 
     const options = {
       method: "DELETE",
-      url: `/api/auth/deleteaUser/${deleteId}`,
+      url: `/api/listing/property/${deleteId}`,
       headers: {
         Authorization: token,
         'Content-Type': 'application/json',
@@ -26,7 +26,7 @@ const DeleteUser = ({ deleteId, closeModal, refreshdata,token}) => {
       .then(function (res) {
         if (res.data?.success) {
           setLoading(false);
-          toast.success("User deleted successfully!");
+          toast.success("Deleted successfully!");
           closeModal();
           refreshdata();
         } else {
@@ -46,7 +46,7 @@ const DeleteUser = ({ deleteId, closeModal, refreshdata,token}) => {
     <>
       <div className="mt-2">
         <p className=" text-[16px] font-normal leading-[30px] text-gray-500 mt-4">
-          Are you sure you want to delete this user ?
+          Are you sure you want to delete this property listing ?
         </p>
       </div>
 
@@ -73,4 +73,4 @@ const DeleteUser = ({ deleteId, closeModal, refreshdata,token}) => {
   );
 };
 
-export default DeleteUser;
+export default DeleteModal;
