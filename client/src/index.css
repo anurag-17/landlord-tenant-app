@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
 
 * {
   margin: 0;
@@ -15,7 +15,6 @@ body {
 }
 
 @layer components {
-  
   .flexCenter {
     @apply flex items-center justify-center;
   }
@@ -33,7 +32,7 @@ body {
   }
 
   /* FONTS */
-  
+
   .regular-18 {
     @apply xl:text-[18px] font-[400] md:text-[16px] text-[15px];
   }
@@ -66,48 +65,70 @@ body {
   }
 
   .login_button {
-    @apply w-full bg-primary font-medium text-white p-2 rounded-lg  hover:bg-white hover:text-primary hover:border hover:border-[gray-300] h-[50px]  transition-all ease-in-out delay-75 duration-700 hover:border-primary  ;
+    @apply w-full bg-primary font-medium text-white p-2 rounded-lg  hover:bg-white hover:text-primary hover:border hover:border-[gray-300] h-[50px]  transition-all ease-in-out delay-75 duration-700 hover:border-primary;
   }
-  .input_search{
-    @apply focus-visible:outline-none border-none w-full rounded-[5px] font-normal text-[15px] text-[#6a6969] placeholder:text-[11px]
+  .input_search {
+    @apply focus-visible:outline-none border-none w-full rounded-[5px] font-normal text-[15px] text-[#6a6969] placeholder:text-[11px];
   }
-  .search_btn{
-    @apply px-6 rounded text-[12px] text-[gray] h-[32px] bg-[#6a696917] hover:text-black
+  .search_btn {
+    @apply px-6  text-[12px]  h-[32px] hover:text-[#f3f3f3] bg-primary text-white font-medium; 
   }
-  .clear_search_btn{
-    @apply px-1 rounded text-[12px] text-[gray] border border-[#6a696917] hover:text-black mr-1
+  .clear_search_btn {
+    @apply px-1 rounded text-[12px] text-[gray] border border-[#6a696917] hover:text-black mr-1 ;
   }
-  .outer_table{
-    @apply rounded-[10px] bg-white py-[30px] px-[20px] flexBetween mt-[20px] p-6 overflow-x-scroll
+  .outer_table {
+    @apply rounded-[10px] bg-white py-[30px] px-[20px] flexBetween mt-[20px] p-6 overflow-x-scroll;
   }
-  .table_head{
-    @apply py-3 px-5 text-left bg-white 
+  .table_head {
+    @apply py-3 px-5 text-left bg-white;
   }
-  .table_data{
-    @apply text-[14px] font-[400] py-3 px-5
+  .table_data {
+    @apply text-[14px] font-[400] py-3 px-5;
   }
-  
-  .table_btn_div{
-    @apply flex flex-col md:flex-row items-center gap-x-5
+
+  .table_btn_div {
+    @apply flex flex-col md:flex-row items-center gap-x-5;
   }
-  .no_data{
-    @apply py-4 px-4 w-full flex flex-col items-center justify-center border border-[#f3f3f3] bg-white rounded-[20px] mt-[10px]
+  .no_data {
+    @apply py-4 px-4 w-full flex flex-col items-center justify-center border border-[#f3f3f3] bg-white rounded-[20px] mt-[10px];
   }
-  .delete_btn{
-    @apply px-4 text-[13px] border rounded py-2 text-red-700 focus-visible:outline-none
+
+  .form_col {
+    @apply grid grid-cols-2  py-[5px];
   }
-  
-  .primary_btn{
-    @apply px-4 text-[13px] border rounded 
-    hover:bg-white hover:text-primary py-2 bg-primary focus-visible:outline-none
+  .form_label_head {
+    @apply 2xl:text-[16px] text-[15px] font-[400] leading-tight capitalize;
   }
-  .secondary_btn{
-    @apply px-4 text-[13px] border rounded 
-    bg-white text-primary py-2 hover:bg-primary focus-visible:outline-none
+  .form_info {
+    @apply 2xl:text-[16px] text-[15px] font-[500] leading-tight;
   }
-  
+  .form_heading {
+    @apply whitespace-nowrap capitalize leading-tight lg:text-[18px]  text-[16px] font-medium;
+  }
+
+  .delete_btn {
+    @apply px-4 text-[13px] border rounded py-2 text-red-700 border-[red] hover:bg-red-700 focus-visible:outline-none hover:text-white;
+  }
+
+  .primary_btn {
+    @apply px-4 text-[13px] border rounded text-white
+    hover:bg-white hover:text-primary py-2 bg-primary focus-visible:outline-none;
+  }
+  .secondary_btn {
+    @apply px-4 text-[13px] border border-primary rounded hover:text-white
+    bg-white text-primary py-2 hover:bg-primary focus-visible:outline-none;
+  }
+
+  button {
+    @apply focus-visible:outline-none transition-all duration-1000 delay-75 ease-in-out;
+  }
+
+  th,
+  td {
+    border: none !important;
+    border-bottom: 1px solid #81828345 !important;
+  }
 }
- 
 
 /* Hide scrollbar for Chrome, Safari and Opera */
 .hide-scrollbar::-webkit-scrollbar {

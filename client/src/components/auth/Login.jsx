@@ -84,7 +84,7 @@ const Login = () => {
                       onChange={InputHandler}
                       minLength={8}
                       required
-                      autocomplete="current-password"
+                      autoComplete="current-password"
                     />
                     <div className="flex items-center mt-4 px-2 cursor-pointer">
                       <input

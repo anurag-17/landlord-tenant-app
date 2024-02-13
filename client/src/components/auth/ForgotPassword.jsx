@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
 
 import RightSection from "./RightSection";
 
@@ -9,19 +10,19 @@ const ForgotPassword = () => {
 
     const [email, setEmail] = useState("");
     const [isLoading, setLoading] = useState(false);
-
+    const { token } = useSelector((state) => state?.auth);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true)
         try {
-            const response = await axios.post('/api/auth/forgotpassword', {email:email}, {
+            const res = await axios.post('/api/auth/forgotpassword', {email:email}, {
                 headers: {
                     'Content-Type': 'application/json',
                 },
             });
 
-            if (response.status === 200) {
+            if (res.data?.success) {
                 toast.success("Mail sent, Please check your mail!")
                 setLoading(false)
             } else {
