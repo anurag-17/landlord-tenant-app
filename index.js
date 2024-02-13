@@ -171,7 +171,7 @@ app.get("/", (req, res) => {
 
 // Auth and User 
 app.use("/api/auth", require("./routes/auth"));
-app.use("/api/property", require("./routes/propertyRoute"));
+app.use("/api/listing", require("./routes/propertyRoute"));
 
 app.use("/api/auth/upload", require("./routes/auth"));
 
