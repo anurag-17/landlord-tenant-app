@@ -4,7 +4,7 @@ const Conversation = require("../models/Conversation");
 const Property = require("../models/Property");
 let io;
 
-export const getReceiverSocketId = (receiverId) => {
+exports.getReceiverSocketId = (receiverId) => {
 	return userSocketMap[receiverId];
 };
 
