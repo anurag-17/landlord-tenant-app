@@ -4,22 +4,25 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 import { Switch } from "@headlessui/react";
 
-import DeleteUser from "./DeleteUser";
+import DeleteModal from "./modal/DeleteModal";
 import CloseIcon from "../Svg/CloseIcon";
 import Pagination from "../../pagination/Pagination";
 import Loader from "../../loader/Index";
-import PreviewModal from "./PreviewModal";
+// import PreviewModal from "./modal/PreviewModal";
 
 export const headItems = [
   "S. No.",
-  "Name",
-  " Contact No",
-  "Email",
-  "Block user",
+  "title",
+  "category",
+  "For",
+  "Address",
+  "No. of Rooms",
+  "price",
+  "block listing",
   "Action",
 ];
 
-const User = () => {
+const Report = () => {
   const [isRefresh, setRefresh] = useState(false);
   const [allData, setAllData] = useState([]);
   const [isLoader, setIsLoader] = useState(false);
@@ -70,7 +73,7 @@ const User = () => {
   const searchDataFunc = (search_cate) => {
     const options = {
       method: "GET",
-      url: `/api/auth/all-users?search=${search_cate}`,
+      url: `/api/listing/properties/search?search=${search_cate}`,
       headers: {
         Authorization: token,
         "Content-Type": "multipart/form-data",
@@ -95,16 +98,16 @@ const User = () => {
   const handlePreview = async (prev_id) => {
     setIsLoader(true);
     try {
-      const res = await axios.get(`/api/auth/getUserById/${prev_id}`, {
+      const res = await axios.get(`/api/listing/property/${prev_id}`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: token,
         },
       });
       if (res.data?.success) {
-        // console.log(res.data.user);
+        // console.log(res.data?.property);
         setOpenPopup(true);
-        setPreviewData(res.data?.user);
+        setPreviewData(res.data?.property);
         setIsLoader(false);
       } else {
         setIsLoader(false);
@@ -118,13 +121,12 @@ const User = () => {
   const closePreviewModal = () => {
     setOpenPopup(false);
   };
-
   // get all data ----
   const getAllData = (pageNo) => {
     setIsLoader(true);
     const options = {
       method: "GET",
-      url: `/api/auth/all-users?page=${pageNo}&limit=${visiblePageCount}`,
+      url: `/api/listing/properties/search?page=${pageNo}&limit=${visiblePageCount}`,
       headers: {
         Authorization: token,
         "Content-Type": "application/json",
@@ -133,7 +135,7 @@ const User = () => {
     axios
       .request(options)
       .then((res) => {
-        console.log(res);
+        // console.log(res);
         if (res?.data?.success) {
           setIsLoader(false);
           setAllData(res?.data);
@@ -156,7 +158,7 @@ const User = () => {
     setIsLoader(true);
     try {
       const res = await axios.put(
-        `/api/auth/edit-user/${userId}`,
+        `/api/listing/property/${userId}`,
         { isBlocked: !isBlocked },
         {
           headers: { "Content-Type": "application/json", Authorization: token },
@@ -164,7 +166,7 @@ const User = () => {
       );
 
       if (res.data?.success) {
-        refreshdata()
+        refreshdata();
         return;
       } else {
         console.error("Toggle blocked request failed.");
@@ -174,8 +176,6 @@ const User = () => {
     } finally {
       setIsLoader(false);
     }
-
-    // console.log(userId, { isBlocked: !isBlocked });
   };
   return (
     <>
@@ -183,7 +183,7 @@ const User = () => {
       <section className="mt-[20px] lg:mt-0 px-20 md:px-0">
         <div className=" mx-auto">
           <div className="rounded-[10px] bg-white py-[20px] flexBetween px-[20px]">
-            <p className=" text-[22px] font-semibold">User list</p>
+            <p className=" text-[22px] font-semibold">Report list</p>
             <div className="flexCenter gap-x-7 lg:gap-x-5 md:flex-auto flex-wrap gap-y-3 md:justify-end">
               <div className="border border-primary  bg-[#302f2f82]] flexCenter h-[32px] pl-[10px] md:w-auto w-full">
                 <input
@@ -212,13 +212,12 @@ const User = () => {
           </div>
           <div className="px-[20px]">
             <div className="outer_table ">
-              <table className="w-full min-w-[640px] table-auto mt-[20px] ">
+              <table className="w-full table-auto mt-[20px] ">
                 <thead className="">
                   <tr className=" ">
                     {headItems.map((items, inx) => (
-                      <th className="table_head" key={inx}>
+                      <th className="table_head whitespace-nowrap" key={inx}>
                         <p className="block text-[13px] font-medium uppercase text-[#72727b]">
-                          {" "}
                           {items}
                         </p>
                       </th>
@@ -227,16 +226,19 @@ const User = () => {
                 </thead>
 
                 <tbody>
-                  {Array.isArray(allData?.users) &&
-                    allData?.users?.length > 0 &&
-                    allData?.users?.map((items, index) => (
+                  {Array.isArray(allData?.properties) &&
+                    allData?.properties?.length > 0 &&
+                    allData?.properties?.map((items, index) => (
                       <tr key={index}>
                         <td className="table_data">{index + 1}</td>
                         <td className="table_data capitalize">
-                          {items?.fullname}
+                          {items?.title}
                         </td>
-                        <td className="table_data">{items?.mobile} </td>
-                        <td className="table_data">{items?.email}</td>
+                        <td className="table_data">{items?.category} </td>
+                        <td className="table_data">{items?.listingType}</td>
+                        <td className="table_data"></td>
+                        <td className="table_data">{items?.numberOfRooms}</td>
+                        <td className="table_data whitespace-nowrap">$ {items?.price}</td>
                         <td className="table_data">
                           <Switch
                             checked={items?.isBlocked}
@@ -280,7 +282,7 @@ const User = () => {
                 </tbody>
               </table>
             </div>
-            {Array.isArray(allData?.users) && allData?.users?.length === 0 && (
+            {Array.isArray(allData?.properties) && allData?.properties?.length === 0 && (
               <div className="no_data">
                 <p className="text-[18px] fontsemibold">No data</p>
               </div>
@@ -331,7 +333,7 @@ const User = () => {
                   >
                     Delete user
                   </Dialog.Title>
-                  <DeleteUser
+                  <DeleteModal
                     closeModal={closeDeleteModal}
                     refreshdata={refreshdata}
                     deleteId={Id}
@@ -344,8 +346,8 @@ const User = () => {
         </Dialog>
       </Transition>
 
-      {/*---------- Preview popup---------- */}
-      <Transition appear show={openPopup} as={Fragment}>
+        {/*---------- Preview popup---------- */}
+        <Transition appear show={openPopup} as={Fragment}>
         <Dialog
           as="div"
           className="relative z-[11]"
@@ -374,7 +376,7 @@ const User = () => {
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <Dialog.Panel className="w-full lg:max-w-[900] md:max-w-[800px] sm:max-w-[500px] transform overflow-hidden rounded-2xl bg-white 2xl:py-10  py-8 px-8 2xl:px-12 text-left align-middle shadow-xl transition-all">
+                <Dialog.Panel className="w-full lg:max-w-[900px] md:max-w-[800px] sm:max-w-[500px] transform overflow-hidden rounded-2xl bg-white 2xl:py-10  py-8 px-8 2xl:px-12 text-left align-middle shadow-xl transition-all">
                   <div className="flex justify-end items-end ">
                     <button
                       className=" cursor-pointer"
@@ -383,10 +385,10 @@ const User = () => {
                       <CloseIcon />
                     </button>
                   </div>
-                  <PreviewModal
+                  {/* <PreviewModal
                     closeModal={closePreviewModal}
                     previewData={previewData}
-                  />
+                  /> */}
                 </Dialog.Panel>
               </Transition.Child>
             </div>
@@ -397,4 +399,4 @@ const User = () => {
   );
 };
 
-export default User;
+export default Report;

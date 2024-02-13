@@ -28,7 +28,7 @@ const AdminDashboard = () => {
           "Content-Type": "application/json",
         },
       });
-      // console.log(res);
+      console.log(res);
       if (res?.data?.success) {
         dispatch(removeToken());
         toast.success("Logout successfully !");
