@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import axios from "axios";
 
 import "react-toastify/dist/ReactToastify.css";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
 import './App.css';
 
 import Login from "./components/auth/Login";
@@ -21,7 +22,7 @@ function App() {
   const dispatch = useDispatch();
   const {isLoggedIn , token} = useSelector(state => state?.auth);
   const user = useSelector(state => state?.auth);
-console.log(user)
+// console.log(user)
 
   function PrivateRoute({ path, element }) {
   
@@ -37,7 +38,7 @@ console.log(user)
   const verify = async () => {
     try {
       const res = await axios.get(`/api/auth/verifyUserToken/${token}`);
-        console.log(res);
+        // console.log(res);
       if (res?.data?.success) {
         // alert("ok")
         dispatch(setUserDetails(res?.data?.data));

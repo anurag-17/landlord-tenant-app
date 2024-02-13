@@ -1,4 +1,6 @@
 import Dashboard from "../components/admin-pages/Dashboard";
+import Property from "../components/admin-pages/property/Property";
+import Report from "../components/admin-pages/report/Report";
 import User from "../components/admin-pages/user/User";
 
 export const sideMenus = [
@@ -14,18 +16,20 @@ export const sideMenus = [
     label: "User list",
     component : <User />,
     url: "/",
-    // // icon: <UserIcon />,
   },
   {
     id: 2,
     label: "Property list",
-    url: "/",
-    // // icon: <CategoryIcon />,
+    component : <Property />,
+  },
+  {
+    id: 3,
+    label: "Report",
+    component : <Report />,
   },
   // {
-  //   id: 3,
-  //   label: "Feedback",
-  //   url: "/",
-  //   icon: <Feedbackicon />,
+  //   id: 4,
+  //   label: "Property List",
+  //   component : <Dashboard />,
   // },
 ];
