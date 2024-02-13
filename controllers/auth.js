@@ -6,6 +6,7 @@ const { generateToken, verifyToken } = require("../config/jwtToken");
 const sendToken = require("../utils/jwtToken");
 const jwt = require("jsonwebtoken");
 const uploadOnS3 = require("../utils/uploadImage");
+const Property = require("../models/Property");
 
 exports.uploadImage = async (req, res, next) => {
   try {
@@ -32,21 +33,17 @@ exports.register = async (req, res, next) => {
     const existingMobile = await User.findOne({ mobile });
 
     if (existingUser) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          error: "User with this email already exists.",
-        });
+      return res.status(400).json({
+        success: false,
+        error: "User with this email already exists.",
+      });
     }
 
     if (existingMobile) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          error: "User with this contact number already exists.",
-        });
+      return res.status(400).json({
+        success: false,
+        error: "User with this contact number already exists.",
+      });
     }
 
     const userData = {
@@ -168,12 +165,10 @@ exports.logout = async (req, res) => {
     const authHeader = req.headers.authorization;
 
     if (!authHeader) {
-      return res
-        .status(401)
-        .json({
-          success: false,
-          message: "Please login to access this resource",
-        });
+      return res.status(401).json({
+        success: false,
+        message: "Please login to access this resource",
+      });
     }
 
     const token = authHeader;
@@ -190,20 +185,16 @@ exports.logout = async (req, res) => {
       );
 
       if (!user) {
-        return res
-          .status(401)
-          .json({
-            success: false,
-            message: "Invalid session or token, please login again",
-          });
+        return res.status(401).json({
+          success: false,
+          message: "Invalid session or token, please login again",
+        });
       }
 
-      return res
-        .status(200)
-        .json({
-          success: true,
-          message: `${userData.fullname} is Logout Successfully`,
-        });
+      return res.status(200).json({
+        success: true,
+        message: `${userData.fullname} is Logout Successfully`,
+      });
     } else {
       return res
         .status(401)
@@ -230,12 +221,10 @@ exports.forgotPassword = async (req, res, next) => {
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res
-        .status(404)
-        .json({
-          success: false,
-          error: `${email} this email is not registered`,
-        });
+      return res.status(404).json({
+        success: false,
+        error: `${email} this email is not registered`,
+      });
     }
 
     const resetToken = user.getResetPasswordToken();
@@ -314,12 +303,10 @@ exports.forgotPassword = async (req, res, next) => {
         text: message,
       });
 
-      return res
-        .status(200)
-        .json({
-          success: true,
-          data: "Password Reset Email Sent Successfully",
-        });
+      return res.status(200).json({
+        success: true,
+        data: "Password Reset Email Sent Successfully",
+      });
     } catch (error) {
       user.passwordResetToken = undefined;
       user.passwordResetExpires = undefined;
@@ -385,13 +372,11 @@ exports.verifyUser = async (req, res) => {
         .json({ success: false, message: "Unauthorized Access" });
     }
 
-    return res
-      .status(200)
-      .json({
-        success: true,
-        data: LoggedUser,
-        message: "Verification Successful",
-      });
+    return res.status(200).json({
+      success: true,
+      data: LoggedUser,
+      message: "Verification Successful",
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ success: false, error: error.message });
@@ -399,12 +384,12 @@ exports.verifyUser = async (req, res) => {
 };
 
 exports.updatedUser = async (req, res) => {
-  const { _id } = req.user; // Removing unnecessary property access
-  validateMongoDbId(_id);
+  const  {id}  = req.params; // Removing unnecessary property access
+  validateMongoDbId(id);
 
   try {
     const updatedUser = await User.findByIdAndUpdate(
-      _id,
+      id,
       {
         fullname: req?.body?.fullname,
         // lastname: req.body.lastname,
@@ -426,9 +411,36 @@ exports.updatedUser = async (req, res) => {
         new: true,
       }
     );
-    res.status(200).json({ success: true, data: updatedUser });
+    if (!updatedUser) {
+      return res.status(404).json({
+        success: false,
+        error: "User not found",
+      });
+    }
+    if (updatedUser.isBlocked) {
+       // Find properties associated with the blocked user
+    const propertiesToUpdate = await Property.find({ userId: updatedUser._id });
+
+    // Update the status of each property
+    await Promise.all(propertiesToUpdate.map(async (property) => {
+        property.isBlocked = true; // Assuming you have a field isBlocked in your Property schema
+        await property.save();
+    }));
+    }
+    if (!updatedUser.isBlocked) {
+      // Find properties associated with the blocked user
+   const propertiesToUpdate = await Property.find({ userId: updatedUser._id });
+
+   // Update the status of each property
+   await Promise.all(propertiesToUpdate.map(async (property) => {
+       property.isBlocked = false; // Assuming you have a field isBlocked in your Property schema
+       await property.save();
+   }));
+   }
+
+    return res.status(200).json({ success: true, data: updatedUser });
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    return res.status(500).json({ success: false, error: error.message });
   }
 };
 
@@ -461,8 +473,13 @@ exports.getAllUser = async (req, res) => {
       .skip(skip)
       .limit(itemsPerPage)
       .exec();
-
-    res.status(200).json({
+    if (!users) {
+      return res.status(404).json({
+        success: false,
+        error: "Data not found",
+      });
+    }
+    return res.status(200).json({
       success: true,
       totalItems,
       totalPages,
@@ -471,7 +488,9 @@ exports.getAllUser = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, error: "Internal Server Error" });
+    return res
+      .status(500)
+      .json({ success: false, error: "Internal Server Error" });
   }
 };
 
@@ -481,9 +500,11 @@ exports.getaUser = async (req, res) => {
 
   try {
     const getaUser = await User.findById(_id);
-    res.json({
-      getaUser,
-    });
+    
+    if (!getaUser) {
+      return res.status(404).json({ success: false, error: "User not found" });
+    }
+    return  res.status(200).json({ success: true, getaUser });;
   } catch (error) {
     throw new Error(error);
   }
@@ -500,7 +521,7 @@ exports.getUserById = async (req, res) => {
       return res.status(404).json({ success: false, error: "User not found" });
     }
 
-    res.status(200).json({ success: true, user });
+    return res.status(200).json({ success: true, user });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, error: "Internal Server Error" });
@@ -518,10 +539,12 @@ exports.deleteUser = async (req, res) => {
       return res.status(404).json({ success: false, error: "User not found" });
     }
 
-    res.status(200).json({ success: true, deletedUser });
+    return res.status(200).json({ success: true, deletedUser });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, error: "Internal Server Error" });
+    return res
+      .status(500)
+      .json({ success: false, error: "Internal Server Error" });
   }
 };
 
@@ -543,7 +566,7 @@ exports.updatePassword = async (req, res) => {
     user.passwordChangedAt = Date.now();
     await user.save();
 
-    res
+    return res
       .status(200)
       .json({ success: true, message: "Password changed successfully" });
   } catch (error) {
