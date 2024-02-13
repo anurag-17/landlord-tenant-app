@@ -36,7 +36,13 @@ const UserSchema = new mongoose.Schema(
     university:{
       type: String,
     },
+    ageGroup:{
+      type: String,
+    },
     gender:{
+      type: String,
+    },
+    genderPrefer:{
       type: String,
     },
     eatPrefer:{
@@ -57,6 +63,10 @@ const UserSchema = new mongoose.Schema(
     provider: {
       type: String,
       default: "local",
+    },
+    isBlocked:{
+      type:Boolean,
+      default: false,
     },
     provider_ID: {
       type: String,

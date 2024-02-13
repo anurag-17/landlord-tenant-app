@@ -2,7 +2,7 @@ const User = require("../models/User");
 const ErrorResponse = require("../utils/errorRes");
 const sendEmail = require("../utils/sendEmail");
 const validateMongoDbId = require("../utils/validateMongodbId");
-const { generateToken , verifyToken} = require("../config/jwtToken");
+const { generateToken, verifyToken } = require("../config/jwtToken");
 const sendToken = require("../utils/jwtToken");
 const jwt = require("jsonwebtoken");
 const uploadOnS3 = require("../utils/uploadImage");
@@ -32,11 +32,21 @@ exports.register = async (req, res, next) => {
     const existingMobile = await User.findOne({ mobile });
 
     if (existingUser) {
-      return res.status(400).json({ success: false, error: "User with this email already exists." });
+      return res
+        .status(400)
+        .json({
+          success: false,
+          error: "User with this email already exists.",
+        });
     }
 
     if (existingMobile) {
-      return res.status(400).json({ success: false, error: "User with this contact number already exists." });
+      return res
+        .status(400)
+        .json({
+          success: false,
+          error: "User with this contact number already exists.",
+        });
     }
 
     const userData = {
@@ -46,13 +56,15 @@ exports.register = async (req, res, next) => {
       fullname: req.body.fullname,
       password: req.body.password,
       profilePicture: req?.body?.profilePicture,
-      age:req?.body?.age,
-      university:req?.body?.university,
-      gender:req?.body?.gender,
-      eatPrefer:req?.body?.eatPrefer,
-      smoke_drinkPrefer:req?.body?.smoke_drinkPrefer,
-      PetPrefer:req?.body?.PetPrefer,
-      provinces:req?.body?.provinces
+      age: req?.body?.age,
+      university: req?.body?.university,
+      gender: req?.body?.gender,
+      eatPrefer: req?.body?.eatPrefer,
+      smoke_drinkPrefer: req?.body?.smoke_drinkPrefer,
+      PetPrefer: req?.body?.PetPrefer,
+      provinces: req?.body?.provinces,
+      ageGroup: req?.body?.ageGroup,
+      genderPrefer: req?.body?.genderPrefer,
     };
 
     const newUser = await User.create(userData);
@@ -62,18 +74,23 @@ exports.register = async (req, res, next) => {
   }
 };
 
-
 exports.login = async (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(400).json({ success: false, error: "Please provide Email and Password" });
+    return res
+      .status(400)
+      .json({ success: false, error: "Please provide Email and Password" });
   }
 
   try {
     const findUser = await User.findOne({ email }).select("+password");
 
-    if (findUser && (await findUser.matchPasswords(password))) {
+    if (
+      findUser &&
+      !findUser.isBlocked &&
+      (await findUser.matchPasswords(password))
+    ) {
       const token = generateToken({ id: findUser._id });
 
       await User.findByIdAndUpdate(
@@ -93,15 +110,16 @@ exports.login = async (req, res, next) => {
         token: token,
       };
 
-      return res.status(200).json({success: true, user});
+      return res.status(200).json({ success: true, user });
     } else {
-      return res.status(401).json({ success: false, error: "Invalid Credentials" });
+      return res
+        .status(401)
+        .json({ success: false, error: "Invalid Credentials" });
     }
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
 };
-
 
 exports.adminLogin = async (req, res, next) => {
   const { email, password } = req.body;
@@ -131,12 +149,12 @@ exports.adminLogin = async (req, res, next) => {
           _id: findAdmin._id,
           fullname: findAdmin.fullname,
           email: findAdmin.email,
-          profilePicture: findAdmin.profilePicture
+          profilePicture: findAdmin.profilePicture,
         },
         token: token,
       };
 
-      return res.status(200).json({success:true,user});
+      return res.status(200).json({ success: true, user });
     } else {
       throw new Error("Invalid Credentials");
     }
@@ -145,13 +163,17 @@ exports.adminLogin = async (req, res, next) => {
   }
 };
 
-
 exports.logout = async (req, res) => {
   try {
     const authHeader = req.headers.authorization;
 
     if (!authHeader) {
-      return res.status(401).json({ success: false, message: "Please login to access this resource" });
+      return res
+        .status(401)
+        .json({
+          success: false,
+          message: "Please login to access this resource",
+        });
     }
 
     const token = authHeader;
@@ -166,18 +188,32 @@ exports.logout = async (req, res) => {
         { $unset: { activeToken: "" } },
         { new: true }
       );
-      
+
       if (!user) {
-        return res.status(401).json({ success: false, message: "Invalid session or token, please login again" });
+        return res
+          .status(401)
+          .json({
+            success: false,
+            message: "Invalid session or token, please login again",
+          });
       }
 
-      return res.status(200).json({ success: true, message: `${userData.fullname} is Logout Successfully` });
+      return res
+        .status(200)
+        .json({
+          success: true,
+          message: `${userData.fullname} is Logout Successfully`,
+        });
     } else {
-      return res.status(401).json({ success: false, message: "Token expired, please login again" });
+      return res
+        .status(401)
+        .json({ success: false, message: "Token expired, please login again" });
     }
   } catch (error) {
     if (error.name === "TokenExpiredError") {
-      return res.status(401).json({ success: false, message: "Token expired, please login again" });
+      return res
+        .status(401)
+        .json({ success: false, message: "Token expired, please login again" });
     } else if (error.name === "JsonWebTokenError") {
       return res.status(401).json({ success: false, message: "Invalid token" });
     } else {
@@ -187,7 +223,6 @@ exports.logout = async (req, res) => {
   }
 };
 
-
 exports.forgotPassword = async (req, res, next) => {
   const { email } = req.body;
 
@@ -195,7 +230,12 @@ exports.forgotPassword = async (req, res, next) => {
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(404).json({ success: false, error: `${email} this email is not registered` });
+      return res
+        .status(404)
+        .json({
+          success: false,
+          error: `${email} this email is not registered`,
+        });
     }
 
     const resetToken = user.getResetPasswordToken();
@@ -274,18 +314,24 @@ exports.forgotPassword = async (req, res, next) => {
         text: message,
       });
 
-      return res.status(200).json({ success: true, data: "Password Reset Email Sent Successfully" });
+      return res
+        .status(200)
+        .json({
+          success: true,
+          data: "Password Reset Email Sent Successfully",
+        });
     } catch (error) {
       user.passwordResetToken = undefined;
       user.passwordResetExpires = undefined;
       await user.save();
-      return res.status(500).json({ success: false, error: "Email could not be sent" });
+      return res
+        .status(500)
+        .json({ success: false, error: "Email could not be sent" });
     }
   } catch (error) {
     next(error);
   }
 };
-
 
 exports.resetPassword = async (req, res, next) => {
   try {
@@ -295,7 +341,9 @@ exports.resetPassword = async (req, res, next) => {
     });
 
     if (!user) {
-      return res.status(400).json({ success: false, error: "Invalid Reset Token" });
+      return res
+        .status(400)
+        .json({ success: false, error: "Invalid Reset Token" });
     }
 
     user.password = req.body.password;
@@ -304,12 +352,13 @@ exports.resetPassword = async (req, res, next) => {
 
     await user.save();
 
-    res.status(200).json({ success: true, data: "Password Reset Successfully" });
+    res
+      .status(200)
+      .json({ success: true, data: "Password Reset Successfully" });
   } catch (error) {
     next(error);
   }
 };
-
 
 exports.verifyUser = async (req, res) => {
   const { token } = req.params;
@@ -318,24 +367,36 @@ exports.verifyUser = async (req, res) => {
     const decodedData = verifyToken(token);
 
     if (!decodedData) {
-      return res.status(401).json({ success: false, message: "Unauthorized Access" });
+      return res
+        .status(401)
+        .json({ success: false, message: "Unauthorized Access" });
     }
 
     const { id } = decodedData;
 
-    const LoggedUser = await User.findOne({ _id: id, activeToken: token }).select("-password -activeToken");
+    const LoggedUser = await User.findOne({
+      _id: id,
+      activeToken: token,
+    }).select("-password -activeToken");
 
     if (!LoggedUser) {
-      return res.status(401).json({ success: false, message: "Unauthorized Access" });
+      return res
+        .status(401)
+        .json({ success: false, message: "Unauthorized Access" });
     }
 
-    return res.status(200).json({ success: true, data: LoggedUser, message: "Verification Successful" });
+    return res
+      .status(200)
+      .json({
+        success: true,
+        data: LoggedUser,
+        message: "Verification Successful",
+      });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ success: false, error: error.message });
   }
 };
-
 
 exports.updatedUser = async (req, res) => {
   const { _id } = req.user; // Removing unnecessary property access
@@ -356,7 +417,10 @@ exports.updatedUser = async (req, res) => {
         eatPrefer: req?.body?.eatPrefer,
         smoke_drinkPrefer: req?.body?.smoke_drinkPrefer,
         PetPrefer: req?.body?.PetPrefer,
-        provinces:req?.body?.provinces
+        provinces: req?.body?.provinces,
+        isBlocked: req?.body?.isBlocked,
+        ageGroup: req?.body?.ageGroup,
+        genderPrefer: req?.body?.genderPrefer,
       },
       {
         new: true,
@@ -368,18 +432,17 @@ exports.updatedUser = async (req, res) => {
   }
 };
 
-
 exports.getAllUser = async (req, res) => {
   try {
     const { page = 1, limit = 10 } = req.query;
     const searchQuery = req.query.search;
-    
+
     const currentPage = parseInt(page, 10);
     const itemsPerPage = parseInt(limit, 10);
 
     // const userQuery = User.find();
     //not including admin role
-    let userQuery = User.find({ role: { $ne: "admin" } })
+    let userQuery = User.find({ role: { $ne: "admin" } });
     if (searchQuery) {
       userQuery.or([
         { fullname: { $regex: new RegExp(searchQuery, "i") } },
@@ -393,7 +456,11 @@ exports.getAllUser = async (req, res) => {
     const totalPages = Math.ceil(totalItems / itemsPerPage);
 
     const skip = (currentPage - 1) * itemsPerPage;
-    const users = await userQuery.sort({ fullname: 1 }).skip(skip).limit(itemsPerPage).exec();
+    const users = await userQuery
+      .sort({ fullname: 1 })
+      .skip(skip)
+      .limit(itemsPerPage)
+      .exec();
 
     res.status(200).json({
       success: true,
@@ -407,8 +474,6 @@ exports.getAllUser = async (req, res) => {
     res.status(500).json({ success: false, error: "Internal Server Error" });
   }
 };
-
-
 
 exports.getaUser = async (req, res) => {
   const { _id } = req.user;
@@ -425,7 +490,7 @@ exports.getaUser = async (req, res) => {
 };
 
 exports.getUserById = async (req, res) => {
-  const  _id  = req.params.id;
+  const _id = req.params.id;
   validateMongoDbId(_id);
 
   try {
@@ -441,7 +506,6 @@ exports.getUserById = async (req, res) => {
     res.status(500).json({ success: false, error: "Internal Server Error" });
   }
 };
-
 
 exports.deleteUser = async (req, res) => {
   const { id } = req.params;
@@ -461,7 +525,6 @@ exports.deleteUser = async (req, res) => {
   }
 };
 
-
 exports.updatePassword = async (req, res) => {
   try {
     const { oldPassword, newPassword } = req.body;
@@ -471,17 +534,20 @@ exports.updatePassword = async (req, res) => {
     // Verify the current password
     const isPasswordMatch = await user.matchPasswords(oldPassword);
     if (!isPasswordMatch) {
-      return res.status(401).json({ success: false, error: "Current password is incorrect" });
+      return res
+        .status(401)
+        .json({ success: false, error: "Current password is incorrect" });
     }
 
     user.password = newPassword;
     user.passwordChangedAt = Date.now();
     await user.save();
 
-    res.status(200).json({ success: true, message: "Password changed successfully" });
+    res
+      .status(200)
+      .json({ success: true, message: "Password changed successfully" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, error: "Password change failed" });
   }
 };
-

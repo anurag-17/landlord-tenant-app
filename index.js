@@ -18,18 +18,8 @@ connectDB();
 
 const app = express();
 
-if (process.env.NODE_ENV === "dev") {
-  //replaced "production" with "dev"
-  app.use(express.static("./client/build"));
 
-  app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, ".", "client", "build", "index.html"));
-  });
-} else {
-  app.get("/", (req, res) => {
-    res.send("API is running..");
-  });
-}
+
 
 
 
@@ -49,7 +39,7 @@ app.use(cors({ origin: "*" }));
 app.use(cookieParser('secret'));
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ limit: "5mb", extended: true }));
-app.use(bodyParser.urlencoded({ extended: true }));
+// app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "5mb", extended: true }));
 app.use(
@@ -181,8 +171,22 @@ app.get("/", (req, res) => {
 
 // Auth and User 
 app.use("/api/auth", require("./routes/auth"));
+app.use("/api/property", require("./routes/propertyRoute"));
 
 app.use("/api/auth/upload", require("./routes/auth"));
+
+if (process.env.NODE_ENV === "dev") {
+  app.use(express.static(path.join(__dirname, 'client', 'build')));
+
+  // Define route to serve React app
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
+  });
+} else {
+  app.get("/", (req, res) => {
+    res.send("API is running..");
+  });
+}
 
 // Error Handler 
 app.use(errorHandler);

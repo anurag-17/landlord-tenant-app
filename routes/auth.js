@@ -40,7 +40,7 @@ router.post("/updatePassword", isAuthenticatedUser, updatePassword);
 router.put("/edit-user", isAuthenticatedUser, updatedUser);
 
 // Get all Users
-router.get("/all-users", isAuthenticatedUser, authorizeRoles("admin"), getAllUser);
+router.route("/all-users").get(isAuthenticatedUser, authorizeRoles("admin"), getAllUser);
 
 // Get a User
 router.route("/getaUser").get(isAuthenticatedUser, getaUser);
