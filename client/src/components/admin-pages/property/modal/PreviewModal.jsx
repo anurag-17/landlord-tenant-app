@@ -5,7 +5,7 @@ const PreviewModal = ({ previewData }) => {
   console.log(previewData);
   return (
     <div className="pb-[20px]">
-      <div className="grid grid-cols-2 gap-5 lg:gap-8">
+      <div className="grid md:grid-cols-2 gap-5 lg:gap-8">
         <div className="">
           <Carousel
             infiniteLoop={true}

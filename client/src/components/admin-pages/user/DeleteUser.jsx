@@ -51,7 +51,7 @@ const DeleteUser = ({ deleteId, closeModal, refreshdata,token}) => {
       </div>
 
       <div className="mt-8">
-        <div className="flex justify-between gap-x-5">
+        <div className="flex md:flex-row flex-col gap-3 justify-between gap-x-5">
           <button
             className="w-full secondary_btn"
             onClick={()=>closeModal()}

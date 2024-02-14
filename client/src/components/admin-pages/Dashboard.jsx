@@ -14,11 +14,15 @@ const Dashboard = () => {
   console.log(userDetails);
   return (
     <>
-      <section className="mt-[20px] lg:mt-0 px-20 md:px-0">
+      <section className>
         <div className=" mx-auto">
-          <div className="rounded-[10px] bg-white py-[20px] flexBetween px-[20px]">
-            <p className=" text-[22px] font-semibold">
+          <div className="rounded-[10px] bg-white py-[20px] flexCenter md:flexBetween flex-col md:flex-row gap-3 px-[20px]">
+            <p className="text-[20px] md:text-[22px] font-semibold leading-tight md:block hidden mt-[20px] lg:mt-0">
               Welcome to Admin Dashboard
+            </p>
+            <p className="text-[20px] md:text-[22px] font-semibold leading-tight text-center mt-[30px] md:hidden block">
+              Welcome to
+              <br/> Admin Dashboard
             </p>
             <div className="flexCenter gap-x-7 lg:gap-x-5 md:flex-auto flex-wrap gap-y-3 md:justify-end">
               <Menu as="div" className="relative text-left w-[50px] h-[50px] rounded-[50%] border p-1 flexCenter">
@@ -38,7 +42,7 @@ const Dashboard = () => {
                   leaveFrom="transform scale-100"
                   leaveTo="transform scale-95"
                 >
-                  <Menu.Items className="absolute right-4 top-11 w-56 z-[11] mt-2 px-2 py-5 shadow-2xl rounded-lg origin-top-right border border-[#f3f3f3] bg-[white]  side-profile">
+                  <Menu.Items className="absolute md:right-4 top-11 w-56 z-[11] mt-2 px-2 py-5 shadow-2xl rounded-lg origin-top-right border border-[#f3f3f3] bg-[white]  side-profile">
                     <div className="p-1 flex flex-col gap-4">
                       <Menu.Item>
                         <Link
