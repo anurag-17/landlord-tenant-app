@@ -180,9 +180,9 @@ const User = () => {
   return (
     <>
       {isLoader && <Loader />}
-      <section className="mt-[20px] lg:mt-0 px-20 md:px-0">
+      <section className="w-full">
         <div className=" mx-auto">
-          <div className="rounded-[10px] bg-white py-[20px] flexBetween px-[20px]">
+          <div className="rounded-[10px] bg-white py-[20px] flexBetween flex-col md:flex-row gap-3 px-[20px] mt-[20px] lg:mt-0">
             <p className=" text-[22px] font-semibold">User list</p>
             <div className="flexCenter gap-x-7 lg:gap-x-5 md:flex-auto flex-wrap gap-y-3 md:justify-end">
               <div className="border border-primary  bg-[#302f2f82]] flexCenter h-[32px] pl-[10px] md:w-auto w-full">
@@ -210,15 +210,14 @@ const User = () => {
               </div>
             </div>
           </div>
-          <div className="px-[20px]">
-            <div className="outer_table ">
+          <div className="">
+            <div className="outer_table">
               <table className="w-full min-w-[640px] table-auto mt-[20px] ">
                 <thead className="">
                   <tr className=" ">
                     {headItems.map((items, inx) => (
                       <th className="table_head" key={inx}>
-                        <p className="block text-[13px] font-medium uppercase text-[#72727b]">
-                          {" "}
+                        <p className="block text-[13px] font-medium uppercase whitespace-nowrap text-[#72727b]">
                           {items}
                         </p>
                       </th>
@@ -324,7 +323,7 @@ const User = () => {
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <Dialog.Panel className="w-full max-w-[500px] transform overflow-hidden rounded-2xl bg-white py-10 px-12 text-left align-middle shadow-xl transition-all">
+                <Dialog.Panel className="w-full max-w-[500px] transform overflow-hidden rounded-2xl bg-white 2xl:py-10 2xl:px-12 px-8 py-8  text-left align-middle shadow-xl transition-all">
                   <Dialog.Title
                     as="h3"
                     className="xl:text-[20px] text-[18px] font-medium leading-6 text-gray-900"
@@ -374,7 +373,7 @@ const User = () => {
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <Dialog.Panel className="w-full lg:max-w-[900] md:max-w-[800px] sm:max-w-[500px] transform overflow-hidden rounded-2xl bg-white 2xl:py-10  py-8 px-8 2xl:px-12 text-left align-middle shadow-xl transition-all">
+                <Dialog.Panel className="w-full lg:max-w-[900] md:max-w-[800px] sm:max-w-[500px] transform overflow-hidden rounded-2xl bg-white 2xl:py-10 px-8 py-8 2xl:px-12 text-left align-middle shadow-xl transition-all">
                   <div className="flex justify-end items-end ">
                     <button
                       className=" cursor-pointer"
