@@ -9,15 +9,17 @@ import CloseIcon from "../Svg/CloseIcon";
 import Pagination from "../../pagination/Pagination";
 import Loader from "../../loader/Index";
 import PreviewModal from "./modal/PreviewModal";
+import Rating from "./Ratings";
 
 export const headItems = [
   "S. No.",
   "title",
   "category",
   "For",
-  "Address",
+  "City",
   "No. of Rooms",
   "price",
+  "ratings",
   "block listing",
   "Action",
 ];
@@ -134,7 +136,7 @@ const Property = () => {
     axios
       .request(options)
       .then((res) => {
-        // console.log(res);
+        console.log(res);
         if (res?.data?.success) {
           setIsLoader(false);
           setAllData(res?.data);
@@ -235,9 +237,12 @@ const Property = () => {
                         </td>
                         <td className="table_data">{items?.category} </td>
                         <td className="table_data">{items?.listingType}</td>
-                        <td className="table_data"></td>
+                        <td className="table_data">{items?.city}</td>
                         <td className="table_data">{items?.numberOfRooms}</td>
                         <td className="table_data whitespace-nowrap">$ {items?.price}</td>
+                        <td className="table_data whitespace-nowrap">  
+                        <Rating rating="3.5" /> {items?.rating}
+                        </td>
                         <td className="table_data">
                           <Switch
                             checked={items?.isBlocked}
@@ -260,6 +265,8 @@ const Property = () => {
                             />
                           </Switch>
                         </td>
+                    
+
                         <td className="table_data">
                           <div className="table_btn_div">
                             <button
