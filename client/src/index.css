@@ -130,6 +130,19 @@ body {
   }
 }
 
+.star {
+  color: gray; /* Default color */
+}
+
+.filled {
+  color: #0cae3a; /* Filled star color */
+}
+
+.half-filled {
+  color: #0cae3a;/* Half-filled star color */
+}
+
+
 /* Hide scrollbar for Chrome, Safari and Opera */
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
