@@ -30,31 +30,31 @@ const UserSchema = new mongoose.Schema(
       type: String,
       default: "user",
     },
-    age:{
+    age: {
       type: String,
     },
-    university:{
+    university: {
       type: String,
     },
-    ageGroup:{
+    ageGroup: {
       type: String,
     },
-    gender:{
+    gender: {
       type: String,
     },
-    genderPrefer:{
+    genderPrefer: {
       type: String,
     },
-    eatPrefer:{
+    eatPrefer: {
       type: String,
     },
-    smoke_drinkPrefer:{
+    smoke_drinkPrefer: {
       type: String,
     },
-    PetPrefer:{
+    PetPrefer: {
       type: String,
-    },    
-    provinces:{
+    },
+    provinces: {
       type: String,
     },
     refreshToken: {
@@ -64,16 +64,17 @@ const UserSchema = new mongoose.Schema(
       type: String,
       default: "local",
     },
-    isBlocked:{
-      type:Boolean,
+    isBlocked: {
+      type: Boolean,
       default: false,
     },
     provider_ID: {
       type: String,
     },
     activeToken: {
-      type: String
+      type: String,
     },
+    wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: "Property" }],
     passwordChangedAt: Date,
     passwordResetToken: String,
     passwordResetExpires: Date,
