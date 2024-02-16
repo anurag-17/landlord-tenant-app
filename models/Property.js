@@ -34,7 +34,7 @@ const PropertySchema = new mongoose.Schema({
     type: Array,
   },
   price: {
-    type: String,
+    type: Number,
   },
   feature: {
     type: Array,
@@ -66,7 +66,33 @@ const PropertySchema = new mongoose.Schema({
   isBlocked:{
     type:Boolean,
     default: false,
-  }
+  },
+  address:{
+    type: String,
+  },
+  city:{
+    type: String,
+  },
+  state:{
+    type: String,
+  },
+  country:{
+    type: String,
+  },
+  pincode:{
+    type: String,
+  },
+  ratings: [
+    {
+      star: Number,
+      comment: String,
+      postedby: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    },
+  ],
+  totalrating: {
+    type: String,
+    default: 0,
+  },
 });
 const Property = mongoose.model("Property", PropertySchema);
 

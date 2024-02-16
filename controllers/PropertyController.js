@@ -29,6 +29,11 @@ exports.addProperty = async (req, res) => {
       smoke_drinkPrefer,
       PetPrefer,
       provinces,
+      address,
+      city,
+      state,
+      country,
+      pincode,
     } = req.body;
 
     // Create a new Property object
@@ -53,6 +58,11 @@ exports.addProperty = async (req, res) => {
       smoke_drinkPrefer,
       PetPrefer,
       provinces,
+      address,
+      city,
+      state,
+      country,
+      pincode,
     });
 
     // Save the property to the database
@@ -177,7 +187,17 @@ exports.deletePropertyById = async (req, res) => {
 exports.searchProperties = async (req, res) => {
   try {
     // Extract search query parameters from query parameters
-    const { title, provinces } = req.query;
+    const {
+      title,
+      provinces,
+      userId,
+      city,
+      address,
+      state,
+      country,
+      listingType,
+      price,
+    } = req.body;
 
     // Extract page number and page size from query parameters, with default values if not provided
     const page = parseInt(req.query.page) || 1;
@@ -188,12 +208,45 @@ exports.searchProperties = async (req, res) => {
     if (title) filter.title = { $regex: new RegExp(title), $options: "i" }; // Case-insensitive search by title
     if (provinces)
       filter.provinces = { $regex: new RegExp(provinces), $options: "i" }; // Case-insensitive search by provinces
-
-      // Count total number of properties matching the filter
+    if (userId) {
+      filter.userId = { $regex: new RegExp(userId), $options: "i" };
+    }
+    ///if city
+    if (city) filter.city = { $regex: new RegExp(city), $options: "i" };
+    //if address
+    if (address)
+      filter.address = { $regex: new RegExp(address), $options: "i" };
+    //if state
+    if (state) filter.state = { $regex: new RegExp(state), $options: "i" };
+    //if country
+    if (country)
+      filter.country = { $regex: new RegExp(country), $options: "i" };
+    //
+    // If lsitingtype are provided, add them to the property filter
+    if (listingType && listingType.length > 0) {
+      filter.listingType = { $all: listingType };
+    }
+    // if price is provided
+    if (price) {
+      // Extract min and max price values from the provided string
+      const [minPriceStr, maxPriceStr] = price.split("-").map(Number);
+      // Convert string price values to numbers
+      const minPrice = parseFloat(minPriceStr);
+      const maxPrice = parseFloat(maxPriceStr);
+      console.log(minPrice, maxPrice); 
+      // Add price range filter to the property filter
+      if (!isNaN(minPrice) && !isNaN(maxPrice)) {
+        filter.price = { $gte: minPrice, $lte: maxPrice };
+      } else {
+        // Handle invalid price format
+        return res.status(400).json({ success: false, error: "Invalid price format" });
+      }
+    }
+    // Count total number of properties matching the filter
     const totalProperties = await Property.countDocuments(filter);
 
     // Calculate total number of pages
-    const totalPages = Math.ceil(totalProperties / pageSize); 
+    const totalPages = Math.ceil(totalProperties / pageSize);
     // Calculate skip value based on page number and page size
     const skip = (page - 1) * pageSize;
 
@@ -201,9 +254,14 @@ exports.searchProperties = async (req, res) => {
     const properties = await Property.find(filter).skip(skip).limit(pageSize);
 
     // Return properties along with pagination metadata
-    return res
-      .status(200)
-      .json({ success: true, properties, page, totalProperties,limit: pageSize ,totalPages});
+    return res.status(200).json({
+      success: true,
+      properties,
+      page,
+      totalProperties,
+      limit: pageSize,
+      totalPages,
+    });
   } catch (error) {
     // Return error response if something goes wrong
     console.error("Error searching properties:", error);
@@ -217,11 +275,27 @@ exports.searchProperties = async (req, res) => {
 exports.filterProperties = async (req, res) => {
   try {
     // Extract user preferences and otherPreferences from request body
-    const { tenantId, otherPreferences, userLocation } = req.body;
+    const {
+      tenantId,
+      otherPreferences,
+      userLocation,
+      city,
+      address,
+      state,
+      country,
+      listingType,
+      title,
+      provinces,
+      price,
+    } = req.body;
 
     // Fetch user preferences from the database based on userId
     const user = await User.findById(tenantId);
-
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, error: "Failed to fetch tenant" });
+    }
     // Extract user preferences
     const { genderPrefer, eatPrefer, smoke_drinkPrefer, PetPrefer } = user;
 
@@ -265,6 +339,38 @@ exports.filterProperties = async (req, res) => {
     if (otherPreferences && otherPreferences.length > 0) {
       propertyFilter.preference = { $all: otherPreferences };
     }
+    // If lsitingtype are provided, add them to the property filter
+    if (listingType && listingType.length > 0) {
+      propertyFilter.listingType = { $all: listingType };
+    }
+    ///if city
+    if (city) propertyFilter.city = { $regex: new RegExp(city), $options: "i" };
+    //if address
+    if (address)
+      propertyFilter.address = { $regex: new RegExp(address), $options: "i" };
+    //if state
+    if (state)
+      propertyFilter.state = { $regex: new RegExp(state), $options: "i" };
+    //if country
+    if (country)
+      propertyFilter.country = { $regex: new RegExp(country), $options: "i" };
+    //title
+    if (title)
+      propertyFilter.title = { $regex: new RegExp(title), $options: "i" }; // Case-insensitive search by title
+    //province
+    if (provinces)
+      propertyFilter.provinces = {
+        $regex: new RegExp(provinces),
+        $options: "i",
+      }; // Case-insensitive search by provinces
+    //price
+    if (price) {
+      // Extract min and max price values from the provided string
+      const [minPrice, maxPrice] = price.split("-").map(Number);
+
+      // Add price range filter to the property filter
+      propertyFilter.price = { $gte: minPrice, $lte: maxPrice };
+    }
 
     // If user location is provided, filter properties within 5 km radius
     let properties = await Property.find(propertyFilter);
@@ -283,7 +389,7 @@ exports.filterProperties = async (req, res) => {
             property.location[0].longitude
           );
           console.log(distance);
-          return distance <= 5;
+          return distance <= 10;
         } else {
           return false; // Exclude properties without valid location
         }
@@ -302,16 +408,14 @@ exports.filterProperties = async (req, res) => {
     const paginatedProperties = properties.slice(startIndex, endIndex);
 
     // Return paginated properties along with pagination metadata
-    return res
-      .status(200)
-      .json({
-        success: true,
-        properties: paginatedProperties,
-        page,
-        totalPages,
-        totalProperties,
-        limit: pageSize,
-      });
+    return res.status(200).json({
+      success: true,
+      properties: paginatedProperties,
+      page,
+      totalPages,
+      totalProperties,
+      limit: pageSize,
+    });
   } catch (error) {
     // Return error response if something goes wrong
     console.error("Error filtering properties:", error);
