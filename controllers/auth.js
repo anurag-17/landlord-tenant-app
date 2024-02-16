@@ -384,7 +384,7 @@ exports.verifyUser = async (req, res) => {
 };
 
 exports.updatedUser = async (req, res) => {
-  const  {id}  = req.params; // Removing unnecessary property access
+  const { id } = req.params; // Removing unnecessary property access
   validateMongoDbId(id);
 
   try {
@@ -418,25 +418,33 @@ exports.updatedUser = async (req, res) => {
       });
     }
     if (updatedUser.isBlocked) {
-       // Find properties associated with the blocked user
-    const propertiesToUpdate = await Property.find({ userId: updatedUser._id });
+      // Find properties associated with the blocked user
+      const propertiesToUpdate = await Property.find({
+        userId: updatedUser._id,
+      });
 
-    // Update the status of each property
-    await Promise.all(propertiesToUpdate.map(async (property) => {
-        property.isBlocked = true; // Assuming you have a field isBlocked in your Property schema
-        await property.save();
-    }));
+      // Update the status of each property
+      await Promise.all(
+        propertiesToUpdate.map(async (property) => {
+          property.isBlocked = true; // Assuming you have a field isBlocked in your Property schema
+          await property.save();
+        })
+      );
     }
     if (!updatedUser.isBlocked) {
       // Find properties associated with the blocked user
-   const propertiesToUpdate = await Property.find({ userId: updatedUser._id });
+      const propertiesToUpdate = await Property.find({
+        userId: updatedUser._id,
+      });
 
-   // Update the status of each property
-   await Promise.all(propertiesToUpdate.map(async (property) => {
-       property.isBlocked = false; // Assuming you have a field isBlocked in your Property schema
-       await property.save();
-   }));
-   }
+      // Update the status of each property
+      await Promise.all(
+        propertiesToUpdate.map(async (property) => {
+          property.isBlocked = false; // Assuming you have a field isBlocked in your Property schema
+          await property.save();
+        })
+      );
+    }
 
     return res.status(200).json({ success: true, data: updatedUser });
   } catch (error) {
@@ -500,11 +508,11 @@ exports.getaUser = async (req, res) => {
 
   try {
     const getaUser = await User.findById(_id);
-    
+
     if (!getaUser) {
       return res.status(404).json({ success: false, error: "User not found" });
     }
-    return  res.status(200).json({ success: true, getaUser });;
+    return res.status(200).json({ success: true, getaUser });
   } catch (error) {
     throw new Error(error);
   }
@@ -538,7 +546,8 @@ exports.deleteUser = async (req, res) => {
     if (!deletedUser) {
       return res.status(404).json({ success: false, error: "User not found" });
     }
-
+    // Find and delete properties associated with the user
+    const deletedProperties = await Property.deleteMany({ userId: id });
     return res.status(200).json({ success: true, deletedUser });
   } catch (error) {
     console.error(error);
