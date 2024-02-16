@@ -9,15 +9,17 @@ import CloseIcon from "../Svg/CloseIcon";
 import Pagination from "../../pagination/Pagination";
 import Loader from "../../loader/Index";
 import PreviewModal from "./modal/PreviewModal";
+import Rating from "./Ratings";
 
 export const headItems = [
   "S. No.",
   "title",
   "category",
   "For",
-  "Address",
+  "City",
   "No. of Rooms",
   "price",
+  "ratings",
   "block listing",
   "Action",
 ];
@@ -105,7 +107,6 @@ const Property = () => {
         },
       });
       if (res.data?.success) {
-        // console.log(res.data?.property);
         setOpenPopup(true);
         setPreviewData(res.data?.property);
         setIsLoader(false);
@@ -135,7 +136,7 @@ const Property = () => {
     axios
       .request(options)
       .then((res) => {
-        // console.log(res);
+        console.log(res);
         if (res?.data?.success) {
           setIsLoader(false);
           setAllData(res?.data);
@@ -180,9 +181,9 @@ const Property = () => {
   return (
     <>
       {isLoader && <Loader />}
-      <section className="mt-[20px] lg:mt-0 px-20 md:px-0">
+      <section className="">
         <div className=" mx-auto">
-          <div className="rounded-[10px] bg-white py-[20px] flexBetween px-[20px]">
+          <div className="rounded-[10px] bg-white py-[20px] flexBetween flex-col md:flex-row gap-3 px-[20px] mt-[20px] lg:mt-0">
             <p className=" text-[22px] font-semibold">Properties list</p>
             <div className="flexCenter gap-x-7 lg:gap-x-5 md:flex-auto flex-wrap gap-y-3 md:justify-end">
               <div className="border border-primary  bg-[#302f2f82]] flexCenter h-[32px] pl-[10px] md:w-auto w-full">
@@ -210,7 +211,7 @@ const Property = () => {
               </div>
             </div>
           </div>
-          <div className="px-[20px]">
+          <div className="">
             <div className="outer_table ">
               <table className="w-full table-auto mt-[20px] ">
                 <thead className="">
@@ -236,9 +237,12 @@ const Property = () => {
                         </td>
                         <td className="table_data">{items?.category} </td>
                         <td className="table_data">{items?.listingType}</td>
-                        <td className="table_data"></td>
+                        <td className="table_data">{items?.city}</td>
                         <td className="table_data">{items?.numberOfRooms}</td>
                         <td className="table_data whitespace-nowrap">$ {items?.price}</td>
+                        <td className="table_data whitespace-nowrap">  
+                        <Rating rating="3.5" /> {items?.rating}
+                        </td>
                         <td className="table_data">
                           <Switch
                             checked={items?.isBlocked}
@@ -261,6 +265,8 @@ const Property = () => {
                             />
                           </Switch>
                         </td>
+                    
+
                         <td className="table_data">
                           <div className="table_btn_div">
                             <button
@@ -326,7 +332,7 @@ const Property = () => {
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <Dialog.Panel className="w-full max-w-[500px] transform overflow-hidden rounded-2xl bg-white py-10 px-12 text-left align-middle shadow-xl transition-all">
+                <Dialog.Panel className="w-full max-w-[500px] transform overflow-hidden rounded-2xl bg-white 2xl:py-10  py-8 px-8 2xl:px-12 text-left align-middle shadow-xl transition-all">
                   <Dialog.Title
                     as="h3"
                     className="xl:text-[20px] text-[18px] font-medium leading-6 text-gray-900"
@@ -366,7 +372,7 @@ const Property = () => {
           </Transition.Child>
 
           <div className="fixed inset-0 overflow-y-auto">
-            <div className="flex min-h-full items-center justify-center p-4 text-center">
+            <div className="flex min-h-full items-center justify-center md:p-4 text-center">
               <Transition.Child
                 as={Fragment}
                 enter="ease-out duration-300"
@@ -376,7 +382,7 @@ const Property = () => {
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <Dialog.Panel className="w-full lg:max-w-[900px] md:max-w-[800px] sm:max-w-[500px] transform overflow-hidden rounded-2xl bg-white 2xl:py-10  py-8 px-8 2xl:px-12 text-left align-middle shadow-xl transition-all">
+                <Dialog.Panel className="w-full lg:max-w-[950px] md:max-w-[800px] sm:max-w-[600px] transform overflow-hidden rounded-2xl bg-white  2xl:py-10 px-4 py-4 sm:py-8 md:px-8 2xl:px-12  text-left align-middle shadow-xl transition-all">
                   <div className="flex justify-end items-end ">
                     <button
                       className=" cursor-pointer"
