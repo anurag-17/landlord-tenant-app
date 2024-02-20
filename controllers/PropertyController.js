@@ -451,3 +451,49 @@ exports.filterProperties = async (req, res) => {
       .json({ success: false, error: "Failed to filter properties" });
   }
 };
+exports.addToWishlist = async (req, res) => {
+  const { prodId } = req.body;
+  const { _id } = req.user._id;
+  try {
+    const user = await User.findById(_id);
+    const alreadyadded = user.wishlist.find((id) => id.toString() === prodId);
+    if (alreadyadded) {
+      // Remove the product from the wishlist
+      user.wishlist = user.wishlist.filter(id => id.toString() !== prodId);
+      await user.save();
+      res.json({success: true, message: 'Product removed from wishlist', wishlist: user.wishlist, added: false });
+    } else {
+      // Add the product to the wishlist
+      user.wishlist.push(prodId);
+      await user.save();
+      res.json({ success: true,message: 'Product added to wishlist', wishlist: user.wishlist, added: true });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, error: 'An error occurred while updating the wishlist' });
+  }
+};
+exports.deleteAllWishlistItems = async (req, res) => {
+  const { _id } = req.user._id;
+
+  try {
+    // Find the user by ID
+    const user = await User.findById(_id);
+
+    if (!user) {
+      return res.status(404).json({ success: false,error: "User not found" });
+    }
+
+    // Clear the user's wishlist by setting it to an empty array
+    user.wishlist = [];
+
+    // Save the user to update the wishlist
+    await user.save();
+
+    res.json({success: true, message: "All wishlist items deleted" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({success: false, error: "An error occurred while deleting wishlist items" });
+  }
+};
+   
