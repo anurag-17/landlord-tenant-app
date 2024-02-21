@@ -49,7 +49,7 @@ exports.register = async (req, res, next) => {
     const userData = {
       email,
       mobile: req.body.mobile,
-      // role: req.body.role,
+      role: req.body.role,
       fullname: req.body.fullname,
       password: req.body.password,
       profilePicture: req?.body?.profilePicture,
@@ -81,7 +81,7 @@ exports.login = async (req, res, next) => {
   }
 
   try {
-    const findUser = await User.findOne({ email }).select("+password");
+    const findUser = await User.findOne({ email }).select("+password").populate("wishlist");
 
     if (
       findUser &&
@@ -102,6 +102,7 @@ exports.login = async (req, res, next) => {
           _id: findUser._id,
           fullname: findUser.fullname,
           email: findUser.email,
+          wishlist:findUser.wishlist,
           provider: findUser.provider,
         },
         token: token,

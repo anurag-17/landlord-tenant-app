@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const Property = require("./Property");
 
 const UserSchema = new mongoose.Schema(
   {
@@ -29,6 +30,22 @@ const UserSchema = new mongoose.Schema(
     role: {
       type: String,
       default: "user",
+    },
+    dateOfbirth:{
+      type: String,
+    },
+    collegeName:{
+      type: String,
+    },
+    collegeProgram:{
+      type: String,
+
+    },
+    preference:{
+      type: String,
+    },
+    roomMateBio:{
+      type: String,
     },
     age: {
       type: String,
@@ -74,7 +91,7 @@ const UserSchema = new mongoose.Schema(
     activeToken: {
       type: String,
     },
-    wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: "Property" }],
+    wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: Property }],
     passwordChangedAt: Date,
     passwordResetToken: String,
     passwordResetExpires: Date,
