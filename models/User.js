@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const Property = require("./Property");
 
 const UserSchema = new mongoose.Schema(
   {
@@ -30,31 +31,47 @@ const UserSchema = new mongoose.Schema(
       type: String,
       default: "user",
     },
-    age:{
+    dateOfbirth:{
       type: String,
     },
-    university:{
+    collegeName:{
       type: String,
     },
-    ageGroup:{
+    collegeProgram:{
+      type: String,
+
+    },
+    preference:{
       type: String,
     },
-    gender:{
+    roomMateBio:{
       type: String,
     },
-    genderPrefer:{
+    age: {
       type: String,
     },
-    eatPrefer:{
+    university: {
       type: String,
     },
-    smoke_drinkPrefer:{
+    ageGroup: {
       type: String,
     },
-    PetPrefer:{
+    gender: {
       type: String,
-    },    
-    provinces:{
+    },
+    genderPrefer: {
+      type: String,
+    },
+    eatPrefer: {
+      type: String,
+    },
+    smoke_drinkPrefer: {
+      type: String,
+    },
+    PetPrefer: {
+      type: String,
+    },
+    provinces: {
       type: String,
     },
     refreshToken: {
@@ -64,16 +81,17 @@ const UserSchema = new mongoose.Schema(
       type: String,
       default: "local",
     },
-    isBlocked:{
-      type:Boolean,
+    isBlocked: {
+      type: Boolean,
       default: false,
     },
     provider_ID: {
       type: String,
     },
     activeToken: {
-      type: String
+      type: String,
     },
+    wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: Property }],
     passwordChangedAt: Date,
     passwordResetToken: String,
     passwordResetExpires: Date,

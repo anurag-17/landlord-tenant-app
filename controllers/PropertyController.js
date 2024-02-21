@@ -198,13 +198,14 @@ exports.searchProperties = async (req, res) => {
       listingType,
       price,
     } = req.body;
+    const searchQuery = req.query.search;
 
     // Extract page number and page size from query parameters, with default values if not provided
     const page = parseInt(req.query.page) || 1;
     const pageSize = parseInt(req.query.limit) || 10;
 
     // Create a filter object based on search parameters
-    const filter = {};
+    let filter = {};
     if (title) filter.title = { $regex: new RegExp(title), $options: "i" }; // Case-insensitive search by title
     if (provinces)
       filter.provinces = { $regex: new RegExp(provinces), $options: "i" }; // Case-insensitive search by provinces
@@ -241,6 +242,19 @@ exports.searchProperties = async (req, res) => {
         // Handle invalid price format
         return res.status(400).json({ success: false, error: "Invalid price format" });
       }
+    }
+     // If there's a search query, add it to the filter
+     if (searchQuery) {
+      const searchFilter = {
+        $or: [
+          { title: { $regex: searchQuery, $options: 'i' } },
+          { city: { $regex: searchQuery, $options: 'i' } },
+          { country: { $regex: searchQuery, $options: 'i' } },
+          { state: { $regex: searchQuery, $options: 'i' } },
+        ]
+      };
+      // Merge existing filter with search filter using $and
+      filter = { $and: [filter, searchFilter] };
     }
     // Count total number of properties matching the filter
     const totalProperties = await Property.countDocuments(filter);
@@ -288,7 +302,7 @@ exports.filterProperties = async (req, res) => {
       provinces,
       price,
     } = req.body;
-
+    const searchQuery = req.query.search;
     // Fetch user preferences from the database based on userId
     const user = await User.findById(tenantId);
     if (!user) {
@@ -371,6 +385,19 @@ exports.filterProperties = async (req, res) => {
       // Add price range filter to the property filter
       propertyFilter.price = { $gte: minPrice, $lte: maxPrice };
     }
+    // If there's a search query, add it to the filter
+    if (searchQuery) {
+      const searchFilter = {
+        $or: [
+          { title: { $regex: searchQuery, $options: 'i' } },
+          { city: { $regex: searchQuery, $options: 'i' } },
+          { country: { $regex: searchQuery, $options: 'i' } },
+          { state: { $regex: searchQuery, $options: 'i' } },
+        ]
+      };
+      // Merge existing filter with search filter using $and
+      propertyFilter = { $and: [filter, searchFilter] };
+    }
 
     // If user location is provided, filter properties within 5 km radius
     let properties = await Property.find(propertyFilter);
@@ -424,3 +451,49 @@ exports.filterProperties = async (req, res) => {
       .json({ success: false, error: "Failed to filter properties" });
   }
 };
+exports.addToWishlist = async (req, res) => {
+  const { prodId } = req.body;
+  const { _id } = req.user._id;
+  try {
+    const user = await User.findById(_id);
+    const alreadyadded = user.wishlist.find((id) => id.toString() === prodId);
+    if (alreadyadded) {
+      // Remove the product from the wishlist
+      user.wishlist = user.wishlist.filter(id => id.toString() !== prodId);
+      await user.save();
+      res.json({success: true, message: 'Product removed from wishlist', wishlist: user.wishlist, added: false });
+    } else {
+      // Add the product to the wishlist
+      user.wishlist.push(prodId);
+      await user.save();
+      res.json({ success: true,message: 'Product added to wishlist', wishlist: user.wishlist, added: true });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, error: 'An error occurred while updating the wishlist' });
+  }
+};
+exports.deleteAllWishlistItems = async (req, res) => {
+  const { _id } = req.user._id;
+
+  try {
+    // Find the user by ID
+    const user = await User.findById(_id);
+
+    if (!user) {
+      return res.status(404).json({ success: false,error: "User not found" });
+    }
+
+    // Clear the user's wishlist by setting it to an empty array
+    user.wishlist = [];
+
+    // Save the user to update the wishlist
+    await user.save();
+
+    res.json({success: true, message: "All wishlist items deleted" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({success: false, error: "An error occurred while deleting wishlist items" });
+  }
+};
+   
