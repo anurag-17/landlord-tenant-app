@@ -31,6 +31,22 @@ const UserSchema = new mongoose.Schema(
       type: String,
       default: "user",
     },
+    dateOfbirth:{
+      type: String,
+    },
+    collegeName:{
+      type: String,
+    },
+    collegeProgram:{
+      type: String,
+
+    },
+    preference:{
+      type: String,
+    },
+    roomMateBio:{
+      type: String,
+    },
     age: {
       type: String,
     },
