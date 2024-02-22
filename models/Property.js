@@ -5,7 +5,10 @@ const mongoose = require("mongoose");
 const PropertySchema = new mongoose.Schema({
   userId:{
   type:String
-  },  
+  }, 
+  availabilityDate:{
+    type: String,
+  }, 
   title: {
     type: String,
   },
@@ -14,9 +17,18 @@ const PropertySchema = new mongoose.Schema({
   },
   description:{
     type: String,
-  },    
-  numberOfRooms:{
-    type: String,
+  },
+  BedRoom:{
+    type: Number,
+  },   
+  BathRoom:{
+    type: Number,
+  },
+  noOfMales:{
+    type: Number,
+  },
+  noOfFemales:{
+    type: Number,
   },
   furnishedType:{
     type: String,
@@ -36,9 +48,18 @@ const PropertySchema = new mongoose.Schema({
   price: {
     type: Number,
   },
+  //like monthly or yearly
+  priceRecur:{
+    type: String,
+  },
+  collegeName:{
+    type: String,
+  },
+// Closest transit
   feature: {
     type: Array,
   },
+  //preferences of user
   preference: {
     type: Array,
   },
