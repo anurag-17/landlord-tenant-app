@@ -42,7 +42,7 @@ const UserSchema = new mongoose.Schema(
 
     },
     preference:{
-      type: String,
+      type: Array,
     },
     roomMateBio:{
       type: String,
@@ -52,6 +52,16 @@ const UserSchema = new mongoose.Schema(
     },
     university: {
       type: String,
+    },
+    country:{
+      type: String,
+    },
+    city:{
+      type: String,
+    },
+    spokenLanguage:{
+      type: String,
+
     },
     ageGroup: {
       type: String,
