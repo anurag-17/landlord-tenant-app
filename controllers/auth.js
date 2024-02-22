@@ -62,6 +62,14 @@ exports.register = async (req, res, next) => {
       provinces: req?.body?.provinces,
       ageGroup: req?.body?.ageGroup,
       genderPrefer: req?.body?.genderPrefer,
+      dateOfbirth: req?.body?.dateOfbirth,
+      collegeName: req?.body?.collegeName,
+      collegeProgram: req?.body?.collegeProgram,
+      preference: req?.body?.preference,
+      roomMateBio: req?.body?.roomMateBio,
+      spokenLanguage: req?.body?.spokenLanguage,
+      country: req?.body?.country,
+      city: req?.body?.city,
     };
 
     const newUser = await User.create(userData);
@@ -81,7 +89,9 @@ exports.login = async (req, res, next) => {
   }
 
   try {
-    const findUser = await User.findOne({ email }).select("+password").populate("wishlist");
+    const findUser = await User.findOne({ email })
+      .select("+password")
+      .populate("wishlist");
 
     if (
       findUser &&
@@ -102,7 +112,7 @@ exports.login = async (req, res, next) => {
           _id: findUser._id,
           fullname: findUser.fullname,
           email: findUser.email,
-          wishlist:findUser.wishlist,
+          wishlist: findUser.wishlist,
           provider: findUser.provider,
         },
         token: token,
@@ -407,6 +417,14 @@ exports.updatedUser = async (req, res) => {
         isBlocked: req?.body?.isBlocked,
         ageGroup: req?.body?.ageGroup,
         genderPrefer: req?.body?.genderPrefer,
+        dateOfbirth: req?.body?.dateOfbirth,
+        collegeName: req?.body?.collegeName,
+        collegeProgram: req?.body?.collegeProgram,
+        preference: req?.body?.preference,
+        roomMateBio: req?.body?.roomMateBio,
+        spokenLanguage: req?.body?.spokenLanguage,
+        country: req?.body?.country,
+        city: req?.body?.city,
       },
       {
         new: true,
