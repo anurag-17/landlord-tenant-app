@@ -75,7 +75,7 @@ const Property = () => {
   const searchDataFunc = (search_cate) => {
     const options = {
       method: "POST",
-      url: `/api/listing/properties/search?search=${search_cate}`,
+      url: `/api/listing/properties/all?search=${search_cate}`,
       headers: {
         Authorization: token,
         "Content-Type": "multipart/form-data",
@@ -127,7 +127,7 @@ const Property = () => {
     setIsLoader(true);
     const options = {
       method: "POST",
-      url: `/api/listing/properties/search?page=${pageNo}&limit=${visiblePageCount}`,
+      url: `/api/listing/properties/all?page=${pageNo}&limit=${visiblePageCount}`,
       headers: {
         Authorization: token,
         "Content-Type": "application/json",
