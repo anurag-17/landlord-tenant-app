@@ -126,7 +126,7 @@ const Property = () => {
   const getAllData = (pageNo) => {
     setIsLoader(true);
     const options = {
-      method: "GET",
+      method: "POST",
       url: `/api/listing/properties/search?page=${pageNo}&limit=${visiblePageCount}`,
       headers: {
         Authorization: token,
