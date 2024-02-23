@@ -74,7 +74,7 @@ const Property = () => {
   };
   const searchDataFunc = (search_cate) => {
     const options = {
-      method: "GET",
+      method: "POST",
       url: `/api/listing/properties/search?search=${search_cate}`,
       headers: {
         Authorization: token,
