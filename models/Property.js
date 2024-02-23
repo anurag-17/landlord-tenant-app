@@ -63,24 +63,24 @@ const PropertySchema = new mongoose.Schema({
   preference: {
     type: Array,
   },
-  ageGroup: {
-    type: String,
-  },
-  university: {
-    type: String,
-  },
-  gender: {
-    type: String,
-  },
-  eatPrefer: {
-    type: String,
-  },
-  smoke_drinkPrefer: {
-    type: String,
-  },
-  PetPrefer: {
-    type: String,
-  },
+  // ageGroup: {
+  //   type: String,
+  // },
+  // university: {
+  //   type: String,
+  // },
+  // gender: {
+  //   type: String,
+  // },
+  // eatPrefer: {
+  //   type: String,
+  // },
+  // smoke_drinkPrefer: {
+  //   type: String,
+  // },
+  // PetPrefer: {
+  //   type: String,
+  // },
   provinces: {
     type: String,
   },

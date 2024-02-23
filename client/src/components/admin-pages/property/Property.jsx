@@ -74,7 +74,7 @@ const Property = () => {
   };
   const searchDataFunc = (search_cate) => {
     const options = {
-      method: "GET",
+      method: "POST",
       url: `/api/listing/properties/search?search=${search_cate}`,
       headers: {
         Authorization: token,
@@ -126,7 +126,7 @@ const Property = () => {
   const getAllData = (pageNo) => {
     setIsLoader(true);
     const options = {
-      method: "GET",
+      method: "POST",
       url: `/api/listing/properties/search?page=${pageNo}&limit=${visiblePageCount}`,
       headers: {
         Authorization: token,

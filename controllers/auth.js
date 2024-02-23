@@ -108,13 +108,7 @@ exports.login = async (req, res, next) => {
 
       const user = {
         success: true,
-        user: {
-          _id: findUser._id,
-          fullname: findUser.fullname,
-          email: findUser.email,
-          wishlist: findUser.wishlist,
-          provider: findUser.provider,
-        },
+        findUser,
         token: token,
       };
 
@@ -526,7 +520,7 @@ exports.getaUser = async (req, res) => {
   validateMongoDbId(_id);
 
   try {
-    const getaUser = await User.findById(_id);
+    const getaUser = await User.findById(_id).populate("wishlist");
 
     if (!getaUser) {
       return res.status(404).json({ success: false, error: "User not found" });
@@ -542,7 +536,7 @@ exports.getUserById = async (req, res) => {
   validateMongoDbId(_id);
 
   try {
-    const user = await User.findById(_id);
+    const user = await User.findById(_id).populate("wishlist");
 
     if (!user) {
       return res.status(404).json({ success: false, error: "User not found" });
