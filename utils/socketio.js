@@ -22,6 +22,9 @@ exports.init = (server) => {
 	// io.emit() is used to send events to all the connected clients
 	io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
+  socket.on("typing", () => io.emit("typing"));
+  socket.on("stop typing", () => io.emit("stop typing"));
+
 	// socket.on() is used to listen to the events. can be used both on client and server side
 	socket.on("disconnect", () => {
 		console.log("user disconnected", socket.id);
