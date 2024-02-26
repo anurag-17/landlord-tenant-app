@@ -1,4 +1,4 @@
-preference
+
 const mongoose = require("mongoose");
 
 const PreferenceSchema = new mongoose.Schema(
@@ -6,6 +6,7 @@ const PreferenceSchema = new mongoose.Schema(
     preference: {
       type: String,
       required: true,
+      unique: true,
     },
   },
   {

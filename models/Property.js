@@ -1,6 +1,8 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
+const Preference = require("./Preferences");
+const Category = require("./Category");
 
 const PropertySchema = new mongoose.Schema({
   userId: {
@@ -37,7 +39,7 @@ const PropertySchema = new mongoose.Schema({
     type: Array,
   },
   category: {
-    type: String,
+    type:mongoose.Schema.Types.ObjectId, ref:Category,
   },
   location: {
     type: Array,
@@ -60,9 +62,7 @@ const PropertySchema = new mongoose.Schema({
     type: Array,
   },
   //preferences of user
-  preference: {
-    type: Array,
-  },
+  preference: [{ type: mongoose.Schema.Types.ObjectId, ref:Preference}],
   // ageGroup: {
   //   type: String,
   // },

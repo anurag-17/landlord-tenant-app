@@ -4,6 +4,8 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const Property = require("./Property");
 
+const Preference = require("./Preferences");
+
 const UserSchema = new mongoose.Schema(
   {
     fullname: {
@@ -41,9 +43,7 @@ const UserSchema = new mongoose.Schema(
       type: String,
 
     },
-    preference:{
-      type: Array,
-    },
+    preference:[{ type: mongoose.Schema.Types.ObjectId, ref: Preference }],
     roomMateBio:{
       type: String,
     },

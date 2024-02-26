@@ -46,7 +46,7 @@ const AdminDashboard = () => {
 
   return (
     <section className="">
-      <div className="flex min-h-screen relative lg:static">
+      <div className="flex max-h-[100vh] relative lg:static">
         <div
           className="py-2 px-3  absolute top-4 left-2 flex flex-col gap-[5px] cursor-pointer lg:hidden"
           onClick={() => setShowDrawer(true)}
