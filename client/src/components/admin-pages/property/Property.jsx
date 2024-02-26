@@ -17,7 +17,7 @@ export const headItems = [
   "category",
   "For",
   "City",
-  "No. of Rooms",
+  // "No. of Rooms",
   "price",
   "ratings",
   "block listing",
@@ -213,14 +213,15 @@ const Property = () => {
           </div>
           <div className="">
             <div className="outer_table ">
-              <table className="w-full table-auto mt-[20px] ">
+              <table className="w-full table-auto mt-[20px] overflow-x-scroll">
                 <thead className="">
                   <tr className=" ">
                     {headItems.map((items, inx) => (
-                      <th className="table_head whitespace-nowrap" key={inx}>
-                        <p className="block text-[13px] font-medium uppercase text-[#72727b]">
-                          {items}
-                        </p>
+                      <th
+                        className="table_head p-0 py-2 px-2 text-[13px] font-medium uppercase text-[#72727b]"
+                        key={inx}
+                      >
+                        {items}
                       </th>
                     ))}
                   </tr>
@@ -229,75 +230,93 @@ const Property = () => {
                 <tbody>
                   {Array.isArray(allData?.properties) &&
                     allData?.properties?.length > 0 &&
-                    allData?.properties?.map((items, index) => (
-                      <tr key={index}>
-                        <td className="table_data">{index + 1}</td>
-                        <td className="table_data capitalize">
-                          {items?.title}
-                        </td>
-                        <td className="table_data">{items?.category} </td>
-                        <td className="table_data">{items?.listingType}</td>
-                        <td className="table_data">{items?.city}</td>
-                        <td className="table_data">{items?.numberOfRooms}</td>
-                        <td className="table_data whitespace-nowrap">$ {items?.price}</td>
-                        <td className="table_data whitespace-nowrap">  
-                        <Rating rating="3.5" /> {items?.rating}
-                        </td>
-                        <td className="table_data">
-                          <Switch
-                            checked={items?.isBlocked}
-                            onChange={() =>
-                              handleToggleBlocked(items?._id, items?.isBlocked)
-                            }
-                            className={`${
-                              items?.isBlocked ? "bg-primary" : "bg-gray-200"
-                            } relative inline-flex h-6 w-11 items-center rounded-full`}
-                          >
-                            <span className="sr-only">
-                              Enable notifications
-                            </span>
-                            <span
-                              className={`${
-                                items?.isBlocked
-                                  ? "translate-x-6"
-                                  : "translate-x-1"
-                              } inline-block h-4 w-4 transform rounded-full bg-white transition`}
-                            />
-                          </Switch>
-                        </td>
-                    
+                    allData?.properties.map((items, index) => {
+                      return (
+                        <>
+                          <tr className="text-[13px] font-medium uppercase">
+                            <td className="p-2">
+                              {Number(index + 1) +
+                                10 * Number(allData?.page - 1)}
+                            </td>
+                            <td className="p-2">{items.title}</td>
+                            <td className="p-2">
+                              {items?.category?.title
+                                ? items?.category?.title
+                                : "Not found"}{" "}
+                            </td>
+                            <td className="p-2">{items?.listingType}</td>
+                            <td className="p-2">{items?.city}</td>
+                            {/* <td className="p-2">
+                              {items?.numberOfRooms}
+                            </td> */}
+                            <td className="p-2 whitespace-nowrap">
+                              $ {items?.price}
+                            </td>
+                            <td className="p-2 whitespace-nowrap">
+                              <Rating rating="3.5" /> {items?.rating}
+                            </td>
+                            <td className="p-2">
+                              <Switch
+                                checked={items?.isBlocked}
+                                onChange={() =>
+                                  handleToggleBlocked(
+                                    items?._id,
+                                    items?.isBlocked
+                                  )
+                                }
+                                className={`${
+                                  items?.isBlocked
+                                    ? "bg-primary"
+                                    : "bg-gray-200"
+                                } relative inline-flex h-6 w-11 items-center rounded-full`}
+                              >
+                                <span className="sr-only">
+                                  Enable notifications
+                                </span>
+                                <span
+                                  className={`${
+                                    items?.isBlocked
+                                      ? "translate-x-6"
+                                      : "translate-x-1"
+                                  } inline-block h-4 w-4 transform rounded-full bg-white transition`}
+                                />
+                              </Switch>
+                            </td>
 
-                        <td className="table_data">
-                          <div className="table_btn_div">
-                            <button
-                              className="secondary_btn"
-                              onClick={() => handlePreview(items?._id)}
-                            >
-                              Preview
-                            </button>
-                            <button
-                              className="delete_btn"
-                              onClick={() => handleDelete(items?._id)}
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
+                            <td className="p-2">
+                              <div className="table_btn_div">
+                                <button
+                                  className="secondary_btn"
+                                  onClick={() => handlePreview(items?._id)}
+                                >
+                                  Preview
+                                </button>
+                                <button
+                                  className="delete_btn"
+                                  onClick={() => handleDelete(items?._id)}
+                                >
+                                  Delete
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        </>
+                      );
+                    })}
                 </tbody>
               </table>
             </div>
-            {Array.isArray(allData?.properties) && allData?.properties?.length === 0 && (
-              <div className="no_data">
-                <p className="text-[18px] fontsemibold">No data</p>
-              </div>
-            )}
+            {Array.isArray(allData?.properties) &&
+              allData?.properties?.length === 0 && (
+                <div className="no_data">
+                  <p className="text-[18px] fontsemibold">No data</p>
+                </div>
+              )}
           </div>
 
           {allData?.totalPages > 1 && (
             <Pagination
-              currentpage={allData?.currentPage}
+              currentpage={allData?.page}
               totalCount={allData?.totalPages}
               visiblePageCount={visiblePageCount}
               getAllData={getAllData}
@@ -352,8 +371,8 @@ const Property = () => {
         </Dialog>
       </Transition>
 
-        {/*---------- Preview popup---------- */}
-        <Transition appear show={openPopup} as={Fragment}>
+      {/*---------- Preview popup---------- */}
+      <Transition appear show={openPopup} as={Fragment}>
         <Dialog
           as="div"
           className="relative z-[11]"

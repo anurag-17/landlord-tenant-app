@@ -5,17 +5,24 @@ exports.createCategory = async (req, res) => {
   try {
     const { title } = req.body;
 
-    const existingCategory = await Category.findOne({ title: { $regex: new RegExp(`^${title}$`, "i") } });
-    
+    const existingCategory = await Category.findOne({
+      title: { $regex: new RegExp(`^${title}$`, "i") },
+    });
+
     if (existingCategory) {
-      return res.status(400).json({ error: 'Category with this title already exists' });
+      return res.status(400).json({
+        success: false,
+        error: "Category with this title already exists",
+      });
     }
 
     const newCategory = await Category.create({ title });
-    res.status(201).json(newCategory);
+    return res.status(201).json({ success: true, newCategory });
   } catch (error) {
-    console.error('Error:', error.message);
-    res.status(500).json({ error: 'Internal Server Error', status: 500 });
+    console.error("Error:", error.message);
+    return res
+      .status(500)
+      .json({ success: false, error: "Internal Server Error" });
   }
 };
 
@@ -26,50 +33,68 @@ exports.updateCategory = async (req, res) => {
     const updatedCategory = await Category.findByIdAndUpdate(id, req.body, {
       new: true,
     });
-    res.json(updatedCategory);
+    return res.json({ success: true, updatedCategory });
   } catch (error) {
-    throw new Error(error);
+    console.error("Error:", error.message);
+    return res
+      .status(500)
+      .json({ success: false, error: "Internal Server Error" });
   }
 };
 
 exports.deleteCategory = async (req, res) => {
-  const { id } = req.body;
+  const { id } = req.params;
   validateMongoDbId(id);
 
   try {
     const deletedCategory = await Category.findById(id);
 
     if (!deletedCategory) {
-      return res.status(404).json({ error: "Category not found" });
+      return res
+        .status(404)
+        .json({ success: false, error: "Category not found" });
     }
 
     await Category.deleteOne({ _id: id });
 
-    res.json({ message: "Category deleted successfully" });
+    return res.json({
+      success: true,
+      message: "Category deleted successfully",
+    });
   } catch (error) {
     console.error("Error:", error.message);
-    res.status(500).json({ error: "Internal Server Error" });
+    return res
+      .status(500)
+      .json({ success: false, error: "Internal Server Error" });
   }
 };
 
 exports.deleteBulkCategory = async (req, res) => {
   try {
     const { CategoryIds } = req.body;
-    const deleteCategorys = await Category.deleteMany({ _id: { $in: CategoryIds } });
-    res.json(deleteCategorys);
+    const deleteCategorys = await Category.deleteMany({
+      _id: { $in: CategoryIds },
+    });
+    res.json({ success: true, deleteCategorys });
   } catch (error) {
-    throw new Error(error);
+    console.error("Error:", error.message);
+    return res
+      .status(500)
+      .json({ success: false, error: "Internal Server Error" });
   }
 };
 
 exports.getCategory = async (req, res) => {
-  const { id } = req.body;
+  const { id } = req.params;
   validateMongoDbId(id);
   try {
     const getaCategory = await Category.findById(id);
-    res.json(getaCategory);
+    res.json({ success: true, getaCategory });
   } catch (error) {
-    throw new Error(error);
+    console.error("Error:", error.message);
+    return res
+      .status(500)
+      .json({ success: false, error: "Internal Server Error" });
   }
 };
 
@@ -87,7 +112,9 @@ exports.getallCategory = async (req, res) => {
     }
 
     const totalCategories = await Category.countDocuments(query);
-    const totalPages = itemsPerPage ? Math.ceil(totalCategories / itemsPerPage) : 1;
+    const totalPages = itemsPerPage
+      ? Math.ceil(totalCategories / itemsPerPage)
+      : 1;
 
     const skip = itemsPerPage ? (currentPage - 1) * itemsPerPage : 0;
 
@@ -98,6 +125,7 @@ exports.getallCategory = async (req, res) => {
       .limit(itemsPerPage);
 
     res.status(200).json({
+      success: true,
       current_page: currentPage,
       total_pages: totalPages,
       total_items: totalCategories,
@@ -105,6 +133,6 @@ exports.getallCategory = async (req, res) => {
     });
   } catch (error) {
     console.log("Error:", error.message);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({success: false, error: "Internal Server Error" });
   }
 };

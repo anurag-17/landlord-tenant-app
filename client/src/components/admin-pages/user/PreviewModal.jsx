@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 
 const PreviewModal = ({ previewData}) => {
+  console.log(previewData);
   return (
     <div className="pb-[20px]">
       <div className="flex flex-col lg:flex-row xl:gap-14 gap-8">
@@ -17,48 +18,56 @@ const PreviewModal = ({ previewData}) => {
           </h4>
           <div className="pt-2">
             <div className="form_col">
-              <label className="form_label_head">Age :</label>
+              <label className="form_label_head ">Age</label>
               <div className="form_info ">{previewData?.age}</div>
             </div>
             <div className="form_col">
-              <label className="form_label_head">Number :</label>
+              <label className="form_label_head">Number </label>
               <div className="form_info ">{previewData?.mobile}</div>
             </div>
             <div className="form_col">
-              <label className="form_label_head">Email:</label>
+              <label className="form_label_head">Email</label>
               <div className="form_info ">{previewData?.email}</div>
             </div>
             <div className="form_col">
-              <label className="form_label_head">Gender:</label>
+              <label className="form_label_head">Gender</label>
               <div className="form_info capitalize">{previewData?.gender}</div>
             </div>
             <div className="form_col">
-              <label className="form_label_head">university :</label>
+              <label className="form_label_head">University </label>
               <div className="form_info">{previewData?.university}</div>
             </div>
           </div>
-          <div className="">
-            <h6 className="form_heading py-2"> Preference </h6>
-            <div className="form_col">
-              <label className="form_label_head">Pet :</label>
-              <div className="form_info capitalize" >{previewData?.PetPrefer}</div>
-            </div>
-            <div className="form_col">
-              <label className="form_label_head"> Eating preference:</label>
-              <div className="form_info capitalize">{previewData?.eatPrefer}</div>
-            </div>
-            <div className="form_col">
-              <label className="form_label_head">Smoke / Drink :</label>
-              <div className="form_info capitalize">{previewData?.smoke_drinkPrefer}</div>
-            </div>
-            <div className="form_col">
-              <label className="form_label_head">Gender preference :</label>
-              <div className="form_info capitalize">{previewData?.genderPrefer}</div>
-            </div>
-            <div className="form_col">
-              <label className="form_label_head">Age group :</label>
-              <div className="form_info capitalize">{previewData?.ageGroup}</div>
-            </div>
+          <div className="form_col">
+              <label className="form_label_head">Spoken Langauge </label>
+              <div className="form_info">{previewData?.university}</div>
+            
+          </div>
+          <div className="border border-b-0 border-[black]"></div>
+          <div className="py-2">
+            <h6 className="form_label_head py-2">Roomate Bio</h6>
+             <div className="form_info">
+              {
+                previewData?.roomMateBio
+              }
+             </div>
+          </div>
+          <div className="py-2">
+            <h6 className="form_label_head py-2"> Preference </h6>
+             <div className="flex form_info gap-2">
+              {
+                Array.isArray(previewData?.preference) && previewData?.preference && 
+                previewData?.preference.map((items, index)=>{
+                  return(
+                    <>
+                      <div className="bg-[#234f68] text-[white] border rounded-[24px] py-3 px-8">
+                        {items.preference}
+                      </div>
+                    </>
+                  )
+                })
+              }
+             </div>
           </div>
         </div>
       </div>
