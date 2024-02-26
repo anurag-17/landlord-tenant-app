@@ -3,34 +3,34 @@ const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 
 const PropertySchema = new mongoose.Schema({
-  userId:{
-  type:String
-  }, 
-  availabilityDate:{
+  userId: {
     type: String,
-  }, 
+  },
+  availabilityDate: {
+    type: String,
+  },
   title: {
     type: String,
   },
-  area:{
+  area: {
     type: String,
   },
-  description:{
+  description: {
     type: String,
   },
-  BedRoom:{
-    type: Number,
-  },   
-  BathRoom:{
+  BedRoom: {
     type: Number,
   },
-  noOfMales:{
+  BathRoom: {
     type: Number,
   },
-  noOfFemales:{
+  noOfMales: {
     type: Number,
   },
-  furnishedType:{
+  noOfFemales: {
+    type: Number,
+  },
+  furnishedType: {
     type: String,
   },
   listingType: {
@@ -49,13 +49,13 @@ const PropertySchema = new mongoose.Schema({
     type: Number,
   },
   //like monthly or yearly
-  priceRecur:{
+  priceRecur: {
     type: String,
   },
-  collegeName:{
+  collegeName: {
     type: String,
   },
-// Closest transit
+  // Closest transit
   feature: {
     type: Array,
   },
@@ -84,23 +84,23 @@ const PropertySchema = new mongoose.Schema({
   provinces: {
     type: String,
   },
-  isBlocked:{
-    type:Boolean,
+  isBlocked: {
+    type: Boolean,
     default: false,
   },
-  address:{
+  address: {
     type: String,
   },
-  city:{
+  city: {
     type: String,
   },
-  state:{
+  state: {
     type: String,
   },
-  country:{
+  country: {
     type: String,
   },
-  pincode:{
+  pincode: {
     type: String,
   },
   ratings: [
