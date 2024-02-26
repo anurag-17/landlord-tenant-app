@@ -91,7 +91,7 @@ exports.login = async (req, res, next) => {
   try {
     const findUser = await User.findOne({ email })
       .select("+password")
-      .populate("wishlist");
+      .populate("wishlist").populate('preference');
 
     if (
       findUser &&
@@ -475,7 +475,7 @@ exports.getAllUser = async (req, res) => {
 
     // const userQuery = User.find();
     //not including admin role
-    let userQuery = User.find({ role: { $ne: "admin" } });
+    let userQuery = User.find({ role: { $ne: "admin" } }).populate("wishlist").populate('preference');
     if (searchQuery) {
       userQuery.or([
         { fullname: { $regex: new RegExp(searchQuery, "i") } },
@@ -520,7 +520,7 @@ exports.getaUser = async (req, res) => {
   validateMongoDbId(_id);
 
   try {
-    const getaUser = await User.findById(_id).populate("wishlist");
+    const getaUser = await User.findById(_id).populate("wishlist").populate('preference');
 
     if (!getaUser) {
       return res.status(404).json({ success: false, error: "User not found" });
@@ -536,7 +536,7 @@ exports.getUserById = async (req, res) => {
   validateMongoDbId(_id);
 
   try {
-    const user = await User.findById(_id).populate("wishlist");
+    const user = await User.findById(_id).populate("wishlist").populate("preference");
 
     if (!user) {
       return res.status(404).json({ success: false, error: "User not found" });

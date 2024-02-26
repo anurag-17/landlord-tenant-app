@@ -87,7 +87,9 @@ exports.getPropertyById = async (req, res) => {
     const { id } = req.params;
 
     // Find the property in the database by its ID
-    const property = await Property.findById(id);
+    const property = await Property.findById(id)
+      .populate("category")
+      .populate("preference");
 
     // Check if the property exists
     if (!property) {
@@ -203,18 +205,27 @@ exports.searchProperties = async (req, res) => {
     let filter = {};
 
     if (title) filter.title = { $regex: new RegExp(title), $options: "i" };
-    if (provinces) filter.provinces = { $regex: new RegExp(provinces), $options: "i" };
+    if (provinces)
+      filter.provinces = { $regex: new RegExp(provinces), $options: "i" };
     if (userId) filter.userId = { $regex: new RegExp(userId), $options: "i" };
     if (city) filter.city = { $regex: new RegExp(city), $options: "i" };
-    if (address) filter.address = { $regex: new RegExp(address), $options: "i" };
+    if (address)
+      filter.address = { $regex: new RegExp(address), $options: "i" };
     if (state) filter.state = { $regex: new RegExp(state), $options: "i" };
-    if (country) filter.country = { $regex: new RegExp(country), $options: "i" };
-    if (listingType && listingType.length > 0) filter.listingType = { $all: listingType };
+    if (country)
+      filter.country = { $regex: new RegExp(country), $options: "i" };
+    if (listingType && listingType.length > 0)
+      filter.listingType = { $all: listingType };
 
     if (price) {
       const priceFormat = price.split("-");
-      if (priceFormat.length !== 2 || !priceFormat.every(val => !isNaN(parseFloat(val)))) {
-        return res.status(400).json({ success: false, error: "Invalid price format" });
+      if (
+        priceFormat.length !== 2 ||
+        !priceFormat.every((val) => !isNaN(parseFloat(val)))
+      ) {
+        return res
+          .status(400)
+          .json({ success: false, error: "Invalid price format" });
       }
       const [minPrice, maxPrice] = priceFormat.map(Number);
       filter.price = { $gte: minPrice, $lte: maxPrice };
@@ -223,11 +234,11 @@ exports.searchProperties = async (req, res) => {
     if (searchQuery) {
       const searchFilter = {
         $or: [
-          { title: { $regex: searchQuery, $options: 'i' } },
-          { city: { $regex: searchQuery, $options: 'i' } },
-          { country: { $regex: searchQuery, $options: 'i' } },
-          { state: { $regex: searchQuery, $options: 'i' } },
-        ]
+          { title: { $regex: searchQuery, $options: "i" } },
+          { city: { $regex: searchQuery, $options: "i" } },
+          { country: { $regex: searchQuery, $options: "i" } },
+          { state: { $regex: searchQuery, $options: "i" } },
+        ],
       };
       filter = { $and: [filter, searchFilter] };
     }
@@ -236,7 +247,11 @@ exports.searchProperties = async (req, res) => {
     const totalPages = Math.ceil(totalProperties / pageSize);
     const skip = (page - 1) * pageSize;
 
-    const properties = await Property.find(filter).skip(skip).limit(pageSize);
+    const properties = await Property.find(filter)
+      .populate("category")
+      .populate("preference")
+      .skip(skip)
+      .limit(pageSize);
 
     return res.status(200).json({
       success: true,
@@ -248,7 +263,9 @@ exports.searchProperties = async (req, res) => {
     });
   } catch (error) {
     console.error("Error searching properties:", error);
-    return res.status(500).json({ success: false, error: "Failed to search properties" });
+    return res
+      .status(500)
+      .json({ success: false, error: "Failed to search properties" });
   }
 };
 
@@ -278,11 +295,19 @@ exports.filterProperties = async (req, res) => {
       propertyFilter.listingType = { $all: listingType };
     }
     if (city) propertyFilter.city = { $regex: new RegExp(city), $options: "i" };
-    if (address) propertyFilter.address = { $regex: new RegExp(address), $options: "i" };
-    if (state) propertyFilter.state = { $regex: new RegExp(state), $options: "i" };
-    if (country) propertyFilter.country = { $regex: new RegExp(country), $options: "i" };
-    if (title) propertyFilter.title = { $regex: new RegExp(title), $options: "i" };
-    if (provinces) propertyFilter.provinces = { $regex: new RegExp(provinces), $options: "i" };
+    if (address)
+      propertyFilter.address = { $regex: new RegExp(address), $options: "i" };
+    if (state)
+      propertyFilter.state = { $regex: new RegExp(state), $options: "i" };
+    if (country)
+      propertyFilter.country = { $regex: new RegExp(country), $options: "i" };
+    if (title)
+      propertyFilter.title = { $regex: new RegExp(title), $options: "i" };
+    if (provinces)
+      propertyFilter.provinces = {
+        $regex: new RegExp(provinces),
+        $options: "i",
+      };
     if (price) {
       const [minPrice, maxPrice] = price.split("-").map(Number);
       propertyFilter.price = { $gte: minPrice, $lte: maxPrice };
@@ -290,20 +315,26 @@ exports.filterProperties = async (req, res) => {
     if (searchQuery) {
       const searchFilter = {
         $or: [
-          { title: { $regex: searchQuery, $options: 'i' } },
-          { city: { $regex: searchQuery, $options: 'i' } },
-          { country: { $regex: searchQuery, $options: 'i' } },
-          { state: { $regex: searchQuery, $options: 'i' } },
-        ]
+          { title: { $regex: searchQuery, $options: "i" } },
+          { city: { $regex: searchQuery, $options: "i" } },
+          { country: { $regex: searchQuery, $options: "i" } },
+          { state: { $regex: searchQuery, $options: "i" } },
+        ],
       };
       propertyFilter = { $and: [propertyFilter, searchFilter] };
     }
-console.log(propertyFilter);
-    let properties = await Property.find(propertyFilter);
+    console.log(propertyFilter);
+    let properties = await Property.find(propertyFilter)
+      .populate("category")
+      .populate("preference");
 
     if (userLocation && userLocation.latitude && userLocation.longitude) {
-      properties = properties.filter(property => {
-        if (property.location && property.location[0].latitude && property.location[0].longitude) {
+      properties = properties.filter((property) => {
+        if (
+          property.location &&
+          property.location[0].latitude &&
+          property.location[0].longitude
+        ) {
           const distance = calculateDistance(
             userLocation.latitude,
             userLocation.longitude,
@@ -336,7 +367,9 @@ console.log(propertyFilter);
     });
   } catch (error) {
     console.error("Error filtering properties:", error);
-    return res.status(500).json({ success: false, error: "Failed to filter properties" });
+    return res
+      .status(500)
+      .json({ success: false, error: "Failed to filter properties" });
   }
 };
 
@@ -348,18 +381,33 @@ exports.addToWishlist = async (req, res) => {
     const alreadyadded = user.wishlist.find((id) => id.toString() === prodId);
     if (alreadyadded) {
       // Remove the product from the wishlist
-      user.wishlist = user.wishlist.filter(id => id.toString() !== prodId);
+      user.wishlist = user.wishlist.filter((id) => id.toString() !== prodId);
       await user.save();
-      res.json({success: true, message: 'Product removed from wishlist', wishlist: user.wishlist, added: false });
+      res.json({
+        success: true,
+        message: "Product removed from wishlist",
+        wishlist: user.wishlist,
+        added: false,
+      });
     } else {
       // Add the product to the wishlist
       user.wishlist.push(prodId);
       await user.save();
-      res.json({ success: true,message: 'Product added to wishlist', wishlist: user.wishlist, added: true });
+      res.json({
+        success: true,
+        message: "Product added to wishlist",
+        wishlist: user.wishlist,
+        added: true,
+      });
     }
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, error: 'An error occurred while updating the wishlist' });
+    res
+      .status(500)
+      .json({
+        success: false,
+        error: "An error occurred while updating the wishlist",
+      });
   }
 };
 exports.deleteAllWishlistItems = async (req, res) => {
@@ -370,7 +418,7 @@ exports.deleteAllWishlistItems = async (req, res) => {
     const user = await User.findById(_id);
 
     if (!user) {
-      return res.status(404).json({ success: false,error: "User not found" });
+      return res.status(404).json({ success: false, error: "User not found" });
     }
 
     // Clear the user's wishlist by setting it to an empty array
@@ -379,9 +427,14 @@ exports.deleteAllWishlistItems = async (req, res) => {
     // Save the user to update the wishlist
     await user.save();
 
-    res.json({success: true, message: "All wishlist items deleted" });
+    res.json({ success: true, message: "All wishlist items deleted" });
   } catch (error) {
     console.error(error);
-    res.status(500).json({success: false, error: "An error occurred while deleting wishlist items" });
+    res
+      .status(500)
+      .json({
+        success: false,
+        error: "An error occurred while deleting wishlist items",
+      });
   }
 };

@@ -169,8 +169,8 @@ app.get("/", (req, res) => {
 app.use("/api/auth", require("./routes/auth"));
 
 app.use("/api/listing", require("./routes/propertyRoute"));
-
-
+app.use("/api/preference", require("./routes/preferenceRoute"))
+app.use("/api/category", require("./routes/category"))
 
 app.use("/api/message", require("./routes/message"));
 

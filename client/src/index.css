@@ -94,20 +94,20 @@ body {
   }
 
   .form_col {
-    @apply grid grid-cols-2  py-[5px];
+    @apply flex py-2;
   }
   .form_label_head {
-    @apply 2xl:text-[16px] text-[15px] font-[400] leading-tight capitalize;
+    @apply w-[30%] 2xl:text-[16px] text-[15px] font-[400] leading-tight capitalize;
   }
   .form_info {
-    @apply 2xl:text-[16px] text-[15px] font-[500] leading-tight;
+    @apply w-[70%] 2xl:text-[16px] text-[15px] font-[500] leading-tight;
   }
   .form_heading {
     @apply whitespace-nowrap capitalize leading-tight lg:text-[18px]  text-[16px] font-medium;
   }
 
   .delete_btn {
-    @apply px-4 text-[13px] border rounded py-1 md:py-2 text-red-700 border-[red] hover:bg-red-700 focus-visible:outline-none hover:text-white w-full;
+    @apply px-4 text-[13px] border rounded py-1 md:py-2 text-red-700 border-[red] hover:bg-red-700 focus-visible:outline-none hover:text-white ;
   }
 
   .primary_btn {

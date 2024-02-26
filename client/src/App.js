@@ -23,7 +23,7 @@ function App() {
   const {isLoggedIn , token} = useSelector(state => state?.auth);
   const user = useSelector(state => state?.auth);
 // console.log(user)
-
+console.log(token);
   function PrivateRoute({ path, element }) {
   
     return isLoggedIn ? (

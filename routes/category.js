@@ -11,16 +11,16 @@ const {
 } = require("../controllers/CategoryController");
 const { isAuthenticatedUser, authorizeRoles } = require("../middleware/auth");
 
-router.post("/createCategory", isAuthenticatedUser, createCategory);
+router.post("/createCategory", isAuthenticatedUser,authorizeRoles("admin"), createCategory);
 
-router.put("/updateCategory", isAuthenticatedUser, updateCategory);
+router.put("/updateCategory", isAuthenticatedUser,authorizeRoles("admin"), updateCategory);
 
-router.delete("/deleteCategory", isAuthenticatedUser, authorizeRoles("admin"), deleteCategory);
+router.delete("/deleteCategory/:id", isAuthenticatedUser, authorizeRoles("admin"), deleteCategory);
 
 router.post("/deleteBulkCategory", isAuthenticatedUser, authorizeRoles("admin"), deleteBulkCategory);
 
-router.post("/getCategory", getCategory);
+router.get("/getCategory/:id",isAuthenticatedUser,authorizeRoles("admin"), getCategory);
 
-router.get("/getallCategory", getallCategory);
+router.get("/getallCategory",isAuthenticatedUser, getallCategory);
 
 module.exports = router;
