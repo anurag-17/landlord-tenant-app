@@ -89,7 +89,8 @@ exports.getPropertyById = async (req, res) => {
     // Find the property in the database by its ID
     const property = await Property.findById(id)
       .populate("category")
-      .populate("preference");
+      .populate("preference")
+      .populate("userId");
 
     // Check if the property exists
     if (!property) {
@@ -250,6 +251,7 @@ exports.searchProperties = async (req, res) => {
     const properties = await Property.find(filter)
       .populate("category")
       .populate("preference")
+      .populate("userId")
       .skip(skip)
       .limit(pageSize);
 
@@ -326,7 +328,8 @@ exports.filterProperties = async (req, res) => {
     console.log(propertyFilter);
     let properties = await Property.find(propertyFilter)
       .populate("category")
-      .populate("preference");
+      .populate("preference")
+      .populate("userId");
 
     if (userLocation && userLocation.latitude && userLocation.longitude) {
       properties = properties.filter((property) => {

@@ -102,7 +102,9 @@ exports.login = async (req, res, next) => {
 
       await User.findByIdAndUpdate(
         { _id: findUser._id?.toString() },
-        { activeToken: token },
+        { activeToken: token,
+          lastLogin: Date.now()
+         },
         { new: true }
       );
 
@@ -185,7 +187,7 @@ exports.logout = async (req, res) => {
     if (userData.activeToken && userData.activeToken === token) {
       const user = await User.findOneAndUpdate(
         { _id: decodedData.id, activeToken: token },
-        { $unset: { activeToken: "" } },
+        { $unset: { activeToken: "" }, lastLogout: Date.now() },
         { new: true }
       );
 
@@ -596,3 +598,49 @@ exports.updatePassword = async (req, res) => {
     res.status(500).json({ success: false, error: "Password change failed" });
   }
 };
+
+exports.graphData = async (req, res) => {
+  try {
+    const currentDate = new Date();
+    const currentMonth = currentDate.getMonth();
+
+    const totalCounts = {};
+
+    const propertyCount = await Property.countDocuments();
+    totalCounts.totalProperties = propertyCount;
+// console.log("11111111111111111",propertyCount);
+const userIds = await Property.distinct('userId');
+const usersWithoutPropertyCount = await User.countDocuments({ _id: { $nin: userIds } });
+    totalCounts.usersWithoutProperty = usersWithoutPropertyCount;
+// console.log("22222222222222222",usersWithoutPropertyCount);
+    const currentDateLoginCount = await User.countDocuments({ lastLogin: { $gte: new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate()), $lt: new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() + 1) } });
+    totalCounts.currentDateLoginUsers = currentDateLoginCount;
+// console.log("33333333333333333",currentDateLoginCount);
+    const currentMonthLoginCount = await User.countDocuments({ lastLogin: { $gte: new Date(currentDate.getFullYear(), currentMonth, 1), $lt: new Date(currentDate.getFullYear(), currentMonth + 1, 1) } });
+    totalCounts.currentMonthLoginUsers = currentMonthLoginCount;
+// console.log("44444444444444444",currentMonthLoginCount);
+    const genderCounts = await User.aggregate([
+        { $group: { _id: "$gender", count: { $sum: 1 } } }
+    ]);
+    totalCounts.genderCounts = genderCounts;
+// console.log("55555555555555555",genderCounts);
+    const cityCounts = await User.aggregate([
+        { $group: { _id: "$city", count: { $sum: 1 } } }
+    ]);
+    totalCounts.cityCounts = cityCounts;
+// console.log("66666666666666666",cityCounts);
+    const sevenDaysInactiveCount = await User.countDocuments({ lastLogin: { $lt: new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() - 7) } });
+    totalCounts.sevenDaysInactiveUsers = sevenDaysInactiveCount;
+// console.log("77777777777777777",sevenDaysInactiveCount);
+    const thirtyDaysInactiveCount = await User.countDocuments({ lastLogin: { $lt: new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() - 30) } });
+    totalCounts.thirtyDaysInactiveUsers = thirtyDaysInactiveCount;
+// console.log("88888888888888888",thirtyDaysInactiveCount);
+    res.json(totalCounts);
+} catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error' });
+}
+}
+
+//new register
+//preference
