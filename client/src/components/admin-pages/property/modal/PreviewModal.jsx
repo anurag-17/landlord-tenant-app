@@ -26,83 +26,75 @@ const PreviewModal = ({ previewData }) => {
         </div>
         <div className=" w-full pb-2">
           <h4 className=" whitespace-nowrap capitalize 2xl:text-[30px] lg:text-[26px]  text-[24px] font-medium">
-            {previewData?.category}
+            {previewData?.title}
           </h4>
           <div className="py-2 border-b border-[#bebbbb] ">
             <div className="form_col">
-              <label className="form_label_head">number Of Rooms :</label>
-              <div className="form_info ">{previewData?.numberOfRooms}</div>
+              <label className="form_label_head">Category</label>
+              <div className="form_info ">
+                {previewData?.category?.title
+                  ? previewData?.category?.title
+                  : "Not Found"}
+              </div>
             </div>
             <div className="form_col">
-              <label className="form_label_head">Listing Type :</label>
-              <div className="form_info ">{previewData?.listingType}</div>
+              <label className="form_label_head">Listing Type </label>
+              <div className="form_info ">
+                {Array.isArray(previewData?.listingType) &&
+                  previewData?.listingType.length > 0 &&
+                  previewData?.listingType.map((iter, inde) => {
+                    return (
+                      <>
+                        <span className="mr-2">{iter}</span>
+                      </>
+                    );
+                  })}
+              </div>
             </div>
+
             <div className="form_col">
-              <label className="form_label_head">Furnished Type :</label>
+              <label className="form_label_head">Furnished Type </label>
               <div className="form_info ">{previewData?.furnishedType}</div>
             </div>
             <div className="form_col">
-              <label className="form_label_head">price :</label>
+              <label className="form_label_head">price </label>
               <div className="form_info ">{previewData?.price}</div>
             </div>
             <div className="form_col">
-              <label className="form_label_head">area :</label>
+              <label className="form_label_head">area </label>
               <div className="form_info ">{previewData?.area}</div>
             </div>
             <div className="form_col">
-              <label className="form_label_head">feature :</label>
-              <ul className="list-disc list-inside ">
+              <label className="form_label_head">feature </label>
+              <ul className=" list-inside ">
                 {previewData?.feature?.map((item, index) => (
-                  <li className="form_info" key={index}>{item}</li>
+                  <li className="font-medium" key={index}>
+                    {item}
+                  </li>
                 ))}
               </ul>
             </div>
             <div className="form_col">
-              <label className="form_label_head">description :</label>
+              <label className="form_label_head">description </label>
               <div className="form_info ">{previewData?.description}</div>
             </div>
             <div className="form_col">
-              <label className="form_label_head">university :</label>
-              <div className="form_info">{previewData?.university}</div>
+              <label className="form_label_head">Collage Name </label>
+              <div className="form_info">{previewData?.collegeName}</div>
             </div>
           </div>
           <div className="">
             <h6 className="form_heading py-3"> Preference </h6>
+
             <div className="form_col">
-              <label className="form_label_head">Pet :</label>
-              <div className="form_info capitalize">
-                {previewData?.PetPrefer}
-              </div>
-            </div>
-            <div className="form_col">
-              <label className="form_label_head"> Eating preference:</label>
-              <div className="form_info capitalize">
-                {previewData?.eatPrefer}
-              </div>
-            </div>
-            <div className="form_col">
-              <label className="form_label_head">Smoke / Drink :</label>
-              <div className="form_info capitalize">
-                {previewData?.smoke_drinkPrefer}
-              </div>
-            </div>
-            <div className="form_col">
-              <label className="form_label_head">Gender preference :</label>
-              <div className="form_info capitalize">{previewData?.gender}</div>
-            </div>
-            <div className="form_col">
-              <label className="form_label_head">Age group :</label>
-              <div className="form_info capitalize">
-                {previewData?.ageGroup}
-              </div>
-            </div>
-            <div className="form_col">
-              <label className="form_label_head">Other preference:</label>
-              <ul className="list-disc list-inside ">
+              <label className="form_label_head">Preference</label>
+              <div className="flex form_info gap-2 ">
                 {previewData?.preference?.map((item, index) => (
-                  <li className="form_info" key={index}>{item}</li>
+                  <div className="bg-[#234f68] text-[white] border rounded-[24px] py-3 px-8">
+                    {item.preference}
+                  </div>
                 ))}
-              </ul>
+              </div>
             </div>
           </div>
         </div>

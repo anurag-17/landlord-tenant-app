@@ -2,6 +2,9 @@ const mongoose = require("mongoose");
 const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const Property = require("./Property");
+
+const Preference = require("./Preferences");
 
 const UserSchema = new mongoose.Schema(
   {
@@ -30,31 +33,55 @@ const UserSchema = new mongoose.Schema(
       type: String,
       default: "user",
     },
-    age:{
+    dateOfbirth:{
       type: String,
     },
-    university:{
+    collegeName:{
       type: String,
     },
-    ageGroup:{
+    collegeProgram:{
+      type: String,
+
+    },
+    preference:[{ type: mongoose.Schema.Types.ObjectId, ref: Preference }],
+    roomMateBio:{
       type: String,
     },
-    gender:{
+    age: {
       type: String,
     },
-    genderPrefer:{
+    university: {
       type: String,
     },
-    eatPrefer:{
+    country:{
       type: String,
     },
-    smoke_drinkPrefer:{
+    city:{
       type: String,
     },
-    PetPrefer:{
+    spokenLanguage:{
       type: String,
-    },    
-    provinces:{
+
+    },
+    ageGroup: {
+      type: String,
+    },
+    gender: {
+      type: String,
+    },
+    genderPrefer: {
+      type: String,
+    },
+    eatPrefer: {
+      type: String,
+    },
+    smoke_drinkPrefer: {
+      type: String,
+    },
+    PetPrefer: {
+      type: String,
+    },
+    provinces: {
       type: String,
     },
     refreshToken: {
@@ -64,16 +91,17 @@ const UserSchema = new mongoose.Schema(
       type: String,
       default: "local",
     },
-    isBlocked:{
-      type:Boolean,
+    isBlocked: {
+      type: Boolean,
       default: false,
     },
     provider_ID: {
       type: String,
     },
     activeToken: {
-      type: String
+      type: String,
     },
+    wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: Property }],
     passwordChangedAt: Date,
     passwordResetToken: String,
     passwordResetExpires: Date,

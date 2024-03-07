@@ -1,31 +1,45 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
+const Preference = require("./Preferences");
+const Category = require("./Category");
 
 const PropertySchema = new mongoose.Schema({
-  userId:{
-  type:String
-  },  
+  userId: {
+    type: String,
+  },
+  availabilityDate: {
+    type: String,
+  },
   title: {
     type: String,
   },
-  area:{
+  area: {
     type: String,
   },
-  description:{
-    type: String,
-  },    
-  numberOfRooms:{
+  description: {
     type: String,
   },
-  furnishedType:{
+  BedRoom: {
+    type: Number,
+  },
+  BathRoom: {
+    type: Number,
+  },
+  noOfMales: {
+    type: Number,
+  },
+  noOfFemales: {
+    type: Number,
+  },
+  furnishedType: {
     type: String,
   },
   listingType: {
     type: Array,
   },
   category: {
-    type: String,
+    type:mongoose.Schema.Types.ObjectId, ref:Category,
   },
   location: {
     type: Array,
@@ -36,50 +50,57 @@ const PropertySchema = new mongoose.Schema({
   price: {
     type: Number,
   },
+  //like monthly or yearly
+  priceRecur: {
+    type: String,
+  },
+  collegeName: {
+    type: String,
+  },
+  // Closest transit
   feature: {
     type: Array,
   },
-  preference: {
-    type: Array,
-  },
-  ageGroup: {
-    type: String,
-  },
-  university: {
-    type: String,
-  },
-  gender: {
-    type: String,
-  },
-  eatPrefer: {
-    type: String,
-  },
-  smoke_drinkPrefer: {
-    type: String,
-  },
-  PetPrefer: {
-    type: String,
-  },
+  //preferences of user
+  preference: [{ type: mongoose.Schema.Types.ObjectId, ref:Preference}],
+  // ageGroup: {
+  //   type: String,
+  // },
+  // university: {
+  //   type: String,
+  // },
+  // gender: {
+  //   type: String,
+  // },
+  // eatPrefer: {
+  //   type: String,
+  // },
+  // smoke_drinkPrefer: {
+  //   type: String,
+  // },
+  // PetPrefer: {
+  //   type: String,
+  // },
   provinces: {
     type: String,
   },
-  isBlocked:{
-    type:Boolean,
+  isBlocked: {
+    type: Boolean,
     default: false,
   },
-  address:{
+  address: {
     type: String,
   },
-  city:{
+  city: {
     type: String,
   },
-  state:{
+  state: {
     type: String,
   },
-  country:{
+  country: {
     type: String,
   },
-  pincode:{
+  pincode: {
     type: String,
   },
   ratings: [

@@ -4,7 +4,7 @@ const Property = require("../models/Property");
 exports.addReview = async (req, res) => {
   const { prodId, star, comment } = req.body;
   const _id = req.user._id;
-  console.log();
+  // console.log();
   try {
     const product = await Property.findById(prodId);
     let alreadyRated = product.ratings.find(

@@ -10,7 +10,7 @@ const SES = new AWS.SES(awsConfig);
 const sendEmail = async (options) => {
     try {
       const mailOptions = {
-        Source: 'socialsterna@gmail.com',
+        Source: '@gmail.com',
         Destination: {
           ToAddresses: [options.to],
         },

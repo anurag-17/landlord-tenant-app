@@ -49,7 +49,7 @@ exports.register = async (req, res, next) => {
     const userData = {
       email,
       mobile: req.body.mobile,
-      // role: req.body.role,
+      role: req.body.role,
       fullname: req.body.fullname,
       password: req.body.password,
       profilePicture: req?.body?.profilePicture,
@@ -62,6 +62,14 @@ exports.register = async (req, res, next) => {
       provinces: req?.body?.provinces,
       ageGroup: req?.body?.ageGroup,
       genderPrefer: req?.body?.genderPrefer,
+      dateOfbirth: req?.body?.dateOfbirth,
+      collegeName: req?.body?.collegeName,
+      collegeProgram: req?.body?.collegeProgram,
+      preference: req?.body?.preference,
+      roomMateBio: req?.body?.roomMateBio,
+      spokenLanguage: req?.body?.spokenLanguage,
+      country: req?.body?.country,
+      city: req?.body?.city,
     };
 
     const newUser = await User.create(userData);
@@ -81,7 +89,9 @@ exports.login = async (req, res, next) => {
   }
 
   try {
-    const findUser = await User.findOne({ email }).select("+password");
+    const findUser = await User.findOne({ email })
+      .select("+password")
+      .populate("wishlist").populate('preference');
 
     if (
       findUser &&
@@ -98,12 +108,7 @@ exports.login = async (req, res, next) => {
 
       const user = {
         success: true,
-        user: {
-          _id: findUser._id,
-          fullname: findUser.fullname,
-          email: findUser.email,
-          provider: findUser.provider,
-        },
+        findUser,
         token: token,
       };
 
@@ -406,6 +411,14 @@ exports.updatedUser = async (req, res) => {
         isBlocked: req?.body?.isBlocked,
         ageGroup: req?.body?.ageGroup,
         genderPrefer: req?.body?.genderPrefer,
+        dateOfbirth: req?.body?.dateOfbirth,
+        collegeName: req?.body?.collegeName,
+        collegeProgram: req?.body?.collegeProgram,
+        preference: req?.body?.preference,
+        roomMateBio: req?.body?.roomMateBio,
+        spokenLanguage: req?.body?.spokenLanguage,
+        country: req?.body?.country,
+        city: req?.body?.city,
       },
       {
         new: true,
@@ -462,7 +475,7 @@ exports.getAllUser = async (req, res) => {
 
     // const userQuery = User.find();
     //not including admin role
-    let userQuery = User.find({ role: { $ne: "admin" } });
+    let userQuery = User.find({ role: { $ne: "admin" } }).populate("wishlist").populate('preference');
     if (searchQuery) {
       userQuery.or([
         { fullname: { $regex: new RegExp(searchQuery, "i") } },
@@ -507,7 +520,7 @@ exports.getaUser = async (req, res) => {
   validateMongoDbId(_id);
 
   try {
-    const getaUser = await User.findById(_id);
+    const getaUser = await User.findById(_id).populate("wishlist").populate('preference');
 
     if (!getaUser) {
       return res.status(404).json({ success: false, error: "User not found" });
@@ -523,7 +536,7 @@ exports.getUserById = async (req, res) => {
   validateMongoDbId(_id);
 
   try {
-    const user = await User.findById(_id);
+    const user = await User.findById(_id).populate("wishlist").populate("preference");
 
     if (!user) {
       return res.status(404).json({ success: false, error: "User not found" });
