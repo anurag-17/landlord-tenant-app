@@ -228,7 +228,7 @@ const Property = () => {
       if (response.status === 200) {
         toast.success("Download Start");
         window.open(
-          "http://3.21.216.227:5000/api/listing/propertyData",
+          "http://3.21.216.227:4000/api/listing/propertyData",
           "_blank"
         );
       } else {
