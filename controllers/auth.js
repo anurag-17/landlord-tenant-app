@@ -536,7 +536,7 @@ exports.getUserById = async (req, res) => {
   validateMongoDbId(_id);
 
   try {
-    const user = await User.findById(_id).populate("wishlist").populate("preference");
+    const user = await User.findById(_id).populate("wishlist");
 
     if (!user) {
       return res.status(404).json({ success: false, error: "User not found" });
