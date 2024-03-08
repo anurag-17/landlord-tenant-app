@@ -4,6 +4,7 @@ import Prefernce from "../components/admin-pages/Preference/Prefernce";
 import Property from "../components/admin-pages/property/Property";
 import Report from "../components/admin-pages/report/Report";
 import User from "../components/admin-pages/user/User";
+// import HomeIcon from "../assets/home.svg"
 
 export const sideMenus = [
   {
@@ -11,7 +12,7 @@ export const sideMenus = [
     label: "Dashboard",
     component : <Dashboard />,
     url: "/",
-    // icon: <DashboardIcon />,
+   icon:'../assets/home.svg',
   },
   {
     id: 1,
@@ -31,7 +32,7 @@ export const sideMenus = [
   },
   {
     id: 4,
-    label: "Category",
+    label: "Property Category",
     component : <Category />,
   },
   {
