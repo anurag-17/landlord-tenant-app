@@ -9,6 +9,7 @@ import CloseIcon from "../Svg/CloseIcon";
 import Pagination from "../../pagination/Pagination";
 import Loader from "../../loader/Index";
 import PreviewModal from "./PreviewModal";
+import EditDealer from "./EditDealer";
 
 export const headItems = [
   "S. No.",
@@ -27,7 +28,9 @@ const User = () => {
   const [Id, setId] = useState(null);
   const [openDelete, setOpenDelete] = useState(false);
   const [openPopup, setOpenPopup] = useState(false);
+  const [editData, setEditData] = useState([]);
   const [previewData, setPreviewData] = useState({});
+  const [isDrawerOpenO, setIsDrawerOpenO] = useState(false);
   const visiblePageCount = 10;
   const { token } = useSelector((state) => state?.auth);
 
@@ -43,6 +46,10 @@ const User = () => {
 
   const closeDeleteModal = () => {
     setOpenDelete(false);
+  };
+
+  const closeEditModal = () => {
+    setIsDrawerOpenO(false);
   };
 
   // handle search ----
@@ -117,6 +124,31 @@ const User = () => {
   };
   const closePreviewModal = () => {
     setOpenPopup(false);
+  };
+
+   // edit modal ----
+   const handleEdit = async (prev_id) => {
+    setIsLoader(true);
+    try {
+      const res = await axios.get(`/api/auth/getUserById/${prev_id}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token,
+        },
+      });
+      if (res.data?.success) {
+        // console.log(res.data.user);
+        setIsDrawerOpenO(true);
+        setEditData(res.data?.user);
+        setIsLoader(false);
+      } else {
+        setIsLoader(false);
+        return;
+      }
+    } catch (error) {
+      setIsLoader(false);
+      console.error(error);
+    }
   };
 
   // get all data ----
@@ -267,6 +299,12 @@ const User = () => {
                               Preview
                             </button>
                             <button
+                              className="secondary_btn"
+                             onClick={() => handleEdit(items?._id)}
+                            >
+                              Edit
+                            </button>
+                            <button
                               className="delete_btn"
                               onClick={() => handleDelete(items?._id)}
                             >
@@ -296,6 +334,59 @@ const User = () => {
           )}
         </div>
       </section>
+
+       {/* ---------Edit Popup--------------- */}
+       <Transition appear show={isDrawerOpenO} as={Fragment}>
+        <Dialog as="div" className="z-10 fixed" onClose={() => {}}>
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-black bg-opacity-25" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4 text-center">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 scale-95"
+                enterTo="opacity-100 scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 scale-100"
+                leaveTo="opacity-0 scale-95"
+              >
+                <Dialog.Panel className=" w-full max-w-[540px] xl:max-w-[700px] 2xl:max-w-[800px] transform overflow-hidden rounded-2xl bg-white p-5 text-left align-middle shadow-xl transition-all">
+                  <Dialog.Title
+                    as="h3"
+                    className="flex justify-end lg:text-[20px] text-[16px] font-semibold leading-6 text-gray-900"
+                  >
+                    {" "}
+                    <button
+                      className=" cursor-pointer"
+                      onClick={closeEditModal}
+                    >
+                      <CloseIcon />
+                    </button>
+                  </Dialog.Title>
+                  <EditDealer
+                    closeEditModal={closeEditModal}
+                    refreshData={refreshdata}
+                    editData={editData}
+                    token={token}
+                  />
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition>
+
 
       {/*---------- Delete popup---------- */}
       <Transition appear show={openDelete} as={Fragment}>
@@ -385,6 +476,7 @@ const User = () => {
                   <PreviewModal
                     closeModal={closePreviewModal}
                     previewData={previewData}
+                    token={token}
                   />
                 </Dialog.Panel>
               </Transition.Child>
