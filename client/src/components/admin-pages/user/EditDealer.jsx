@@ -174,6 +174,123 @@ const EditDealer = ({ closeEditModal, refreshData, editData, token }) => {
               />
             </div>
             <div className="mt-2">
+              <label className="custom_input_label">college Name</label>
+              <input
+                defaultValue={
+                  editData?.collegeName
+                    ? editData?.collegeName
+                    : userDetail?.collegeName
+                }
+                onChange={inputHandler}
+                type="text"
+                name="collegeName"
+                className="custom_inputt capitalize"
+                required
+                maxLength={84}
+              />
+            </div>
+          
+          </div>
+          <div className="flex ">
+           
+            <div className="mt-2">
+              <label className="custom_input_label">Age</label>
+              <input
+                defaultValue={editData?.age ? editData?.age : userDetail?.age}
+                onChange={inputHandler}
+                type="text"
+                name="age"
+                className="custom_inputt capitalize"
+                required
+                maxLength={84}
+              />
+            </div>
+            <div className="mt-2">
+              <label className="custom_input_label">University</label>
+              <input
+                defaultValue={
+                  editData?.university
+                    ? editData?.university
+                    : userDetail?.university
+                }
+                onChange={inputHandler}
+                type="text"
+                name="university"
+                className="custom_inputt capitalize"
+                required
+                maxLength={84}
+              />
+            </div>
+          
+          </div>
+      
+          <div className="flex ">
+         
+            <div className="mt-2">
+              <label className="custom_input_label">Country</label>
+              <input
+                defaultValue={
+                  editData?.country ? editData?.country : userDetail?.country
+                }
+                onChange={inputHandler}
+                type="text"
+                name="country"
+                className="custom_inputt capitalize"
+                required
+                maxLength={84}
+              />
+            </div>
+            <div className="mt-2">
+              <label className="custom_input_label">City</label>
+              <input
+                defaultValue={
+                  editData?.city ? editData?.city : userDetail?.city
+                }
+                onChange={inputHandler}
+                type="text"
+                name="city"
+                className="custom_inputt capitalize"
+                required
+                maxLength={84}
+              />
+            </div>
+          </div>
+          <div className="flex ">
+         
+            <div className="mt-2">
+              <label className="custom_input_label">Spoken Language</label>
+              <input
+                defaultValue={
+                  editData?.spokenLanguage
+                    ? editData?.spokenLanguage
+                    : userDetail?.spokenLanguage
+                }
+                onChange={inputHandler}
+                type="text"
+                name="spokenLanguage"
+                className="custom_inputt capitalize"
+                required
+                maxLength={84}
+              />
+            </div>
+            <div className="mt-2">
+              <label className="custom_input_label">Gender</label>
+              <input
+                defaultValue={
+                  editData?.gender ? editData?.gender : userDetail?.gender
+                }
+                onChange={inputHandler}
+                type="text"
+                name="gender"
+                className="custom_inputt capitalize"
+                required
+                maxLength={84}
+              />
+            </div>
+          </div>
+          <div className="flex ">
+       
+            <div className="mt-2">
               <label className="custom_input_label">Preference</label>
               <select
                 // value={selectedPreference}
@@ -213,150 +330,6 @@ const EditDealer = ({ closeEditModal, refreshData, editData, token }) => {
                     return null;
                   });
                 })}
-            </div>
-          </div>
-          <div className="flex ">
-            <div className="mt-2">
-              <label className="custom_input_label">college Name</label>
-              <input
-                defaultValue={
-                  editData?.collegeName
-                    ? editData?.collegeName
-                    : userDetail?.collegeName
-                }
-                onChange={inputHandler}
-                type="text"
-                name="collegeName"
-                className="custom_inputt capitalize"
-                required
-                maxLength={84}
-              />
-            </div>
-            <div className="mt-2">
-              <label className="custom_input_label">college Program</label>
-              <input
-                defaultValue={
-                  editData?.collegeProgram
-                    ? editData?.collegeProgram
-                    : userDetail?.collegeProgram
-                }
-                onChange={inputHandler}
-                type="text"
-                name="collegeProgram"
-                className="custom_inputt capitalize"
-                required
-                maxLength={84}
-              />
-            </div>
-          </div>
-          <div className="flex ">
-            <div className="mt-2">
-              <label className="custom_input_label">Room Mate Bio</label>
-              <input
-                defaultValue={
-                  editData?.roomMateBio
-                    ? editData?.roomMateBio
-                    : userDetail?.roomMateBio
-                }
-                onChange={inputHandler}
-                type="text"
-                name="roomMateBio"
-                className="custom_inputt capitalize"
-                required
-                maxLength={84}
-              />
-            </div>
-            <div className="mt-2">
-              <label className="custom_input_label">Age</label>
-              <input
-                defaultValue={editData?.age ? editData?.age : userDetail?.age}
-                onChange={inputHandler}
-                type="text"
-                name="age"
-                className="custom_inputt capitalize"
-                required
-                maxLength={84}
-              />
-            </div>
-          </div>
-          <div className="flex ">
-            <div className="mt-2">
-              <label className="custom_input_label">University</label>
-              <input
-                defaultValue={
-                  editData?.university
-                    ? editData?.university
-                    : userDetail?.university
-                }
-                onChange={inputHandler}
-                type="text"
-                name="university"
-                className="custom_inputt capitalize"
-                required
-                maxLength={84}
-              />
-            </div>
-            <div className="mt-2">
-              <label className="custom_input_label">Country</label>
-              <input
-                defaultValue={
-                  editData?.country ? editData?.country : userDetail?.country
-                }
-                onChange={inputHandler}
-                type="text"
-                name="country"
-                className="custom_inputt capitalize"
-                required
-                maxLength={84}
-              />
-            </div>
-          </div>
-          <div className="flex ">
-            <div className="mt-2">
-              <label className="custom_input_label">City</label>
-              <input
-                defaultValue={
-                  editData?.city ? editData?.city : userDetail?.city
-                }
-                onChange={inputHandler}
-                type="text"
-                name="city"
-                className="custom_inputt capitalize"
-                required
-                maxLength={84}
-              />
-            </div>
-            <div className="mt-2">
-              <label className="custom_input_label">Spoken Language</label>
-              <input
-                defaultValue={
-                  editData?.spokenLanguage
-                    ? editData?.spokenLanguage
-                    : userDetail?.spokenLanguage
-                }
-                onChange={inputHandler}
-                type="text"
-                name="spokenLanguage"
-                className="custom_inputt capitalize"
-                required
-                maxLength={84}
-              />
-            </div>
-          </div>
-          <div className="flex ">
-            <div className="mt-2">
-              <label className="custom_input_label">Gender</label>
-              <input
-                defaultValue={
-                  editData?.gender ? editData?.gender : userDetail?.gender
-                }
-                onChange={inputHandler}
-                type="text"
-                name="gender"
-                className="custom_inputt capitalize"
-                required
-                maxLength={84}
-              />
             </div>
             {/* <div className="mt-2">
               <label className="custom_input_label">Spoken Language</label>

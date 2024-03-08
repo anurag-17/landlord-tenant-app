@@ -108,14 +108,6 @@ const UserSchema = new mongoose.Schema(
     lastLogout: {
       type: Date,
     },
-    // in login api  // current date login count
-    // is month me jisne login kiya uske details 
-    // gender count form usert 
-    // city user count 
-    // inactive for last 7 days form curent date 
-    // inactive for last 30 days from current date
-    
-    // lastLoogut in logout 
     passwordChangedAt: Date,
     passwordResetToken: String,
     passwordResetExpires: Date,

@@ -16,7 +16,8 @@ const {
   updatePassword,
   uploadImage,
   verifyUser,
-  graphData
+  graphData,
+  userData
 } = require("../controllers/auth");
 const { isAuthenticatedUser, authorizeRoles } = require("../middleware/auth");
 const storage = multer.memoryStorage();
@@ -56,6 +57,8 @@ router.route("/forgotpassword").post(forgotPassword);
 router.route("/resetpassword/:resetToken").put(resetPassword);
 
 router.route("/graphData").get(graphData);
+
+router.route("/userData").get(userData);
 
 router.route("/uploadImage").post(isAuthenticatedUser, upload.single('file'),uploadImage)
 

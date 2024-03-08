@@ -7,7 +7,8 @@ const sendToken = require("../utils/jwtToken");
 const jwt = require("jsonwebtoken");
 const uploadOnS3 = require("../utils/uploadImage");
 const Property = require("../models/Property");
-const Preference = require("../models/Preferences")
+const Preference = require("../models/Preferences");
+const CsvParser = require("json2csv").Parser;
 
 exports.uploadImage = async (req, res, next) => {
   try {
@@ -602,7 +603,11 @@ exports.updatePassword = async (req, res) => {
 
 exports.graphData = async (req, res) => {
   try {
-    const currentDate = new Date();
+    let currentDate = req.query.date ? new Date(req.query.date) : new Date();
+    if (isNaN(currentDate.getTime())) {
+      throw new Error("Invalid date format");
+    }
+
     const currentMonth = currentDate.getMonth();
 
     const totalCounts = {};
@@ -704,5 +709,28 @@ exports.graphData = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+exports.userData = async (req, res) => {
+  try {
+    let users = [];
+
+    var invitationData = await User.find({});
+
+    invitationData.forEach((user) => {
+      const { fullname, email, contact, dateOfbirth, collegeName, collegeProgram, age, university, country, city, spokenLanguage, ageGroup, gender, genderPrefer, lastLogin} = user;
+      users.push({ fullname, email, contact, dateOfbirth, collegeName, collegeProgram, age, university, country, city, spokenLanguage, ageGroup, gender, genderPrefer, lastLogin});
+    });
+    const fields = [ "fullname", "email", "contact", "dateOfbirth", "collegeName", "collegeProgram", "age", "university", "country", "city", "spokenLanguage", "ageGroup", "gender", "genderPrefer", "lastLogin" ];
+    const csvParser = new CsvParser({ fields });
+    const data = csvParser.parse(users);
+
+    res.setHeader("Content-Type", "text/csv");
+    res.setHeader("Content-Disposition", "attachment: filename=UserData.csv");
+
+    res.status(200).end(data);
+  } catch (error) {
+    res.status(400).json({ msg: error.message, status: false });
   }
 };

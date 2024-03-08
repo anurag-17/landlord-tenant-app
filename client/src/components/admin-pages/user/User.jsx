@@ -248,8 +248,8 @@ const User = () => {
                 <thead className="">
                   <tr className=" ">
                     {headItems.map((items, inx) => (
-                      <th className="table_head" key={inx}>
-                        <p className="block text-[13px] font-medium uppercase whitespace-nowrap text-[#72727b]">
+                      <th className="table_head " key={inx}>
+                        <p className="block justify-center text-[13px] font-medium uppercase whitespace-nowrap text-[#72727b]">
                           {items}
                         </p>
                       </th>
