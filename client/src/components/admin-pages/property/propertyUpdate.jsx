@@ -81,7 +81,7 @@ const PropertyUpdate = ({
           />
         </div>
         {/* ------2.  Category----- */}
-        <div className="w-1/2">
+        {/* <div className="w-1/2">
           <label className="custom_input_label"> Category</label>
           <input
             value={propertyDetail?.category?.title || ""}
@@ -91,7 +91,7 @@ const PropertyUpdate = ({
             maxLength={200}
             onChange={inputHandler}
           />
-        </div>
+        </div> */}
         {/* ------3. Property For----- */}
         <div className="w-1/2">
           <label className="custom_input_label"> For</label>
