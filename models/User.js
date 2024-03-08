@@ -43,7 +43,7 @@ const UserSchema = new mongoose.Schema(
       type: String,
 
     },
-    preference:[{ type: mongoose.Schema.Types.ObjectId, ref: Preference }],
+    preference:[{ type: mongoose.Schema.Types.ObjectId, ref: Preference }], //prefe with user count // graph
     roomMateBio:{
       type: String,
     },
@@ -102,6 +102,20 @@ const UserSchema = new mongoose.Schema(
       type: String,
     },
     wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: Property }],
+    lastLogin: {
+      type: Date,
+    },
+    lastLogout: {
+      type: Date,
+    },
+    // in login api  // current date login count
+    // is month me jisne login kiya uske details 
+    // gender count form usert 
+    // city user count 
+    // inactive for last 7 days form curent date 
+    // inactive for last 30 days from current date
+    
+    // lastLoogut in logout 
     passwordChangedAt: Date,
     passwordResetToken: String,
     passwordResetExpires: Date,

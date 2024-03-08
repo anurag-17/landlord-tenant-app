@@ -5,8 +5,9 @@ const Preference = require("./Preferences");
 const Category = require("./Category");
 
 const PropertySchema = new mongoose.Schema({
-  userId: {
-    type: String,
+  userId: { 
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
   },
   availabilityDate: {
     type: String,
