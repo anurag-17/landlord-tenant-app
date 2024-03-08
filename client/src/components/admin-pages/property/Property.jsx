@@ -3,13 +3,14 @@ import { Dialog, Transition } from "@headlessui/react";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { Switch } from "@headlessui/react";
-
 import DeleteModal from "./modal/DeleteModal";
 import CloseIcon from "../Svg/CloseIcon";
 import Pagination from "../../pagination/Pagination";
 import Loader from "../../loader/Index";
 import PreviewModal from "./modal/PreviewModal";
 import Rating from "./Ratings";
+import PropertyUpdate from "./propertyUpdate";
+import { ToastContainer } from "react-toastify";
 
 export const headItems = [
   "S. No.",
@@ -35,7 +36,13 @@ const Property = () => {
   const [previewData, setPreviewData] = useState({});
   const visiblePageCount = 10;
   const { token } = useSelector((state) => state?.auth);
+  const [editData, setEditData] = useState([]);
+  const [propertyID, setPropertyID] = useState("");
+  const [isDrawerOpenO, setIsDrawerOpenO] = useState(false);
 
+  const closeDrawerO = () => {
+    setIsDrawerOpenO(false);
+  };
   // console.log(previewData);
   const refreshdata = () => {
     setRefresh(!isRefresh);
@@ -178,9 +185,38 @@ const Property = () => {
       setIsLoader(false);
     }
   };
+
+  const openModall = async (id) => {
+    setIsLoader(true);
+    try {
+      const options = {
+        method: "GET",
+        url: `/api/listing/property/${id}`,
+        headers: {
+          Authorization: token,
+          "Content-Type": "application/json",
+        },
+      };
+      const response = await axios.request(options);
+      if (response.status === 200) {
+        setEditData(response?.data?.property);
+        setPropertyID(id);
+
+        setIsDrawerOpenO(true);
+        setIsLoader(false);
+      } else {
+        console.error("Error: Unexpected response status");
+        setIsLoader(false);
+      }
+    } catch (error) {
+      console.error(error);
+      setIsLoader(false);
+    }
+  };
   return (
     <>
       {isLoader && <Loader />}
+      <ToastContainer autoClose={1000}/>
       <section className="">
         <div className=" mx-auto">
           <div className="rounded-[10px] bg-white py-[20px] flexBetween flex-col md:flex-row gap-3 px-[20px] mt-[20px] lg:mt-0">
@@ -290,6 +326,12 @@ const Property = () => {
                                   onClick={() => handlePreview(items?._id)}
                                 >
                                   Preview
+                                </button>
+                                <button
+                                  className=" blue_btn"
+                                  onClick={() => openModall(items?._id)}
+                                >
+                                  Edit
                                 </button>
                                 <button
                                   className="delete_btn"
@@ -413,6 +455,54 @@ const Property = () => {
                   <PreviewModal
                     closeModal={closePreviewModal}
                     previewData={previewData}
+                  />
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition>
+
+      <Transition appear show={isDrawerOpenO} as={Fragment}>
+        <Dialog as="div" className="relative z-10" onClose={() => {}}>
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-black bg-opacity-25" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4 text-center">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 scale-95"
+                enterTo="opacity-100 scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 scale-100"
+                leaveTo="opacity-0 scale-95"
+              >
+                <Dialog.Panel className="w-2/3 sm:w-full sm:max-w-[700px]  transform overflow-hidden rounded-2xl bg-white p-4  sm:px-8 lg:px-8 text-left align-middle shadow-xl transition-all">
+                  <div className="flex justify-end">
+                    <button onClick={closeDrawerO}>
+                      {/* <img
+                        src="../../../../public/close-square.svg"
+                        className="w-7 md:w-7 lg:w-8 xl:w-9 2xl:w-14"
+                      /> */}
+                      close
+                    </button>
+                  </div>
+                  <PropertyUpdate
+                    propertyID={propertyID}
+                    closeDrawerO={closeDrawerO}
+                    refreshdata={refreshdata}
+                    editData={editData}
                   />
                 </Dialog.Panel>
               </Transition.Child>

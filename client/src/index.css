@@ -48,6 +48,7 @@ body {
   .medium-16 {
     @apply text-[16px] font-[600];
   }
+
   .medium-14 {
     @apply text-[14px] font-[600];
   }
@@ -57,31 +58,37 @@ body {
   }
 
   .bold-32 {
-    @apply 2xl:text-[30px] xl:text-[28px] md:text-[26px] text-[24px]  font-[700] leading-[120%];
+    @apply 2xl:text-[30px] xl:text-[28px] md:text-[26px] text-[24px] font-[700] leading-[120%];
   }
 
   .login-input {
-    @apply w-full px-4 py-2 2xl:h-[50px]  h-[48px] border border-[#E4E4E4] bg-white rounded-[3px] text-[#262628] text-[15px] font-[400px] leading-normal focus-visible:outline-none placeholder:text-[14px] placeholder:text-[#262628];
+    @apply w-full px-4 py-2 2xl:h-[50px] h-[48px] border border-[#E4E4E4] bg-white rounded-[3px] text-[#262628] text-[15px] font-[400px] leading-normal focus-visible:outline-none placeholder:text-[14px] placeholder:text-[#262628];
   }
 
   .login_button {
-    @apply w-full bg-primary font-medium text-white p-2 rounded-lg  hover:bg-white hover:text-primary hover:border hover:border-[gray-300] h-[50px]  transition-all ease-in-out delay-75 duration-700 hover:border-primary;
+    @apply w-full bg-primary font-medium text-white p-2 rounded-lg hover:bg-white hover:text-primary hover:border hover:border-[gray-300] h-[50px] transition-all ease-in-out delay-75 duration-700 hover:border-primary;
   }
+
   .input_search {
     @apply focus-visible:outline-none border-none w-full rounded-[5px] font-normal text-[15px] text-[#6a6969] placeholder:text-[11px];
   }
+
   .search_btn {
-    @apply px-6  text-[12px]  h-[32px] hover:text-[#f3f3f3] bg-primary text-white font-medium; 
+    @apply px-6 text-[12px] h-[32px] hover:text-[#f3f3f3] bg-primary text-white font-medium;
   }
+
   .clear_search_btn {
-    @apply px-1 rounded text-[12px] text-[gray] border border-[#6a696917] hover:text-black mr-1 ;
+    @apply px-1 rounded text-[12px] text-[gray] border border-[#6a696917] hover:text-black mr-1;
   }
+
   .outer_table {
     @apply rounded-[10px] bg-white py-[30px] px-[20px] flexBetween mt-[20px] p-6 overflow-x-scroll;
   }
+
   .table_head {
     @apply py-3 px-5 text-left bg-white;
   }
+
   .table_data {
     @apply text-[14px] font-[400] py-3 px-5;
   }
@@ -89,6 +96,7 @@ body {
   .table_btn_div {
     @apply flex flex-col md:flex-row items-center gap-2 gap-x-5;
   }
+
   .no_data {
     @apply py-4 px-4 w-full flex flex-col items-center justify-center border border-[#f3f3f3] bg-white rounded-[20px] mt-[10px];
   }
@@ -96,27 +104,33 @@ body {
   .form_col {
     @apply flex py-2;
   }
+
   .form_label_head {
     @apply w-[30%] 2xl:text-[16px] text-[15px] font-[400] leading-tight capitalize;
   }
+
   .form_info {
     @apply w-[70%] 2xl:text-[16px] text-[15px] font-[500] leading-tight;
   }
+
   .form_heading {
-    @apply whitespace-nowrap capitalize leading-tight lg:text-[18px]  text-[16px] font-medium;
+    @apply whitespace-nowrap capitalize leading-tight lg:text-[18px] text-[16px] font-medium;
   }
 
   .delete_btn {
-    @apply px-4 text-[13px] border rounded py-1 md:py-2 text-red-700 border-[red] hover:bg-red-700 focus-visible:outline-none hover:text-white ;
+    @apply px-4 text-[13px] border rounded py-1 md:py-2 text-red-700 border-[red] hover:bg-red-700 focus-visible:outline-none hover:text-white;
   }
 
   .primary_btn {
-    @apply px-4 text-[13px] border rounded text-white
-    hover:bg-white hover:text-primary py-1 md:py-2 bg-primary focus-visible:outline-none;
+    @apply px-4 text-[13px] border rounded text-white hover:bg-white hover:text-primary py-1 md:py-2 bg-primary focus-visible:outline-none;
   }
+
   .secondary_btn {
-    @apply px-4 text-[13px] border border-primary rounded hover:text-white
-    bg-white text-primary py-1 md:py-2 hover:bg-primary focus-visible:outline-none;
+    @apply px-4 text-[13px] border border-primary rounded hover:text-white bg-white text-primary py-1 md:py-2 hover:bg-primary focus-visible:outline-none;
+  }
+
+  .blue_btn {
+    @apply px-4 text-[13px] border rounded hover:text-white hover:bg-sky-600 border-sky-600 text-sky-600 bg-white py-1 md:py-2 focus-visible:outline-none;
   }
 
   button {
@@ -131,15 +145,18 @@ body {
 }
 
 .star {
-  color: gray; /* Default color */
+  color: gray;
+  /* Default color */
 }
 
 .filled {
-  color: #0cae3a; /* Filled star color */
+  color: #0cae3a;
+  /* Filled star color */
 }
 
 .half-filled {
-  color: #0cae3a;/* Half-filled star color */
+  color: #0cae3a;
+  /* Half-filled star color */
 }
 
 
@@ -150,31 +167,14 @@ body {
 
 /* Hide scrollbar for IE, Edge and Firefox */
 .hide-scrollbar {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
 }
-.custom_input_label {
-  @apply absolute bg-white z-20 text-gray-800
-  2xl:text-[18px] 2xl:mt-6 2xl:ml-14
-  xl:text-[14px] xl:mt-2 xl:ml-8
-  lg:text-[12px] lg:mt-[10px] lg:ml-[26px]
-  md:text-[10px] md:mt-2 md:ml-6
-  sm:text-[10px] sm:mt-1 sm:ml-5
-  text-[10px] ml-4;
-}
+
+
 .custom_inputt {
-  @apply rounded relative border border-gray-300 bg-gray-50 text-gray-500 focus:bg-white dark:border dark:border-gray-600  focus:outline-none  w-10/12  lg:w-10/12 2xl:text-sm 2xl:m-10 2xl:px-3 2xl:py-2 2xl:h-[50px]
-         xl:m-5 xl:px-3 xl:py-1 xl:h-[40px]
-             lg:m-5 lg:px-2 lg:py-1 lg:h-[35px]
-            md:m-4 md:px-3 md:py-2 md:h-[30px]
-          sm:m-3 sm:px-2 sm:py-1 sm:h-[30px]
-         m-2 px-2 py-1 h-[25px] text-[14px];
+  @apply rounded relative border border-gray-300 bg-gray-50 text-gray-500 focus:bg-white dark:border dark:border-gray-600 focus:outline-none w-10/12 lg:w-10/12 2xl:text-sm 2xl:m-10 2xl:px-3 2xl:py-2 2xl:h-[50px] xl:m-5 xl:px-3 xl:py-1 xl:h-[40px] lg:m-5 lg:px-2 lg:py-1 lg:h-[35px] md:m-4 md:px-3 md:py-2 md:h-[30px] sm:m-3 sm:px-2 sm:py-1 sm:h-[30px] m-2 px-2 py-1 h-[25px] text-[10px];
 }
-.custom_btn {
-  @apply border hover:bg-blue-400 text-white rounded-md lg:rounded-lg bg-blue-600  2xl:text-[20px] 2xl:p-2 2xl:m-10 2xl:mt-0
-              xl:text-[14px] xl:py-2 xl:px-4  xl:m-5 xl:mt-0
-              lg:text-[12px] lg:py-2 lg:px-3 lg:m-5 lg:mt-0
-              md:text-[12px] md:py-1 md:px-2 md:m-4 md:mt-0
-              sm:text-[11px] sm:py-1  sm:px-2 sm:m-3 sm:mt-0
-              text-[9px] py-[3px] px-2 m-2 mt-0;
-}
+
