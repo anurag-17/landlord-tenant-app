@@ -602,7 +602,11 @@ exports.updatePassword = async (req, res) => {
 
 exports.graphData = async (req, res) => {
   try {
-    const currentDate = new Date();
+    let currentDate = req.query.date ? new Date(req.query.date) : new Date();
+    if (isNaN(currentDate.getTime())) {
+      throw new Error("Invalid date format");
+    }
+
     const currentMonth = currentDate.getMonth();
 
     const totalCounts = {};
