@@ -1,132 +1,60 @@
-import React, { Fragment, useState, useEffect } from "react";
+import React, { Fragment, useState, useEffect, useRef } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { useSelector } from "react-redux";
 import axios from "axios";
-import { Switch } from "@headlessui/react";
+import {
+  PieChart,
+  Pie,
+  BarChart,
+  Bar,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
+import html2pdf from "html2pdf.js";
 
-import DeleteModal from "./modal/DeleteModal";
-import CloseIcon from "../Svg/CloseIcon";
-import Pagination from "../../pagination/Pagination";
 import Loader from "../../loader/Index";
-// import PreviewModal from "./modal/PreviewModal";
-
 export const headItems = [
-  "S. No.",
-  "title",
-  "category",
-  "For",
-  "Address",
-  "No. of Rooms",
-  "price",
-  "block listing",
-  "Action",
+  "Daily Users",
+  "Monthly Users",
+  "Seven Day Availablity",
+  "Thirty Day Inactive Users",
+  "New Daily Signup",
 ];
 
 const Report = () => {
+  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#AF19FF"];
+  const COLORS_SET2 = ["#4CAF50", "#FFC107", "#E91E63", "#673AB7", "#9C27B0"];
+  const COLORS_SET3 = ["#F44336", "#2196F3", "#FF5722", "#795548", "#607D8B"];
   const [isRefresh, setRefresh] = useState(false);
   const [allData, setAllData] = useState([]);
   const [isLoader, setIsLoader] = useState(false);
-  const [searchText, setSearchText] = useState("");
-  const [Id, setId] = useState(null);
-  const [openDelete, setOpenDelete] = useState(false);
-  const [openPopup, setOpenPopup] = useState(false);
-  const [previewData, setPreviewData] = useState({});
-  const visiblePageCount = 10;
-  const { token } = useSelector((state) => state?.auth);
+  const [prefData, setPrefData] = useState([]);
+  const [pieGender, setPieGender] = useState([]);
+  const [pieCity, setPieCity] = useState([]);
 
+  const [Id, setId] = useState(null);
+
+  const [fullData, setFullData] = useState([]);
+  const { token } = useSelector((state) => state?.auth);
+  const [userCount, setUserCount] = useState([]);
+  const reportRef = useRef();
   // console.log(previewData);
   const refreshdata = () => {
     setRefresh(!isRefresh);
   };
   // delete func ----
-  const handleDelete = (del_id) => {
-    setId(del_id);
-    setOpenDelete(true);
-  };
 
-  const closeDeleteModal = () => {
-    setOpenDelete(false);
-  };
-
-  // handle search ----
-  const handleSearchInput = (e) => {
-    setSearchText(e.target.value);
-    searchDataFunc(e.target.value);
-  };
-
-  const handleSearch = () => {
-    if (searchText) {
-      searchDataFunc(searchText.trim());
-    }
-  };
-  const handleKeyDown = (e) => {
-    console.log("Pressed key:", e.key);
-    if (e.key === "Backspace") {
-      // e.preventDefault(); // Prevent the default action
-      searchDataFunc(searchText);
-    }
-  };
-  const handleClearSearch = () => {
-    refreshdata();
-    setSearchText("");
-  };
-  const searchDataFunc = (search_cate) => {
-    const options = {
-      method: "GET",
-      url: `/api/listing/properties/search?search=${search_cate}`,
-      headers: {
-        Authorization: token,
-        "Content-Type": "multipart/form-data",
-      },
-    };
-    axios
-      .request(options)
-      .then((response) => {
-        console.log(response?.data);
-        if (response.status === 200) {
-          setAllData(response?.data);
-        } else {
-          return;
-        }
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  };
-
-  // preview modal ----
-  const handlePreview = async (prev_id) => {
-    setIsLoader(true);
-    try {
-      const res = await axios.get(`/api/listing/property/${prev_id}`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token,
-        },
-      });
-      if (res.data?.success) {
-        // console.log(res.data?.property);
-        setOpenPopup(true);
-        setPreviewData(res.data?.property);
-        setIsLoader(false);
-      } else {
-        setIsLoader(false);
-        return;
-      }
-    } catch (error) {
-      setIsLoader(false);
-      console.error(error);
-    }
-  };
-  const closePreviewModal = () => {
-    setOpenPopup(false);
-  };
   // get all data ----
   const getAllData = (pageNo) => {
     setIsLoader(true);
     const options = {
       method: "GET",
-      url: `/api/listing/properties/search?page=${pageNo}&limit=${visiblePageCount}`,
+      url: `/api/auth/graphData`,
       headers: {
         Authorization: token,
         "Content-Type": "application/json",
@@ -136,13 +64,45 @@ const Report = () => {
       .request(options)
       .then((res) => {
         // console.log(res);
-        if (res?.data?.success) {
-          setIsLoader(false);
-          setAllData(res?.data);
-        } else {
-          setIsLoader(false);
-          return;
-        }
+        setIsLoader(false);
+
+        setAllData([
+          {
+            name: "Tenant",
+            value: res?.data?.usersWithoutProperty,
+          },
+          { name: "All Property", value: res?.data?.totalProperties },
+        ]);
+        const transformedPrefData = res?.data?.preferenceCounts?.map(
+          ({ _id, count }) => ({
+            name: _id?.preference,
+            value: count,
+          })
+        );
+
+        setPrefData(transformedPrefData);
+        const transformedGenderData = res?.data?.genderCounts?.map(
+          ({ _id, count }) => ({
+            name: _id,
+            value: count,
+          })
+        );
+        setPieGender(transformedGenderData);
+
+        const transformedCityData = res?.data?.cityCounts?.map(
+          ({ _id, count }) => ({
+            name: _id ? _id : "Others",
+            value: count,
+          })
+        );
+        setPieCity(transformedCityData);
+        setFullData(res?.data);
+        console.log(res?.data, "graph");
+        // if (res?.data?.success) {
+        // } else {
+        //   setIsLoader(false);
+        //   return;
+        // }
       })
       .catch((error) => {
         setIsLoader(false);
@@ -152,249 +112,200 @@ const Report = () => {
   useEffect(() => {
     getAllData(1);
   }, [isRefresh]);
+  console.log(allData);
 
-  const handleToggleBlocked = async (userId, isBlocked) => {
-    if (isBlocked === undefined) return;
-    setIsLoader(true);
-    try {
-      const res = await axios.put(
-        `/api/listing/property/${userId}`,
-        { isBlocked: !isBlocked },
-        {
-          headers: { "Content-Type": "application/json", Authorization: token },
-        }
-      );
-
-      if (res.data?.success) {
-        refreshdata();
-        return;
-      } else {
-        console.error("Toggle blocked request failed.");
-      }
-    } catch (error) {
-      console.error("Toggle blocked request failed:", error);
-    } finally {
-      setIsLoader(false);
+  const generatePDF = async () => {
+    const element = document.getElementById("html-element");
+    const pageBreakElements = element.getElementsByClassName("page-break");
+    const pageBreakCount = pageBreakElements.length;
+    for (let i = 0; i < pageBreakCount; i++) {
+      const pageBreakElement = pageBreakElements[i];
+      pageBreakElement.style.pageBreakAfter = "always";
     }
+
+    const opt = {
+      margin: [5, 5, 5, 5],
+      filename: `report.pdf`,
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+    };
+
+    html2pdf().set(opt).from(element).save();
+    //    // Generate the PDF and convert it to base64
+    // const pdfData = await html2pdf().set(opt).from(element).outputPdf();
+
+    // // Convert the PDF data to base64
+    // const base64PDF = btoa(pdfData);
+
+    // // Now you have the base64 encoded PDF
+    // console.log(base64PDF);
   };
   return (
     <>
       {isLoader && <Loader />}
-      <section className="mt-[20px] lg:mt-0 px-20 md:px-0">
-        <div className=" mx-auto">
-          <div className="rounded-[10px] bg-white py-[20px] flexBetween px-[20px]">
-            <p className=" text-[22px] font-semibold">Report list</p>
-            <div className="flexCenter gap-x-7 lg:gap-x-5 md:flex-auto flex-wrap gap-y-3 md:justify-end">
-              <div className="border border-primary  bg-[#302f2f82]] flexCenter h-[32px] pl-[10px] md:w-auto w-full">
-                <input
-                  type="text"
-                  className="input_search"
-                  value={searchText}
-                  onChange={handleSearchInput}
-                  onKeyDown={handleKeyDown}
-                  placeholder="Search by name, contact, email."
-                />
-                {searchText !== "" ? (
-                  <button
-                    className="clear_search_btn"
-                    onClick={handleClearSearch}
+      <section className="mt-[20px] lg:mt-0 px-20 md:px-0 bg-[#F3F3F3] pb-10">
+        <div className="flex justify-end mt-5 mx-[57px]">
+          <button
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            onClick={generatePDF}
+          >
+            Download PDF
+          </button>
+        </div>
+        <div className=" mx-auto" id="html-element">
+          <div className="mt-10 ">
+            <div className="flex justify-around items-center">
+              <div className="bg-white border p-4 rounded-lg">
+                <BarChart width={300} height={300} data={allData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  {/* <Legend /> */}
+                  <Bar dataKey="value" fill="#8884d8" />
+                </BarChart>
+                <p className="flex justify-center pt-3">
+                  Tanent Without Property VS Total Property
+                </p>
+              </div>
+              <div className="bg-white border p-4 rounded-lg">
+                <PieChart width={400} height={300}>
+                  <Legend />
+                  <Pie
+                    dataKey="value"
+                    isAnimationActive={true}
+                    data={prefData}
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={70}
+                    fill="#8884d8"
+                    label
                   >
-                    <CloseIcon />
-                  </button>
-                ) : (
-                  ""
-                )}
-                <button className="search_btn" onClick={handleSearch}>
-                  Search
-                </button>
+                    {prefData.map((entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                      />
+                    ))}
+                  </Pie>
+
+                  <Tooltip />
+                </PieChart>
+                <p className="flex justify-center pt-3">
+                  Distribution of attributes
+                </p>
               </div>
             </div>
-          </div>
-          <div className="px-[20px]">
-            <div className="outer_table ">
-              <table className="w-full table-auto mt-[20px] ">
-                <thead className="">
-                  <tr className=" ">
-                    {headItems.map((items, inx) => (
-                      <th className="table_head whitespace-nowrap" key={inx}>
-                        <p className="block text-[13px] font-medium uppercase text-[#72727b]">
-                          {items}
-                        </p>
-                      </th>
+            <hr className="my-4 border border-gray-300" />
+            <div className="flex justify-around">
+              <div className="bg-white border p-4 rounded-lg">
+                <PieChart className="" width={400} height={230}>
+                  <Pie
+                    dataKey="value"
+                    isAnimationActive={true}
+                    data={pieGender}
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={70}
+                    fill="#8884d8"
+                    label
+                  >
+                    {prefData.map((entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS_SET2[index % COLORS_SET2.length]}
+                      />
                     ))}
-                  </tr>
-                </thead>
+                  </Pie>
+                  <Legend />
+                  <Tooltip />
+                </PieChart>
+                <p className="flex justify-center pt-3">Gender Makeup</p>
+              </div>
+              <div className="bg-white border p-4 rounded-lg">
+                <PieChart width={400} height={230}>
+                  <Pie
+                    dataKey="value"
+                    isAnimationActive={true}
+                    data={pieCity}
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={70}
+                    fill="#8884d8"
+                    label
+                  >
+                    {prefData.map((entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS_SET3[index % COLORS_SET3.length]}
+                      />
+                    ))}
+                  </Pie>
+                  <Legend />
+                  <Tooltip />
+                </PieChart>
+                <p className="flex justify-center pt-3">
+                  City specific attribute makeup
+                </p>
+              </div>
+            </div>
 
-                <tbody>
-                  {Array.isArray(allData?.properties) &&
-                    allData?.properties?.length > 0 &&
-                    allData?.properties?.map((items, index) => (
-                      <tr key={index}>
-                        <td className="table_data">{index + 1}</td>
-                        <td className="table_data capitalize">
-                          {items?.title}
+            <div className="m-3 mt-7 border p-3 bg-white mb-20">
+              <div className=" flex justify-center">
+                <table className="table-auto mt-[20px] border-collapse  border">
+                  <thead className="border">
+                    <tr className="">
+                      {headItems.map((items, inx) => (
+                        <th
+                          className="table_head border border-gray-300 "
+                          key={inx}
+                        >
+                          <p className="block text-[13px] font-medium uppercase  text-[#72727b]">
+                            {items}
+                          </p>
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {fullData && (
+                      <tr className="">
+                        <td className="table_data border border-gray-300">
+                          <div className="flex justify-center ">
+                            {fullData.currentDateLoginUsers}
+                          </div>
                         </td>
-                        <td className="table_data">{items?.category} </td>
-                        <td className="table_data">{items?.listingType}</td>
-                        <td className="table_data"></td>
-                        <td className="table_data">{items?.numberOfRooms}</td>
-                        <td className="table_data whitespace-nowrap">$ {items?.price}</td>
-                        <td className="table_data">
-                          <Switch
-                            checked={items?.isBlocked}
-                            onChange={() =>
-                              handleToggleBlocked(items?._id, items?.isBlocked)
-                            }
-                            className={`${
-                              items?.isBlocked ? "bg-primary" : "bg-gray-200"
-                            } relative inline-flex h-6 w-11 items-center rounded-full`}
-                          >
-                            <span className="sr-only">
-                              Enable notifications
-                            </span>
-                            <span
-                              className={`${
-                                items?.isBlocked
-                                  ? "translate-x-6"
-                                  : "translate-x-1"
-                              } inline-block h-4 w-4 transform rounded-full bg-white transition`}
-                            />
-                          </Switch>
+                        <td className="table_data border border-gray-300">
+                          <div className="flex justify-center">
+                            {fullData.currentMonthLoginUsers}
+                          </div>
                         </td>
-                        <td className="table_data">
-                          <div className="table_btn_div">
-                            <button
-                              className="secondary_btn"
-                              onClick={() => handlePreview(items?._id)}
-                            >
-                              Preview
-                            </button>
-                            <button
-                              className="delete_btn"
-                              onClick={() => handleDelete(items?._id)}
-                            >
-                              Delete
-                            </button>
+                        <td className="table_data border border-gray-300">
+                          <div className="flex justify-center">
+                            {fullData.sevenDaysInactiveUsers}
+                          </div>
+                        </td>
+                        <td className="table_data border border-gray-300">
+                          <div className="flex justify-center">
+                            {fullData.thirtyDaysInactiveUsers}
+                          </div>
+                        </td>
+                        <td className="table_data border border-gray-300">
+                          <div className="flex justify-center">
+                            {fullData.newUsersToday}
                           </div>
                         </td>
                       </tr>
-                    ))}
-                </tbody>
-              </table>
-            </div>
-            {Array.isArray(allData?.properties) && allData?.properties?.length === 0 && (
-              <div className="no_data">
-                <p className="text-[18px] fontsemibold">No data</p>
+                    )}
+                  </tbody>
+                </table>
               </div>
-            )}
+            </div>
           </div>
-
-          {allData?.totalPages > 1 && (
-            <Pagination
-              currentpage={allData?.currentPage}
-              totalCount={allData?.totalPages}
-              visiblePageCount={visiblePageCount}
-              getAllData={getAllData}
-            />
-          )}
         </div>
       </section>
-
-      {/*---------- Delete popup---------- */}
-      <Transition appear show={openDelete} as={Fragment}>
-        <Dialog as="div" className="relative z-[11]" onClose={closeDeleteModal}>
-          <Transition.Child
-            as={Fragment}
-            enter="ease-out duration-300"
-            enterFrom="opacity-0"
-            enterTo="opacity-100"
-            leave="ease-in duration-200"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
-          >
-            <div className="fixed inset-0 bg-black/70 bg-opacity-25" />
-          </Transition.Child>
-
-          <div className="fixed inset-0 overflow-y-auto">
-            <div className="flex min-h-full items-center justify-center p-4 text-center">
-              <Transition.Child
-                as={Fragment}
-                enter="ease-out duration-300"
-                enterFrom="opacity-0 scale-95"
-                enterTo="opacity-100 scale-100"
-                leave="ease-in duration-200"
-                leaveFrom="opacity-100 scale-100"
-                leaveTo="opacity-0 scale-95"
-              >
-                <Dialog.Panel className="w-full max-w-[500px] transform overflow-hidden rounded-2xl bg-white py-10 px-12 text-left align-middle shadow-xl transition-all">
-                  <Dialog.Title
-                    as="h3"
-                    className="xl:text-[20px] text-[18px] font-medium leading-6 text-gray-900"
-                  >
-                    Delete user
-                  </Dialog.Title>
-                  <DeleteModal
-                    closeModal={closeDeleteModal}
-                    refreshdata={refreshdata}
-                    deleteId={Id}
-                    token={token}
-                  />
-                </Dialog.Panel>
-              </Transition.Child>
-            </div>
-          </div>
-        </Dialog>
-      </Transition>
-
-        {/*---------- Preview popup---------- */}
-        <Transition appear show={openPopup} as={Fragment}>
-        <Dialog
-          as="div"
-          className="relative z-[11]"
-          onClose={closePreviewModal}
-        >
-          <Transition.Child
-            as={Fragment}
-            enter="ease-out duration-300"
-            enterFrom="opacity-0"
-            enterTo="opacity-100"
-            leave="ease-in duration-200"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
-          >
-            <div className="fixed inset-0 bg-black/70 bg-opacity-25" />
-          </Transition.Child>
-
-          <div className="fixed inset-0 overflow-y-auto">
-            <div className="flex min-h-full items-center justify-center p-4 text-center">
-              <Transition.Child
-                as={Fragment}
-                enter="ease-out duration-300"
-                enterFrom="opacity-0 scale-95"
-                enterTo="opacity-100 scale-100"
-                leave="ease-in duration-200"
-                leaveFrom="opacity-100 scale-100"
-                leaveTo="opacity-0 scale-95"
-              >
-                <Dialog.Panel className="w-full lg:max-w-[900px] md:max-w-[800px] sm:max-w-[500px] transform overflow-hidden rounded-2xl bg-white 2xl:py-10  py-8 px-8 2xl:px-12 text-left align-middle shadow-xl transition-all">
-                  <div className="flex justify-end items-end ">
-                    <button
-                      className=" cursor-pointer"
-                      onClick={closePreviewModal}
-                    >
-                      <CloseIcon />
-                    </button>
-                  </div>
-                  {/* <PreviewModal
-                    closeModal={closePreviewModal}
-                    previewData={previewData}
-                  /> */}
-                </Dialog.Panel>
-              </Transition.Child>
-            </div>
-          </div>
-        </Dialog>
-      </Transition>
     </>
   );
 };

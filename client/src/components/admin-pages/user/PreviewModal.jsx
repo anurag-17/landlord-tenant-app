@@ -88,7 +88,7 @@ const PreviewModal = ({ previewData, token }) => {
           </div>
           <div className="py-2">
             <h6 className="form_label_head py-2"> Preference </h6>
-            <div className="flex form_info gap-2">
+            <div className="flex form_info gap-2 flex-wrap">
               {Array.isArray(previewData?.preference) &&
                 previewData?.preference &&
                 previewData?.preference.map((items, index) => {

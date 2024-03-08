@@ -45,8 +45,8 @@ const AdminDashboard = () => {
   };
 
   return (
-    <section className="">
-      <div className="flex max-h-[100vh] relative lg:static">
+    <section className="max-h-[100vh] overflow-hidden">
+      <div className="flex  relative lg:static">
         <div
           className="py-2 px-3  absolute top-4 left-2 flex flex-col gap-[5px] cursor-pointer lg:hidden"
           onClick={() => setShowDrawer(true)}
@@ -57,7 +57,7 @@ const AdminDashboard = () => {
         </div>
 
         <div
-          className={`w-[300px] md:h-auto h-full z-[11] bg-theme-color text-white xl:py-[40px] xl:px-[40px] px-[10px] py-[10px] transition-all duration-1000 delay-100 ease-linear
+          className={` w-[300px] md:h-auto h-full z-[11] bg-theme-color text-white xl:py-[40px] xl:px-[40px] px-[10px] py-[10px] transition-all duration-1000 delay-100 ease-linear
                  ${
                    showDrawer
                      ? "block  absolute top-0 left-0 min-h-screen is-show"
@@ -65,7 +65,7 @@ const AdminDashboard = () => {
                  }`}
         >
           <div
-            className="relative text-white  flex flex-col gap-[5px] cursor-pointer lg:hidden  text-right mr-3 mt-2"
+            className=" relative text-white  flex flex-col gap-[5px] cursor-pointer lg:hidden  text-right mr-3 mt-2"
             onClick={() => setShowDrawer(false)}
           >
             <div className="">
@@ -84,7 +84,7 @@ const AdminDashboard = () => {
               {sideMenus.map((item, index) => (
                 <div
                   key={index}
-                  className={`pl-6 py-3 mx-5 rounded-md  flex gap-x-3 items-center cursor-pointer  transition-colors medium-16 bg-[#0f2439] 
+                  className={`justify-center py-3 mx-5 rounded-md  flex gap-x-3 items-center cursor-pointer  transition-colors medium-16 bg-[#0f2439] 
                                     ${
                                       item.id === ComponentId
                                         ? "bg-theme-secondary text-primary"
@@ -92,23 +92,22 @@ const AdminDashboard = () => {
                                     }  `}
                   onClick={() => handleClick(item.id, item.url)}
                 >
-                  {item?.icon}
-                  <p className=" capitalize whitespace-nowrap ">{item.label}</p>
+                  {/* {item?.icon} */}
+                  <p className="j capitalize whitespace-nowrap ">{item.label}</p>
                 </div>
               ))}
             </div>
-            <div className="bg-white h-[1px] w-[70%] mx-auto mt-[100px]"></div>
-          </div>
-
           <div
-            className={`pl-6 py-3 mx-5 rounded text-center cursor-pointer my-3 flex items-center transition-colors dash-menu gap-x-3  medium-16 hover:bg-theme-secondary hover:text-primary hover:rounded-md  bg-[#0f2439] }`}
+            className={` py-3 mx-5 rounded justify-center text-center cursor-pointer my-3 flex items-center transition-colors dash-menu gap-x-3  medium-16 hover:bg-theme-secondary hover:text-primary hover:rounded-md  bg-[#0f2439] }`}
             onClick={handleSignout}
           >
             {/* <LogoutIcon /> */}
-            <div>
-              <p>Sign Out</p>
-            </div>
+              <p className="">Sign Out</p>
+            
           </div>
+            {/* <div className="bg-white h-[1px] w-[70%] mx-auto mt-[100px]"></div> */}
+          </div>
+
         </div>
         <div className=" bg-[#f3f3f3] w-full">
           {sideMenus.map((item, index) => (
