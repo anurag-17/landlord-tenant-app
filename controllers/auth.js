@@ -7,6 +7,7 @@ const sendToken = require("../utils/jwtToken");
 const jwt = require("jsonwebtoken");
 const uploadOnS3 = require("../utils/uploadImage");
 const Property = require("../models/Property");
+const Preference = require("../models/Preferences")
 
 exports.uploadImage = async (req, res, next) => {
   try {
@@ -102,7 +103,9 @@ exports.login = async (req, res, next) => {
 
       await User.findByIdAndUpdate(
         { _id: findUser._id?.toString() },
-        { activeToken: token },
+        { activeToken: token,
+          lastLogin: Date.now()
+         },
         { new: true }
       );
 
@@ -185,7 +188,7 @@ exports.logout = async (req, res) => {
     if (userData.activeToken && userData.activeToken === token) {
       const user = await User.findOneAndUpdate(
         { _id: decodedData.id, activeToken: token },
-        { $unset: { activeToken: "" } },
+        { $unset: { activeToken: "" }, lastLogout: Date.now() },
         { new: true }
       );
 
@@ -594,5 +597,112 @@ exports.updatePassword = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, error: "Password change failed" });
+  }
+};
+
+exports.graphData = async (req, res) => {
+  try {
+    const currentDate = new Date();
+    const currentMonth = currentDate.getMonth();
+
+    const totalCounts = {};
+
+    const propertyCount = await Property.countDocuments();
+    totalCounts.totalProperties = propertyCount;
+
+    const userIds = await Property.distinct("userId");
+    const usersWithoutPropertyCount = await User.countDocuments({
+      _id: { $nin: userIds },
+    });
+    totalCounts.usersWithoutProperty = usersWithoutPropertyCount;
+
+    const currentDateLoginCount = await User.countDocuments({
+      lastLogin: {
+        $gte: new Date(
+          currentDate.getFullYear(),
+          currentDate.getMonth(),
+          currentDate.getDate()
+        ),
+        $lt: new Date(
+          currentDate.getFullYear(),
+          currentDate.getMonth(),
+          currentDate.getDate() + 1
+        ),
+      },
+    });
+    totalCounts.currentDateLoginUsers = currentDateLoginCount;
+
+    const currentMonthLoginCount = await User.countDocuments({
+      lastLogin: {
+        $gte: new Date(currentDate.getFullYear(), currentMonth, 1),
+        $lt: new Date(currentDate.getFullYear(), currentMonth + 1, 1),
+      },
+    });
+    totalCounts.currentMonthLoginUsers = currentMonthLoginCount;
+
+    const genderCounts = await User.aggregate([
+      { $group: { _id: "$gender", count: { $sum: 1 } } },
+    ]);
+    totalCounts.genderCounts = genderCounts;
+
+    const cityCounts = await User.aggregate([
+      { $group: { _id: "$city", count: { $sum: 1 } } },
+    ]);
+    totalCounts.cityCounts = cityCounts;
+
+    const sevenDaysInactiveCount = await User.countDocuments({
+      lastLogin: {
+        $lt: new Date(
+          currentDate.getFullYear(),
+          currentDate.getMonth(),
+          currentDate.getDate() - 7
+        ),
+      },
+    });
+    totalCounts.sevenDaysInactiveUsers = sevenDaysInactiveCount;
+
+    const thirtyDaysInactiveCount = await User.countDocuments({
+      lastLogin: {
+        $lt: new Date(
+          currentDate.getFullYear(),
+          currentDate.getMonth(),
+          currentDate.getDate() - 30
+        ),
+      },
+    });
+    totalCounts.thirtyDaysInactiveUsers = thirtyDaysInactiveCount;
+
+    // Total count of new users registered today
+    const newUsersTodayCount = await User.countDocuments({
+      createdAt: {
+        $gte: new Date(
+          currentDate.getFullYear(),
+          currentDate.getMonth(),
+          currentDate.getDate()
+        ),
+        $lt: new Date(
+          currentDate.getFullYear(),
+          currentDate.getMonth(),
+          currentDate.getDate() + 1
+        ),
+      },
+    });
+    totalCounts.newUsersToday = newUsersTodayCount;
+
+    const preferenceCounts = await User.aggregate([
+      { $unwind: "$preference" },
+      { $group: { _id: "$preference", count: { $sum: 1 } } },
+    ]).exec();
+
+    const populatedPreferenceCounts = await Preference.populate(
+      preferenceCounts,
+      { path: "_id", select: "preference" }
+    );
+
+    totalCounts.preferenceCounts = populatedPreferenceCounts;
+    res.json(totalCounts);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
