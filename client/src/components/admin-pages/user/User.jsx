@@ -10,6 +10,7 @@ import Pagination from "../../pagination/Pagination";
 import Loader from "../../loader/Index";
 import PreviewModal from "./PreviewModal";
 import EditDealer from "./EditDealer";
+import { ToastContainer,toast } from "react-toastify";
 
 export const headItems = [
   "S. No.",
@@ -126,8 +127,8 @@ const User = () => {
     setOpenPopup(false);
   };
 
-   // edit modal ----
-   const handleEdit = async (prev_id) => {
+  // edit modal ----
+  const handleEdit = async (prev_id) => {
     setIsLoader(true);
     try {
       const res = await axios.get(`/api/auth/getUserById/${prev_id}`, {
@@ -196,7 +197,7 @@ const User = () => {
       );
 
       if (res.data?.success) {
-        refreshdata()
+        refreshdata();
         return;
       } else {
         console.error("Toggle blocked request failed.");
@@ -209,8 +210,35 @@ const User = () => {
 
     // console.log(userId, { isBlocked: !isBlocked });
   };
+
+  const handleDownload = async () => {
+    try {
+      const response = await axios.get(
+        "/api/auth/userData",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.status === 200) {
+        toast.success("Download Start");
+        window.open(
+          "http://3.21.216.227:5000/api/auth/userData",
+          "_blank"
+        );
+      } else {
+        toast.error("Download failed.");
+      }
+    } catch (error) {
+      console.error("Download failed:", error);
+    }
+  };
+
   return (
     <>
+    <ToastContainer/>
       {isLoader && <Loader />}
       <section className="w-full">
         <div className=" mx-auto">
@@ -241,6 +269,9 @@ const User = () => {
                 </button>
               </div>
             </div>
+          </div>
+          <div className="flex justify-end mx-4 mt-3">
+            <button target="_blank" onClick={handleDownload} className="bg-[#0F3554] px-2 py-1 text-white rounded-md">Download</button>
           </div>
           <div className="">
             <div className="outer_table">
@@ -300,7 +331,7 @@ const User = () => {
                             </button>
                             <button
                               className="secondary_btn"
-                             onClick={() => handleEdit(items?._id)}
+                              onClick={() => handleEdit(items?._id)}
                             >
                               Edit
                             </button>
@@ -335,8 +366,8 @@ const User = () => {
         </div>
       </section>
 
-       {/* ---------Edit Popup--------------- */}
-       <Transition appear show={isDrawerOpenO} as={Fragment}>
+      {/* ---------Edit Popup--------------- */}
+      <Transition appear show={isDrawerOpenO} as={Fragment}>
         <Dialog as="div" className="z-10 fixed" onClose={() => {}}>
           <Transition.Child
             as={Fragment}
@@ -386,7 +417,6 @@ const User = () => {
           </div>
         </Dialog>
       </Transition>
-
 
       {/*---------- Delete popup---------- */}
       <Transition appear show={openDelete} as={Fragment}>

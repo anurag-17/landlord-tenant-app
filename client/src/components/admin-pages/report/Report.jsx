@@ -41,7 +41,7 @@ const Report = () => {
 
   const [fullData, setFullData] = useState([]);
   const { token } = useSelector((state) => state?.auth);
-  const [userCount, setUserCount] = useState([]);
+  const [isDate, setIsDate] = useState(true)
   const reportRef = useRef();
   // console.log(previewData);
   const refreshdata = () => {
@@ -50,11 +50,11 @@ const Report = () => {
   // delete func ----
 
   // get all data ----
-  const getAllData = (pageNo) => {
+  const getAllData = (date) => {
     setIsLoader(true);
     const options = {
       method: "GET",
-      url: `/api/auth/graphData`,
+      url: `/api/auth/graphData?${date}`,
       headers: {
         Authorization: token,
         "Content-Type": "application/json",
@@ -110,11 +110,12 @@ const Report = () => {
       });
   };
   useEffect(() => {
-    getAllData(1);
+    getAllData();
   }, [isRefresh]);
   console.log(allData);
 
   const generatePDF = async () => {
+    setIsDate(false)
     const element = document.getElementById("html-element");
     const pageBreakElements = element.getElementsByClassName("page-break");
     const pageBreakCount = pageBreakElements.length;
@@ -140,6 +141,9 @@ const Report = () => {
 
     // // Now you have the base64 encoded PDF
     // console.log(base64PDF);
+    setTimeout(() => {
+      setIsDate(true) 
+    });
   };
   return (
     <>
@@ -170,7 +174,7 @@ const Report = () => {
                 </p>
               </div>
               <div className="bg-white border p-4 rounded-lg">
-                <PieChart width={400} height={300}>
+                <PieChart width={370} height={300}>
                   <Legend />
                   <Pie
                     dataKey="value"
@@ -252,6 +256,24 @@ const Report = () => {
             </div>
 
             <div className="m-3 mt-7 border p-3 bg-white mb-20">
+            <div className="flex justify-end mx-10">
+           
+            <div className="border rounded p-1 ">
+               {
+                isDate? <div>
+                  <input
+                  className="text-gray-400"
+                    type="date"
+                    name=""
+                    id=""
+                    onChange={(e) => {
+                      getAllData(e.target.value);
+                    }}
+                  />
+                </div>:""
+               }
+               </div>
+               </div>
               <div className=" flex justify-center">
                 <table className="table-auto mt-[20px] border-collapse  border">
                   <thead className="border">
