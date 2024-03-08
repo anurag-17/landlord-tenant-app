@@ -79,7 +79,7 @@ const PreviewModal = ({ previewData, token }) => {
           </div>
           <div className="form_col">
             <label className="form_label_head">Spoken Langauge </label>
-            <div className="form_info">{previewData?.university}</div>
+            <div className="form_info">{previewData?.spokenLanguage}</div>
           </div>
           <div className="border border-b-0 border-[black]"></div>
           <div className="py-2">
