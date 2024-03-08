@@ -7,6 +7,7 @@ const sendToken = require("../utils/jwtToken");
 const jwt = require("jsonwebtoken");
 const uploadOnS3 = require("../utils/uploadImage");
 const Property = require("../models/Property");
+const Preference = require("../models/Preferences")
 
 exports.uploadImage = async (req, res, next) => {
   try {
@@ -608,39 +609,100 @@ exports.graphData = async (req, res) => {
 
     const propertyCount = await Property.countDocuments();
     totalCounts.totalProperties = propertyCount;
-// console.log("11111111111111111",propertyCount);
-const userIds = await Property.distinct('userId');
-const usersWithoutPropertyCount = await User.countDocuments({ _id: { $nin: userIds } });
+
+    const userIds = await Property.distinct("userId");
+    const usersWithoutPropertyCount = await User.countDocuments({
+      _id: { $nin: userIds },
+    });
     totalCounts.usersWithoutProperty = usersWithoutPropertyCount;
-// console.log("22222222222222222",usersWithoutPropertyCount);
-    const currentDateLoginCount = await User.countDocuments({ lastLogin: { $gte: new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate()), $lt: new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() + 1) } });
+
+    const currentDateLoginCount = await User.countDocuments({
+      lastLogin: {
+        $gte: new Date(
+          currentDate.getFullYear(),
+          currentDate.getMonth(),
+          currentDate.getDate()
+        ),
+        $lt: new Date(
+          currentDate.getFullYear(),
+          currentDate.getMonth(),
+          currentDate.getDate() + 1
+        ),
+      },
+    });
     totalCounts.currentDateLoginUsers = currentDateLoginCount;
-// console.log("33333333333333333",currentDateLoginCount);
-    const currentMonthLoginCount = await User.countDocuments({ lastLogin: { $gte: new Date(currentDate.getFullYear(), currentMonth, 1), $lt: new Date(currentDate.getFullYear(), currentMonth + 1, 1) } });
+
+    const currentMonthLoginCount = await User.countDocuments({
+      lastLogin: {
+        $gte: new Date(currentDate.getFullYear(), currentMonth, 1),
+        $lt: new Date(currentDate.getFullYear(), currentMonth + 1, 1),
+      },
+    });
     totalCounts.currentMonthLoginUsers = currentMonthLoginCount;
-// console.log("44444444444444444",currentMonthLoginCount);
+
     const genderCounts = await User.aggregate([
-        { $group: { _id: "$gender", count: { $sum: 1 } } }
+      { $group: { _id: "$gender", count: { $sum: 1 } } },
     ]);
     totalCounts.genderCounts = genderCounts;
-// console.log("55555555555555555",genderCounts);
+
     const cityCounts = await User.aggregate([
-        { $group: { _id: "$city", count: { $sum: 1 } } }
+      { $group: { _id: "$city", count: { $sum: 1 } } },
     ]);
     totalCounts.cityCounts = cityCounts;
-// console.log("66666666666666666",cityCounts);
-    const sevenDaysInactiveCount = await User.countDocuments({ lastLogin: { $lt: new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() - 7) } });
-    totalCounts.sevenDaysInactiveUsers = sevenDaysInactiveCount;
-// console.log("77777777777777777",sevenDaysInactiveCount);
-    const thirtyDaysInactiveCount = await User.countDocuments({ lastLogin: { $lt: new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() - 30) } });
-    totalCounts.thirtyDaysInactiveUsers = thirtyDaysInactiveCount;
-// console.log("88888888888888888",thirtyDaysInactiveCount);
-    res.json(totalCounts);
-} catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Internal Server Error' });
-}
-}
 
-//new register
-//preference
+    const sevenDaysInactiveCount = await User.countDocuments({
+      lastLogin: {
+        $lt: new Date(
+          currentDate.getFullYear(),
+          currentDate.getMonth(),
+          currentDate.getDate() - 7
+        ),
+      },
+    });
+    totalCounts.sevenDaysInactiveUsers = sevenDaysInactiveCount;
+
+    const thirtyDaysInactiveCount = await User.countDocuments({
+      lastLogin: {
+        $lt: new Date(
+          currentDate.getFullYear(),
+          currentDate.getMonth(),
+          currentDate.getDate() - 30
+        ),
+      },
+    });
+    totalCounts.thirtyDaysInactiveUsers = thirtyDaysInactiveCount;
+
+    // Total count of new users registered today
+    const newUsersTodayCount = await User.countDocuments({
+      createdAt: {
+        $gte: new Date(
+          currentDate.getFullYear(),
+          currentDate.getMonth(),
+          currentDate.getDate()
+        ),
+        $lt: new Date(
+          currentDate.getFullYear(),
+          currentDate.getMonth(),
+          currentDate.getDate() + 1
+        ),
+      },
+    });
+    totalCounts.newUsersToday = newUsersTodayCount;
+
+    const preferenceCounts = await User.aggregate([
+      { $unwind: "$preference" },
+      { $group: { _id: "$preference", count: { $sum: 1 } } },
+    ]).exec();
+
+    const populatedPreferenceCounts = await Preference.populate(
+      preferenceCounts,
+      { path: "_id", select: "preference" }
+    );
+
+    totalCounts.preferenceCounts = populatedPreferenceCounts;
+    res.json(totalCounts);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
