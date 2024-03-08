@@ -1,7 +1,7 @@
 const Property = require("../models/Property");
 const User = require("../models/User");
 const calculateDistance = require("../utils/DistanceCalculate");
-
+const CsvParser = require("json2csv").Parser;
 // Controller function to add a new property
 exports.addProperty = async (req, res) => {
   try {
@@ -441,3 +441,26 @@ exports.deleteAllWishlistItems = async (req, res) => {
       });
   }
 };
+
+exports.propertyData = async (req, res) => {
+  try {
+    let users = [];
+
+    var invitationData = await Property.find({});
+
+    invitationData.forEach((user) => {
+      const { userId, availabilityDate, title, area, description, BedRoom, BathRoom, furnishedType, listingType, location, price, priceRecur, collegeName, address, city, state, country, pincode,totalrating} = user;
+      users.push({ userId, availabilityDate, title, area, description, BedRoom, BathRoom, furnishedType, listingType, location, price, priceRecur, collegeName, address, city, state, country, pincode,totalrating});
+    });
+    const fields = [ "userId", "availabilityDate", "title", "area", "description", "BedRoom", "BathRoom", "furnishedType", "listingType", "location", "price", "priceRecur", "collegeName", "address", "city", "state", "country", "pincode","totalrating" ];
+    const csvParser = new CsvParser({ fields });
+    const data = csvParser.parse(users);
+
+    res.setHeader("Content-Type", "text/csv");
+    res.setHeader("Content-Disposition", "attachment: filename=PropertyData.csv");
+
+    res.status(200).end(data);
+  } catch (error) {
+    res.status(400).json({ msg: error.message, status: false });
+  }
+}
