@@ -26,11 +26,6 @@ export const sideMenus = [
     component : <Property />,
   },
   {
-    id: 3,
-    label: "Report",
-    component : <Report />,
-  },
-  {
     id: 4,
     label: "Property Category",
     component : <Category />,

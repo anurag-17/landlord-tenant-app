@@ -10,7 +10,7 @@ import Loader from "../../loader/Index";
 import PreviewModal from "./modal/PreviewModal";
 import Rating from "./Ratings";
 import PropertyUpdate from "./propertyUpdate";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer,toast } from "react-toastify";
 
 export const headItems = [
   "S. No.",
@@ -213,6 +213,31 @@ const Property = () => {
       setIsLoader(false);
     }
   };
+
+  const handleDownload = async () => {
+    try {
+      const response = await axios.get(
+        "/api/listing/propertyData",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.status === 200) {
+        toast.success("Download Start");
+        window.open(
+          "http://3.21.216.227:5000/api/listing/propertyData",
+          "_blank"
+        );
+      } else {
+        toast.error("Download failed.");
+      }
+    } catch (error) {
+      console.error("Download failed:", error);
+    }
+  };
   return (
     <>
       {isLoader && <Loader />}
@@ -246,6 +271,9 @@ const Property = () => {
                 </button>
               </div>
             </div>
+          </div>
+          <div className="flex justify-end mx-4 mt-3">
+            <button target="_blank" onClick={handleDownload} className="bg-[#0F3554] px-2 py-1 text-white rounded-md">Download</button>
           </div>
           <div className="">
             <div className="outer_table ">
