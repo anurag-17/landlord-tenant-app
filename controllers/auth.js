@@ -93,7 +93,8 @@ exports.login = async (req, res, next) => {
   try {
     const findUser = await User.findOne({ email })
       .select("+password")
-      .populate("wishlist").populate('preference');
+      .populate("wishlist")
+      .populate("preference");
 
     if (
       findUser &&
@@ -104,9 +105,7 @@ exports.login = async (req, res, next) => {
 
       await User.findByIdAndUpdate(
         { _id: findUser._id?.toString() },
-        { activeToken: token,
-          lastLogin: Date.now()
-         },
+        { activeToken: token, lastLogin: Date.now() },
         { new: true }
       );
 
@@ -479,7 +478,9 @@ exports.getAllUser = async (req, res) => {
 
     // const userQuery = User.find();
     //not including admin role
-    let userQuery = User.find({ role: { $ne: "admin" } }).populate("wishlist").populate('preference');
+    let userQuery = User.find({ role: { $ne: "admin" } })
+      .populate("wishlist")
+      .populate("preference");
     if (searchQuery) {
       userQuery.or([
         { fullname: { $regex: new RegExp(searchQuery, "i") } },
@@ -524,7 +525,9 @@ exports.getaUser = async (req, res) => {
   validateMongoDbId(_id);
 
   try {
-    const getaUser = await User.findById(_id).populate("wishlist").populate('preference');
+    const getaUser = await User.findById(_id)
+      .populate("wishlist")
+      .populate("preference");
 
     if (!getaUser) {
       return res.status(404).json({ success: false, error: "User not found" });
@@ -600,6 +603,43 @@ exports.updatePassword = async (req, res) => {
     res.status(500).json({ success: false, error: "Password change failed" });
   }
 };
+exports.updateAdminEmail = async (req, res) => {
+  const { oldMail, newMail } = req.body;
+  const { _id } = req.user;
+
+  try {
+    const user = await User.findById(_id);
+    
+    if (newMail === oldMail) {
+      return res
+        .status(401)
+        .json({ success: false, error: "Old and new email address cannot be same." });
+    }
+    const existingUser = await User.findOne({ email: newMail });
+    if (existingUser) {
+      return res
+        .status(409)
+        .json({ success: false, error: "The new email address is already in use." });
+    }
+    // Verify the old email
+    if (user.email !== oldMail) {
+      return res
+        .status(401)
+        .json({ success: false, error: "Current email is incorrect" });
+    }
+
+    // Update the email
+    user.email = newMail;
+    await user.save();
+
+    return res
+      .status(200)
+      .json({ success: true, message: "Email updated successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, error: "Email update failed" });
+  }
+};
 
 exports.graphData = async (req, res) => {
   try {
@@ -618,10 +658,12 @@ exports.graphData = async (req, res) => {
     const userIds = await Property.distinct("userId");
     const usersWithoutPropertyCount = await User.countDocuments({
       _id: { $nin: userIds },
+      role: "user",
     });
     totalCounts.usersWithoutProperty = usersWithoutPropertyCount;
 
     const currentDateLoginCount = await User.countDocuments({
+      role: "user",
       lastLogin: {
         $gte: new Date(
           currentDate.getFullYear(),
@@ -642,15 +684,18 @@ exports.graphData = async (req, res) => {
         $gte: new Date(currentDate.getFullYear(), currentMonth, 1),
         $lt: new Date(currentDate.getFullYear(), currentMonth + 1, 1),
       },
+      role: "user",
     });
     totalCounts.currentMonthLoginUsers = currentMonthLoginCount;
 
     const genderCounts = await User.aggregate([
+      { $match: { role: "user" } },
       { $group: { _id: "$gender", count: { $sum: 1 } } },
     ]);
     totalCounts.genderCounts = genderCounts;
 
     const cityCounts = await User.aggregate([
+      { $match: { role: "user" } },
       { $group: { _id: "$city", count: { $sum: 1 } } },
     ]);
     totalCounts.cityCounts = cityCounts;
@@ -663,6 +708,7 @@ exports.graphData = async (req, res) => {
           currentDate.getDate() - 7
         ),
       },
+      role: "user",
     });
     totalCounts.sevenDaysInactiveUsers = sevenDaysInactiveCount;
 
@@ -674,6 +720,7 @@ exports.graphData = async (req, res) => {
           currentDate.getDate() - 30
         ),
       },
+      role: "user",
     });
     totalCounts.thirtyDaysInactiveUsers = thirtyDaysInactiveCount;
 
@@ -691,11 +738,13 @@ exports.graphData = async (req, res) => {
           currentDate.getDate() + 1
         ),
       },
+      role: "user",
     });
     totalCounts.newUsersToday = newUsersTodayCount;
 
     const preferenceCounts = await User.aggregate([
       { $unwind: "$preference" },
+      { $match: { role: "user" } },
       { $group: { _id: "$preference", count: { $sum: 1 } } },
     ]).exec();
 
@@ -719,10 +768,58 @@ exports.userData = async (req, res) => {
     var invitationData = await User.find({});
 
     invitationData.forEach((user) => {
-      const { fullname, email, contact, dateOfbirth, collegeName, collegeProgram, age, university, country, city, spokenLanguage, ageGroup, gender, genderPrefer, lastLogin} = user;
-      users.push({ fullname, email, contact, dateOfbirth, collegeName, collegeProgram, age, university, country, city, spokenLanguage, ageGroup, gender, genderPrefer, lastLogin});
+      const {
+        fullname,
+        email,
+        contact,
+        dateOfbirth,
+        collegeName,
+        collegeProgram,
+        age,
+        university,
+        country,
+        city,
+        spokenLanguage,
+        ageGroup,
+        gender,
+        genderPrefer,
+        lastLogin,
+      } = user;
+      users.push({
+        fullname,
+        email,
+        contact,
+        dateOfbirth,
+        collegeName,
+        collegeProgram,
+        age,
+        university,
+        country,
+        city,
+        spokenLanguage,
+        ageGroup,
+        gender,
+        genderPrefer,
+        lastLogin,
+      });
     });
-    const fields = [ "fullname", "email", "contact", "dateOfbirth", "collegeName", "collegeProgram", "age", "university", "country", "city", "spokenLanguage", "ageGroup", "gender", "genderPrefer", "lastLogin" ];
+    const fields = [
+      "fullname",
+      "email",
+      "contact",
+      "dateOfbirth",
+      "collegeName",
+      "collegeProgram",
+      "age",
+      "university",
+      "country",
+      "city",
+      "spokenLanguage",
+      "ageGroup",
+      "gender",
+      "genderPrefer",
+      "lastLogin",
+    ];
     const csvParser = new CsvParser({ fields });
     const data = csvParser.parse(users);
 

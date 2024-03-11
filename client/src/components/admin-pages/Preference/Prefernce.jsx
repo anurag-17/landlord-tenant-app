@@ -101,8 +101,8 @@ const Prefernce = () => {
             </div>
           </div>
           <div className="">
-            <div className="outer_table ">
-              <table className="w-full table-auto mt-[20px] ">
+            <div className="outer_table overflow-y max-h-[600px]">
+              <table className="w-full table-auto  mt-[20px] ">
                 <thead className="">
                   <tr className=" ">
                     {headItems.map((items, inx) => (

@@ -7,6 +7,7 @@ import axios from "axios";
 import { sideMenus } from "../config/data";
 import { removeToken, setUserDetails } from "../redux/action/authAction";
 import CloseIcon from "./admin-pages/Svg/CloseIcon";
+import dash from '../assets/dashlogo.png';
 
 const AdminDashboard = () => {
   const dispatch = useDispatch();
@@ -57,7 +58,7 @@ const AdminDashboard = () => {
         </div>
 
         <div
-          className={` w-[300px] md:h-auto h-full z-[11] bg-theme-color text-white xl:py-[40px] xl:px-[40px] px-[10px] py-[10px] transition-all duration-1000 delay-100 ease-linear
+          className={` w-[300px] md:h-auto h-full z-[11] bg-theme-color text-white xl:py-[40px] xl:pt-[40px] xl:pb-[400px] px-[10px] py-[10px] transition-all duration-1000 delay-100 ease-linear
                  ${
                    showDrawer
                      ? "block  absolute top-0 left-0 min-h-screen is-show"
@@ -74,17 +75,15 @@ const AdminDashboard = () => {
             </div>
           </div>
           <div className="">
-            <div className="flex justify-center items-center whitespace-pre-wrap py-[20px]">
-              <h1 className="bold-32 text-center whitespace-nowrap ">
-                Admin Dashboard
-              </h1>
+            <div className="flex justify-center items-center">
+             <img className="py-3 w-32 cursor-pointer"  src={dash} alt="dashboard logo"/>
             </div>
             <div className="bg-white h-[1px] w-[70%] mx-auto"></div>
             <div className="flex flex-col 2xl:gap-6 gap-5 pt-[60px]">
               {sideMenus.map((item, index) => (
                 <div
                   key={index}
-                  className={`justify-center py-3 mx-5 rounded-md  flex gap-x-3 items-center cursor-pointer  transition-colors medium-16 bg-[#0f2439] 
+                  className={`justify-center py-3 mx-2 rounded-md  flex gap-x-3 items-center cursor-pointer  transition-colors medium-16 bg-[#0f2439] 
                                     ${
                                       item.id === ComponentId
                                         ? "bg-theme-secondary text-primary"
@@ -98,7 +97,7 @@ const AdminDashboard = () => {
               ))}
             </div>
           <div
-            className={` py-3 mx-5 rounded justify-center text-center cursor-pointer my-3 flex items-center transition-colors dash-menu gap-x-3  medium-16 hover:bg-theme-secondary hover:text-primary hover:rounded-md  bg-[#0f2439] }`}
+            className={` py-3 mx-3  rounded justify-center text-center cursor-pointer my-5 flex items-center transition-colors dash-menu gap-x-3  medium-16 hover:bg-theme-secondary hover:text-primary hover:rounded-md  bg-[#0f2439] }`}
             onClick={handleSignout}
           >
             {/* <LogoutIcon /> */}
