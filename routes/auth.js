@@ -17,7 +17,8 @@ const {
   uploadImage,
   verifyUser,
   graphData,
-  userData
+  userData,
+  updateAdminEmail
 } = require("../controllers/auth");
 const { isAuthenticatedUser, authorizeRoles } = require("../middleware/auth");
 const storage = multer.memoryStorage();
@@ -37,8 +38,8 @@ router.route("/register").post(register);
 
 // Update User Password
 router.post("/updatePassword", isAuthenticatedUser, updatePassword);
-
-// Update User
+router.post("/updateAdminEmail", isAuthenticatedUser, updateAdminEmail);
+// Update User updateAdminEmail
 router.put("/edit-user/:id", isAuthenticatedUser, updatedUser);
 
 // Get all Users

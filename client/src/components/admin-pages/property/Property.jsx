@@ -297,7 +297,7 @@ const Property = () => {
                     allData?.properties.map((items, index) => {
                       return (
                         <>
-                          <tr className="text-[13px] font-medium uppercase">
+                          <tr className="text-[13px] font-medium uppercase ">
                             <td className="p-2">
                               {Number(index + 1) +
                                 10 * Number(allData?.page - 1)}
