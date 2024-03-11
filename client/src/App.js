@@ -15,6 +15,7 @@ import ChangePassword from "./components/auth/ChangePassword";
 import ForgotPassword from "./components/auth/ForgotPassword";
 import ResetPassword from "./components/auth/ResetPassword";
 import { setUserDetails } from "./redux/action/authAction";
+import EditEmail from "./components/auth/EditEmail";
 
 function App() {
   // const navigate = useNavigate();
@@ -65,6 +66,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/change-password" element={<ChangePassword />} />
+          <Route path="/edit-email" element={<EditEmail/>}/>
           <Route path="/reset-password/:token" element={<ResetPassword />} />
 
           <Route

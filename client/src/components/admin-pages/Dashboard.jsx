@@ -19,7 +19,7 @@ const Dashboard = () => {
         <div className=" mx-auto">
           <div className="rounded-[10px] bg-white py-[20px] flexCenter md:flexBetween flex-col md:flex-row gap-3 px-[20px] flex justify-center">
             <p className="text-[20px] md:text-[22px] font-semibold leading-tight md:block hidden mt-[20px] lg:mt-0">
-              Welcome to Admin Dashboard
+              Overview & Trends
             </p>
             <p className="text-[20px] md:text-[22px] font-semibold leading-tight text-center mt-[30px] md:hidden block">
               Welcome to
@@ -45,6 +45,15 @@ const Dashboard = () => {
                 >
                   <Menu.Items className="absolute md:right-4 top-11 w-56 z-[11] mt-2 px-2 py-5 shadow-2xl rounded-lg origin-top-right border border-[#f3f3f3] bg-[white]  side-profile">
                     <div className="p-1 flex flex-col gap-4">
+                    <Menu.Item>
+                        <Link
+                          to="/edit-email"
+                          className="flex gap-x-3 hover:underline text-gray-700 rounded  text-sm group transition-colors items-center"
+                        >
+                          <PasswordIcon className="h-[20px] w-[20px] mr-2" />
+                          Edit Admin-mail
+                        </Link>
+                      </Menu.Item>
                       <Menu.Item>
                         <Link
                           to="/change-password"
