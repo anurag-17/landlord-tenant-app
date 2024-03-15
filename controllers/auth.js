@@ -401,7 +401,7 @@ exports.updatedUser = async (req, res) => {
       {
         fullname: req?.body?.fullname,
         // lastname: req.body.lastname,
-        email: req?.body?.email,
+        // email: req?.body?.email,
         mobile: req?.body?.mobile,
         profilePicture: req?.body?.profilePicture,
         age: req?.body?.age,
