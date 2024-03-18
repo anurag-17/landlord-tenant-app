@@ -177,6 +177,7 @@ app.use("/api/message", require("./routes/message"));
 app.use("/api/auth/upload", require("./routes/auth"));
 app.use("/api/state",require("./routes/stateRoute"))
 app.use("/api/city", require("./routes/cityRoute"))
+app.use("/api/college", require("./routes/CollegeRoute"))
 if (process.env.NODE_ENV === "dev") {
   app.use(express.static(path.join(__dirname, 'client', 'build')));
 
