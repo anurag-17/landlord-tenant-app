@@ -1,3 +1,4 @@
+const { default: mongoose } = require("mongoose");
 const Property = require("../models/Property");
 const User = require("../models/User");
 const calculateDistance = require("../utils/DistanceCalculate");
@@ -206,13 +207,17 @@ exports.searchProperties = async (req, res) => {
     let filter = {};
 
     if (title) filter.title = { $regex: new RegExp(title), $options: "i" };
-    if (provinces)
-      filter.provinces = { $regex: new RegExp(provinces), $options: "i" };
+    if (city) propertyFilter.city = new mongoose.Types.ObjectId(city);
+    if (state) propertyFilter.state = new mongoose.Types.ObjectId(state);
+    if (provinces) {
+        // Assuming 'provinces' is an array of IDs
+        propertyFilter.provinces = new mongoose.Types.ObjectId(provinces)
+    }
     if (userId) filter.userId = { $regex: new RegExp(userId), $options: "i" };
-    if (city) filter.city = { $regex: new RegExp(city), $options: "i" };
+    // if (city) filter.city = { $regex: new RegExp(city), $options: "i" };
     if (address)
       filter.address = { $regex: new RegExp(address), $options: "i" };
-    if (state) filter.state = { $regex: new RegExp(state), $options: "i" };
+    // if (state) filter.state = { $regex: new RegExp(state), $options: "i" };
     if (country)
       filter.country = { $regex: new RegExp(country), $options: "i" };
     if (listingType && listingType.length > 0)
@@ -236,9 +241,9 @@ exports.searchProperties = async (req, res) => {
       const searchFilter = {
         $or: [
           { title: { $regex: searchQuery, $options: "i" } },
-          { city: { $regex: searchQuery, $options: "i" } },
+          // { city: { $regex: searchQuery, $options: "i" } },
           { country: { $regex: searchQuery, $options: "i" } },
-          { state: { $regex: searchQuery, $options: "i" } },
+          // { state: { $regex: searchQuery, $options: "i" } },
         ],
       };
       filter = { $and: [filter, searchFilter] };
@@ -252,6 +257,9 @@ exports.searchProperties = async (req, res) => {
       .populate("category")
       .populate("preference")
       .populate("userId")
+      .populate("state")
+      .populate("provinces")
+      .populate("city")
       .skip(skip)
       .limit(pageSize);
 
@@ -297,20 +305,19 @@ exports.filterProperties = async (req, res) => {
     if (listingType && listingType.length > 0) {
       propertyFilter.listingType = { $all: listingType };
     }
-    if (city) propertyFilter.city = { $regex: new RegExp(city), $options: "i" };
+    // if (city) propertyFilter.city = { $regex: new RegExp(city), $options: "i" };
     if (address)
       propertyFilter.address = { $regex: new RegExp(address), $options: "i" };
-    if (state)
-      propertyFilter.state = { $regex: new RegExp(state), $options: "i" };
+    // if (state) propertyFilter.state = { $regex: new RegExp(state), $options: "i" };
     if (country)
       propertyFilter.country = { $regex: new RegExp(country), $options: "i" };
-    if (title)
-      propertyFilter.title = { $regex: new RegExp(title), $options: "i" };
-    if (provinces)
-      propertyFilter.provinces = {
-        $regex: new RegExp(provinces),
-        $options: "i",
-      };
+    if (title) propertyFilter.title = { $regex: new RegExp(title), $options: "i" };
+      if (city) propertyFilter.city = new mongoose.Types.ObjectId(city);
+      if (state) propertyFilter.state = new mongoose.Types.ObjectId(state);
+      if (provinces) {
+        // Assuming 'provinces' is an array of IDs
+        propertyFilter.provinces = new mongoose.Types.ObjectId(provinces)
+    }
     if (price) {
       const [minPrice, maxPrice] = price.split("-").map(Number);
       propertyFilter.price = { $gte: minPrice, $lte: maxPrice };
@@ -319,9 +326,9 @@ exports.filterProperties = async (req, res) => {
       const searchFilter = {
         $or: [
           { title: { $regex: searchQuery, $options: "i" } },
-          { city: { $regex: searchQuery, $options: "i" } },
+          // { city: { $regex: searchQuery, $options: "i" } },
           { country: { $regex: searchQuery, $options: "i" } },
-          { state: { $regex: searchQuery, $options: "i" } },
+          // { state: { $regex: searchQuery, $options: "i" } },
         ],
       };
       propertyFilter = { $and: [propertyFilter, searchFilter] };
@@ -330,7 +337,10 @@ exports.filterProperties = async (req, res) => {
     let properties = await Property.find(propertyFilter)
       .populate("category")
       .populate("preference")
-      .populate("userId");
+      .populate("userId")
+      .populate("state")
+      .populate("provinces")
+      .populate("city")
 
     if (userLocation && userLocation.latitude && userLocation.longitude) {
       properties = properties.filter((property) => {

@@ -95,7 +95,7 @@ exports.getCities = async (req, res) => {
   try {
     // Find all cities with pagination and optional search query
     // Adjust the projection as needed
-    const cities = await City.find(query)
+    const cities = await City.find(query).populate("stateId")
       .limit(limit * 1)
       .skip((page - 1) * limit)
       .exec();
@@ -123,7 +123,7 @@ exports.getCityByStateId = async (req, res) => {
 
   try {
     // Find all cities belonging to the specified state
-    const cities = await City.find({ stateId: stateId });
+    const cities = await City.find({ stateId: stateId }).populate("stateId");
 
     if (!cities || cities.length === 0) {
       return res.status(404).json({

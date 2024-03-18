@@ -3,6 +3,9 @@ const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const Preference = require("./Preferences");
 const Category = require("./Category");
+const College = require("./College");
+const City = require("./City");
+const State = require("./State");
 
 const PropertySchema = new mongoose.Schema({
   userId: { 
@@ -56,7 +59,7 @@ const PropertySchema = new mongoose.Schema({
     type: String,
   },
   collegeName: {
-    type: String,
+    type:mongoose.Schema.Types.ObjectId, ref:'College',
   },
   // Closest transit
   feature: {
@@ -83,7 +86,7 @@ const PropertySchema = new mongoose.Schema({
   //   type: String,
   // },
   provinces: {
-    type: String,
+    type:mongoose.Schema.Types.ObjectId, ref:'State',
   },
   isBlocked: {
     type: Boolean,
@@ -93,10 +96,10 @@ const PropertySchema = new mongoose.Schema({
     type: String,
   },
   city: {
-    type: String,
+    type:mongoose.Schema.Types.ObjectId, ref:'City',
   },
   state: {
-    type: String,
+    type:mongoose.Schema.Types.ObjectId, ref:'State',
   },
   country: {
     type: String,
