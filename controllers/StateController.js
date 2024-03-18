@@ -123,3 +123,27 @@ exports.updateState = async (req, res) => {
     }
   };
   
+  exports.getStateById = async (req, res) => {
+    const { id } = req.params; // Assuming the state's ID is passed as a URL parameter
+
+    try {
+        // Find the state by its ID
+        const state = await State.findById(id);
+
+        if (!state) {
+            return res.status(404).json({
+                success: false,
+                message: "State not found",
+            });
+        }
+
+        // Return success response with the state data
+        return res.status(200).json({
+            success: true,
+            data: state,
+        });
+    } catch (error) {
+        console.error("Error retrieving state:", error);
+        res.status(500).json({ success: false, error: "Failed to retrieve state" });
+    }
+};

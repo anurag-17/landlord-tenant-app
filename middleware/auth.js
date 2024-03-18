@@ -3,27 +3,39 @@ const User = require("../models/User");
 const ErrorResponse = require("../utils/errorRes");
 
 exports.isAuthenticatedUser = async (req, res, next) => {
-  const authorizationHeader = req.headers.authorization;
-  if (!authorizationHeader) {
-    return next(new ErrorResponse("Please Login to access this resource", 401));
+  const authHeader = req.headers.authorization;
+  let token = '';
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    token = authHeader.slice(7);
+  } else {
+    token = authHeader;
   }
-  // Extract the token from the Authorization header
-  const token = authorizationHeader;
+  if (!token) {
+    return res.status(401).json({ message: "Please login to access this resource" });
+  }
+
   try {
     const decodedData = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = await User.findById({_id:decodedData.id});
-    if (!req.user) {
-      return next(new ErrorResponse("User not found", 404));
-    }
-    if (req.user.activeToken && req.user.activeToken === token) {
+    req.user = await User.findOne({ email: decodedData?.email });
+    // if (!req.user) {
+    //   req.user = await Admin.findOne({ email: decodedData?.email });
+    // }
+    if (req.user.activeToken  && req.user.activeToken === token) {
       next();
     } else {
-      return res.status(401).json({ message: 'Token Expired, Please login again' });
+      return res.status(401).json({ message: 'Token expired, please login again' });
     }
+
     
   } catch (error) {
-    console.log("Error:",error);
-    return next(new ErrorResponse("Token is invalid", 401));
+    if (error.name === 'TokenExpiredError') {
+      return res.status(401).json({ message: 'Token expired, please login again' });
+    } else if (error.name === 'JsonWebTokenError') {
+      return res.status(401).json({ message: 'Invalid token' });
+    } else {
+      console.error('Other error:', error);
+      return res.status(500).json({ message: 'Server error' });
+    }
   }
 };
 
