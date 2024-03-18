@@ -101,7 +101,7 @@ exports.login = async (req, res, next) => {
       !findUser.isBlocked &&
       (await findUser.matchPasswords(password))
     ) {
-      const token = generateToken({ id: findUser._id });
+      const token = generateToken({ email: findUser.email });
 
       await User.findByIdAndUpdate(
         { _id: findUser._id?.toString() },
@@ -141,7 +141,7 @@ exports.adminLogin = async (req, res, next) => {
     }
 
     if (await findAdmin.matchPasswords(password)) {
-      const token = generateToken({ id: findAdmin._id });
+      const token = generateToken({email: findAdmin.email});
       await User.findByIdAndUpdate(
         { _id: findAdmin._id?.toString() },
         { activeToken: token },
