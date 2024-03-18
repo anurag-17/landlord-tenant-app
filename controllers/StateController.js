@@ -13,7 +13,7 @@ exports.addState = async (req, res) => {
     });
   } catch (error) {
     console.error("Error adding state:", error);
-    res.status(500).json({ success: false, error: "Failed to State property" });
+    res.status(500).json({ success: false, error: "Failed to add State" });
   }
 };
 
@@ -82,7 +82,7 @@ exports.updateState = async (req, res) => {
   exports.getAllStates = async (req, res) => {
     // Extract query parameters
     const page = parseInt(req.query.page) || 1; // Default to page 1 if not provided
-    const limit = parseInt(req.query.limit) || 10; // Default to 10 items per page if not provided
+    const limit = parseInt(req.query.limit) || 100; // Default to 10 items per page if not provided
     const search = req.query.search || ''; // Search query, default is empty to fetch all
   
     // Calculate the 'skip' value

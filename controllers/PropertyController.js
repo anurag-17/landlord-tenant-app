@@ -275,16 +275,17 @@ exports.searchProperties = async (req, res) => {
 exports.filterProperties = async (req, res) => {
   try {
     const {
-      otherPreferences,
-      userLocation,
+      otherPreferences, //array
+      userLocation,  //{latitude:73.44,longitude:55.222}
       city,
       address,
       state,
       country,
-      listingType,
+      listingType, //array
       title,
       provinces,
-      price,
+      price, //{minPrice:10, maxPrice:12}
+      reqDistance //number,
     } = req.body;
     const searchQuery = req.query.search;
 
@@ -344,7 +345,7 @@ exports.filterProperties = async (req, res) => {
             property.location[0].latitude,
             property.location[0].longitude
           );
-          return distance <= 10;
+          return distance <= reqDistance || 10;
         } else {
           return false;
         }
