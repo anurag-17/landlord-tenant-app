@@ -48,8 +48,6 @@ exports.register = async (req, res, next) => {
       });
     }
 
-   
-
     const userData = {
       email,
       mobile: req.body.mobile,
@@ -77,7 +75,21 @@ exports.register = async (req, res, next) => {
     };
 
     const newUser = await User.create(userData);
-    sendToken(newUser, 201, res);
+    const token = generateToken({ email: newUser.email });
+
+   const updatedUser =  await User.findByIdAndUpdate(
+      { _id: newUser._id?.toString() },
+      { activeToken: token, lastLogin: Date.now() },
+      { new: true }
+    );
+    if (!updatedUser) {
+      return res
+        .status(401)
+        .json({ success: false, error: "Failed to register" });
+    }
+    return res.status(200).json({ success: true, user:updatedUser, token });
+    //  sendToken(newUser, 201, res);
+
   } catch (error) {
     next(error);
   }
@@ -628,21 +640,17 @@ exports.updateAdminEmail = async (req, res) => {
     const user = await User.findById(_id);
 
     if (newMail === oldMail) {
-      return res
-        .status(401)
-        .json({
-          success: false,
-          error: "Old and new email address cannot be same.",
-        });
+      return res.status(401).json({
+        success: false,
+        error: "Old and new email address cannot be same.",
+      });
     }
     const existingUser = await User.findOne({ email: newMail });
     if (existingUser) {
-      return res
-        .status(409)
-        .json({
-          success: false,
-          error: "The new email address is already in use.",
-        });
+      return res.status(409).json({
+        success: false,
+        error: "The new email address is already in use.",
+      });
     }
     // Verify the old email
     if (user.email !== oldMail) {
