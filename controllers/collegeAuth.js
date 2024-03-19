@@ -5,9 +5,10 @@ const College = require("../models/College");
 // Create a new college
 exports.createCollege = async (req, res) => {
   try {
-    const { name, cityId } = req.body;
+    // Destructure all fields from req.body
+    const { name, cityId, campus, address, latitude, longitude } = req.body;
 
-    // Check if the college already exists
+    // Check if the college already exists by name
     const existingCollege = await College.findOne({ name });
     if (existingCollege) {
       return res.status(400).json({ error: "College already exists" });
@@ -24,8 +25,15 @@ exports.createCollege = async (req, res) => {
       return res.status(404).json({ error: "City not found" });
     }
 
-    // Proceed to create the college since cityId is valid and the city exists
-    const newCollege = new College({ name, cityId });
+    // Proceed to create the college with all provided details
+    const newCollege = new College({
+      name,
+      cityId,
+      campus,
+      address,
+      latitude,
+      longitude
+    });
     await newCollege.save();
     res.status(201).json({ success: true, data: newCollege });
   } catch (error) {

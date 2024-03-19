@@ -51,7 +51,7 @@ exports.register = async (req, res, next) => {
     const userData = {
       email,
       mobile: req.body.mobile,
-      role: req.body.role,
+      // role: req.body.role,
       fullname: req.body.fullname,
       password: req.body.password,
       profilePicture: req?.body?.profilePicture,
@@ -394,6 +394,20 @@ exports.verifyUser = async (req, res) => {
 exports.updatedUser = async (req, res) => {
   const { id } = req.params; // Removing unnecessary property access
   validateMongoDbId(id);
+  if (req.body?.mobile) {
+    // Check if the mobile number exists for another user
+    const existingUserWithMobile = await User.findOne({
+      mobile: req.body.mobile,
+      _id: { $ne: id } // Exclude the current user from the check
+    });
+
+    if (existingUserWithMobile) {
+      return res.status(400).json({
+        success: false,
+        error: "User with this contact number already exists.",
+      });
+    }
+  }
 
   try {
     const updatedUser = await User.findByIdAndUpdate(
@@ -422,6 +436,7 @@ exports.updatedUser = async (req, res) => {
         spokenLanguage: req?.body?.spokenLanguage,
         country: req?.body?.country,
         city: req?.body?.city,
+        step:req?.body?.step
       },
       {
         new: true,

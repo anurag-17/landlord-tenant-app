@@ -5,6 +5,9 @@ const jwt = require("jsonwebtoken");
 const Property = require("./Property");
 
 const Preference = require("./Preferences");
+const College = require("./College");
+const City = require("./City");
+const State = require("./State");
 
 const UserSchema = new mongoose.Schema(
   {
@@ -33,35 +36,35 @@ const UserSchema = new mongoose.Schema(
       type: String,
       default: "user",
     },
-    dateOfbirth:{
+    dateOfbirth: {
       type: String,
     },
-    collegeName:{
+    collegeName: {
       type: String,
     },
-    collegeProgram:{
+    collegeProgram: {
       type: String,
-
     },
-    preference:[{ type: mongoose.Schema.Types.ObjectId, ref: Preference }], //prefe with user count // graph
-    roomMateBio:{
+    preference: [{ type: mongoose.Schema.Types.ObjectId, ref: Preference }], //prefe with user count // graph
+    roomMateBio: {
       type: String,
     },
     age: {
       type: String,
     },
     university: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: College,
+    },
+    country: {
       type: String,
     },
-    country:{
-      type: String,
+    city: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: City,
     },
-    city:{
+    spokenLanguage: {
       type: String,
-    },
-    spokenLanguage:{
-      type: String,
-
     },
     ageGroup: {
       type: String,
@@ -82,7 +85,8 @@ const UserSchema = new mongoose.Schema(
       type: String,
     },
     provinces: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: State,
     },
     refreshToken: {
       type: String,
@@ -107,6 +111,10 @@ const UserSchema = new mongoose.Schema(
     },
     lastLogout: {
       type: Date,
+    },
+    step:{
+      type:Number,
+      default:0
     },
     passwordChangedAt: Date,
     passwordResetToken: String,

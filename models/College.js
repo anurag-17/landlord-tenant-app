@@ -5,12 +5,23 @@ const citySchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
-      unique: true,
     },
-    cityId:{
-         type: mongoose.Schema.Types.ObjectId,
-          ref:"City",
-    }
+    cityId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "City",
+    },
+    campus: {
+      type: String,
+    },
+    address: {
+      type: String,
+    },
+    latitude: {
+      type: Number,
+    },
+    longitude: {
+      type: Number,
+    },
   },
   {
     timestamps: true,
