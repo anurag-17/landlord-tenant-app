@@ -32,8 +32,15 @@ exports.register = async (req, res, next) => {
 
   try {
     const existingUser = await User.findOne({ email });
-    const existingMobile = await User.findOne({ mobile });
-
+    if (mobile) {
+      const existingMobile = await User.findOne({ mobile });
+      if (existingMobile) {
+        return res.status(400).json({
+          success: false,
+          error: "User with this contact number already exists.",
+        });
+      }
+    }
     if (existingUser) {
       return res.status(400).json({
         success: false,
@@ -41,12 +48,7 @@ exports.register = async (req, res, next) => {
       });
     }
 
-    if (existingMobile) {
-      return res.status(400).json({
-        success: false,
-        error: "User with this contact number already exists.",
-      });
-    }
+   
 
     const userData = {
       email,
@@ -141,7 +143,7 @@ exports.adminLogin = async (req, res, next) => {
     }
 
     if (await findAdmin.matchPasswords(password)) {
-      const token = generateToken({email: findAdmin.email});
+      const token = generateToken({ email: findAdmin.email });
       await User.findByIdAndUpdate(
         { _id: findAdmin._id?.toString() },
         { activeToken: token },
@@ -398,7 +400,7 @@ exports.updatedUser = async (req, res) => {
     // Check if the mobile number exists for another user
     const existingUserWithMobile = await User.findOne({
       mobile: req.body.mobile,
-      _id: { $ne: id } // Exclude the current user from the check
+      _id: { $ne: id }, // Exclude the current user from the check
     });
 
     if (existingUserWithMobile) {
@@ -436,7 +438,7 @@ exports.updatedUser = async (req, res) => {
         spokenLanguage: req?.body?.spokenLanguage,
         country: req?.body?.country,
         city: req?.body?.city,
-        step:req?.body?.step
+        step: req?.body?.step,
       },
       {
         new: true,
@@ -624,17 +626,23 @@ exports.updateAdminEmail = async (req, res) => {
 
   try {
     const user = await User.findById(_id);
-    
+
     if (newMail === oldMail) {
       return res
         .status(401)
-        .json({ success: false, error: "Old and new email address cannot be same." });
+        .json({
+          success: false,
+          error: "Old and new email address cannot be same.",
+        });
     }
     const existingUser = await User.findOne({ email: newMail });
     if (existingUser) {
       return res
         .status(409)
-        .json({ success: false, error: "The new email address is already in use." });
+        .json({
+          success: false,
+          error: "The new email address is already in use.",
+        });
     }
     // Verify the old email
     if (user.email !== oldMail) {
