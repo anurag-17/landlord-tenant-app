@@ -2,57 +2,66 @@ import React, { useState } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
 
-const EditCity = ({ EditId,preValue, closeModal, refreshdata,token,editData,states}) => {
-    const [isLoading, setLoading] = useState(false);
-    const [formdata, setFormData] = useState(editData);
-  
-    const [title, setTitle] = useState({
-        id:EditId,title:preValue
-    })
+const EditCity = ({
+  EditId,
+  preValue,
+  closeModal,
+  refreshData,
+  token,
+  editData,
+  states,
+}) => {
+  const [isLoading, setLoading] = useState(false);
+  const [formdata, setFormData] = useState(editData);
+  console.log(formdata);
+  console.log(states);
 
-    const inputHandler = (e) => {
-      console.log(e.target.value )
-      setFormData({ ...formdata, [e.target.name]: e.target.value });
-    };
+  const [title, setTitle] = useState({
+    id: EditId,
+    title: preValue,
+  });
 
-    const handleEdit = (e) => {
-    
-        e.preventDefault();
-        setLoading(true);
-    
-        const options = {
-          method: "PUT",
-          url: `/api/category/updateCategory`,
-          data: title,
-          headers: {
-            Authorization: token,
-            'Content-Type': 'application/json',
-          },
-        };
-    
-        axios
-          .request(options)
-          .then(function (res) {
-            if (res.data?.success) {
-              setLoading(false);
-              toast.success("Updated successfully!");
-              closeModal();
-              refreshdata();
-            } else {
-              setLoading(false);
-              toast.error("Failed. something went wrong!");
-              return;
-            }
-          })
-          .catch(function (error) {
-            setLoading(false);
-            console.error(error);
-            toast.error("Server error!");
-          });
-      };
+  const inputHandler = (e) => {
+    console.log(e.target.value);
+    setFormData({ ...formdata, [e.target.name]: e.target.value });
+  };
+
+  const handleEdit = (e) => {
+    e.preventDefault();
+    setLoading(true);
+    console.log(formdata);
+
+    axios
+      .put(`/api/city/update/${formdata?._id}`, formdata, {
+        headers: {
+          Authorization: token,
+          "Content-Type": "application/json",
+        },
+      })
+      .then((res) => {
+        if (res.data?.success) {
+          setLoading(false);
+          toast.success("Added successfully!");
+          closeModal();
+          refreshData();
+        } else {
+          setLoading(false);
+          toast.error("Failed. something went wrong!");
+        }
+      })
+      .catch((error) => {
+        setLoading(false);
+        console.error(error);
+        toast.error("Server error!");
+        setFormData({
+          cityName: "",
+          stateName: "",
+        });
+      });
+  };
   return (
- <>
- <div className="mt-1">
+    <>
+      <div className="mt-1">
         <p className=" text-[16px] font-normal leading-[30px] text-gray-500 mt-4"></p>
       </div>
 
@@ -61,27 +70,28 @@ const EditCity = ({ EditId,preValue, closeModal, refreshdata,token,editData,stat
           <div>
             <input
               type="text"
-              name="cityName"
+              name="name"
               placeholder="Add city name"
               required
-              defaultValue={formdata.cityName}
+              value={formdata?.name}
               onChange={inputHandler}
               className="py-3 px-3 focus-visible:outline-none border border-[gray] my-3 rounded w-full"
             />
           </div>
           <div>
-            {/* <label htmlFor="stateSelect">Select a state:</label> */}
             <select
               id="stateSelect"
-              name="stateName"
-              defaultValue={formdata.stateName}
+              name="stateId"
+              value={formdata?.stateId}
               onChange={inputHandler}
               className="py-3 px-3 focus-visible:outline-none border border-[gray] my-3 rounded w-full bg:white"
             >
-              <option value="" disabled>Select a state</option>
+              <option value="" disabled>
+                Select a state
+              </option>
               {states.map((state, index) => (
-                <option key={index} value={state}>
-                  {state}
+                <option key={index} value={state?._id}>
+                  {state?.name}
                 </option>
               ))}
             </select>
@@ -107,9 +117,8 @@ const EditCity = ({ EditId,preValue, closeModal, refreshdata,token,editData,stat
           </div>
         </form>
       </div>
+    </>
+  );
+};
 
- </>
-  )
-}
-
-export default EditCity
+export default EditCity;

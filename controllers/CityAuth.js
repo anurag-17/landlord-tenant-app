@@ -86,7 +86,7 @@ exports.deleteCity = async (req, res) => {
 exports.getCities = async (req, res) => {
   const { page = 1, limit = 999999, search } = req.query; // Defaults to page 1 and limit 10 items per page
   let query = {};
-
+  const currentPage = parseInt(page, 10);
   // If there's a search query, adjust the query object to filter by name
   if (search) {
     query.name = { $regex: search, $options: "i" }; // Case-insensitive search
@@ -97,7 +97,7 @@ exports.getCities = async (req, res) => {
     // Adjust the projection as needed
     const cities = await City.find(query).populate("stateId")
       .limit(limit * 1)
-      .skip((page - 1) * limit)
+      .skip((currentPage - 1) * limit)
       .exec();
 
     // Count how many total documents are in the collection
@@ -107,7 +107,7 @@ exports.getCities = async (req, res) => {
     return res.status(200).json({
       success: true,
       totalCount: count,
-      currentPage: page,
+      currentPage,
       totalPages: Math.ceil(count / limit),
       data: cities,
     });

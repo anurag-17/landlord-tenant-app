@@ -14,7 +14,7 @@ import AdminDashboard from "./components/AdminDashboard";
 import ChangePassword from "./components/auth/ChangePassword";
 import ForgotPassword from "./components/auth/ForgotPassword";
 import ResetPassword from "./components/auth/ResetPassword";
-import { setUserDetails } from "./redux/action/authAction";
+import { removeToken, setUserDetails } from "./redux/action/authAction";
 import EditEmail from "./components/auth/EditEmail";
 
 function App() {
@@ -42,11 +42,13 @@ function App() {
         dispatch(setUserDetails(res?.data?.data));
         return;
       } else {
+        dispatch(removeToken());
         <Navigate to="/login" />;
       }
     } catch (error) {
       console.error("Error occurred:", error);
-      toast.error("Invalid authrization!");
+      toast.error("Invalid authorization!");
+      dispatch(removeToken());
       <Navigate to="/login" />;
     }
   };

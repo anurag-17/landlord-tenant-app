@@ -112,7 +112,7 @@ const AdminDashboard = () => {
           </div>
 
         </div>
-        <div className=" bg-[#f3f3f3] w-full">
+        <div className="overflow-y-scroll h-[100vh] bg-[#f3f3f3] w-full">
           {sideMenus.map((item, index) => (
             <Fragment key={index}>
               {ComponentId === item.id && item.component}

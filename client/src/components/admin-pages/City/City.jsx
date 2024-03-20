@@ -2,7 +2,6 @@ import React, { Fragment, useState, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { useSelector } from "react-redux";
 import axios from "axios";
-import { Switch } from "@headlessui/react";
 
 // import DeleteUser from "./DeleteUser";
 import CloseIcon from "../Svg/CloseIcon";
@@ -11,15 +10,9 @@ import Loader from "../../loader/Index";
 import { ToastContainer, toast } from "react-toastify";
 import AddCity from "./Modal/AddCity";
 import EditCity from "./Modal/EditCity";
+import DeleteCity from "./Modal/DeleteCity";
 
-export const headItems = [
-  "S. No.",
-  "Name",
-  //   " Contact No",
-  //   "Email",
-  //   "Block user",
-  "Action",
-];
+export const headItems = ["S. No.", "City name", "State name", "Action"];
 
 const City = () => {
   const [isRefresh, setRefresh] = useState(false);
@@ -103,20 +96,17 @@ const City = () => {
 
   // edit modal ----
   const handleEdit = async (prev_id) => {
-    setEditData(allData);
-    setEditOpen(true);
-    return;
     setIsLoader(true);
     try {
-      const res = await axios.get(`/api/city/getCityById/${prev_id}`, {
+      const res = await axios.get(`/api/city/getById/${prev_id}`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: token,
         },
       });
       if (res.data?.success) {
-        // console.log(res.data.user);
-        setEditData(res.data?.city);
+        // console.log(res.data.data);
+        setEditData(res.data?.data);
         setEditOpen(true);
         setIsLoader(false);
       } else {
@@ -150,7 +140,7 @@ const City = () => {
         console.log(res);
         if (res?.data?.success) {
           setIsLoader(false);
-          setAllData(res?.data?.data);
+          setAllData(res?.data);
         } else {
           setIsLoader(false);
           return;
@@ -254,15 +244,15 @@ const City = () => {
                 </thead>
 
                 <tbody>
-                  {Array.isArray(allData) &&
-                    allData?.length > 0 &&
-                    allData?.map((items, index) => (
+                  {Array.isArray(allData?.data) &&
+                    allData?.data?.length > 0 &&
+                    allData?.data?.map((items, index) => (
                       <tr key={index}>
-                        <td className="table_data">{index + 1}</td>
-                        <td className="table_data capitalize">
-                          {items?.name}
+                        <td className="table_data">
+                          {(allData?.currentPage - 1) * 10 + (index + 1)}
                         </td>
-
+                        <td className="table_data capitalize">{items?.name}</td>
+                        <td className="table_data capitalize">{items?.stateId?.name}</td>
                         <td className="table_data">
                           <div className="table_btn_div">
                             <button
@@ -284,12 +274,11 @@ const City = () => {
                 </tbody>
               </table>
             </div>
-            {Array.isArray(allData?.cities) &&
-              allData?.cities?.length === 0 && (
-                <div className="no_data">
-                  <p className="text-[18px] fontsemibold">No data</p>
-                </div>
-              )}
+            {Array.isArray(allData?.data) && allData?.data?.length === 0 && (
+              <div className="no_data">
+                <p className="text-[18px] fontsemibold">No data</p>
+              </div>
+            )}
           </div>
 
           {allData?.totalPages > 1 && (
@@ -344,6 +333,7 @@ const City = () => {
                     token={token}
                     closeModal={closeAddModal}
                     states={states}
+                    refreshData={refreshdata}
                   />
                 </Dialog.Panel>
               </Transition.Child>
@@ -437,12 +427,12 @@ const City = () => {
                   >
                     Delete user
                   </Dialog.Title>
-                  {/* <DeleteUser
-                    closeModal={closeDeleteModal}
-                    refreshdata={refreshdata}
+                  <DeleteCity
+                   closeModal={closeDeleteModal}
+                    refreshData={refreshdata}
                     deleteId={Id}
                     token={token}
-                  /> */}
+                  />
                 </Dialog.Panel>
               </Transition.Child>
             </div>

@@ -275,7 +275,7 @@ const User = () => {
           </div>
           <div className="">
             <div className="outer_table">
-              <table className="w-full min-w-[640px] table-auto mt-[20px] ">
+              <table className="w-full min-w-[640px] table-auto mt-[20px] overflow-scroll">
                 <thead className="">
                   <tr className=" ">
                     {headItems.map((items, inx) => (

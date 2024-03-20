@@ -2,17 +2,17 @@ import axios from "axios";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 
-const AddCity = ({ closeModal, refreshdata, token,states }) => {
+const AddCity = ({ closeModal, refreshData, token,states }) => {
   console.log(states)
   const [formdata, setFormData] = useState({
-    cityName: "",
-    stateName: "",
+    name: "",
+    stateId: "",
   });
 // const states = ["MP","UP","HP"]
   const [isLoading, setLoading] = useState(false);
 
   const inputHandler = (e) => {
-    console.log(e.target.value )
+    // console.log(e.target.value )
     setFormData({ ...formdata, [e.target.name]: e.target.value });
   };
 
@@ -21,7 +21,7 @@ const AddCity = ({ closeModal, refreshdata, token,states }) => {
     setLoading(true);
     axios
       .post(
-        "/api/city/addCity",
+        "/api/city/add",
         formdata,
         {
           headers: {
@@ -35,7 +35,7 @@ const AddCity = ({ closeModal, refreshdata, token,states }) => {
           setLoading(false);
           toast.success("Added successfully!");
           closeModal();
-          refreshdata();
+          refreshData();
         } else {
           setLoading(false);
           toast.error("Failed. something went wrong!");
@@ -64,11 +64,11 @@ const AddCity = ({ closeModal, refreshdata, token,states }) => {
           <div>
             <input
               type="text"
-              name="cityName"
+              name="name"
               placeholder="Add city name"
               required
-              value={formdata.cityName}
               onChange={inputHandler}
+              value={formdata?.name}
               className="py-3 px-3 focus-visible:outline-none border border-[gray] my-3 rounded w-full"
             />
           </div>
@@ -76,12 +76,13 @@ const AddCity = ({ closeModal, refreshdata, token,states }) => {
             {/* <label htmlFor="stateSelect">Select a state:</label> */}
             <select
               id="stateSelect"
-              name="stateName"
-              value={formdata.stateName}
+              name="stateId"
+              value={formdata?.stateId}
+              required
               onChange={inputHandler}
               className="py-3 px-3 focus-visible:outline-none border border-[gray] my-3 rounded w-full bg:white"
             >
-              <option value="" disabled>Select a state</option>
+              <option value="" >Select a state</option>
               {states.map((state, index) => (
                 <option key={index} value={state?._id}>
                   {state?.name}
