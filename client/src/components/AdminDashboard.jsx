@@ -36,12 +36,16 @@ const AdminDashboard = () => {
         toast.success("Logout successfully !");
         navigate("/login");
       } else {
-        toast.error("Logout failed try again !");
+        // toast.error("Logout failed try again !");
+        dispatch(removeToken());
+        navigate("/login");
       }
     } catch (error) {
       // dispatch(removeToken());
+      dispatch(removeToken());
+      navigate("/login");
       console.error("Error occurred:", error);
-      toast.error(error?.response?.data?.message || "Invalid token !");
+      // toast.error(error?.response?.data?.message || "Invalid token !");
     }
   };
 

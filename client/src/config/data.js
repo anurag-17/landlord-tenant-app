@@ -1,4 +1,5 @@
 import Category from "../components/admin-pages/Category/Category";
+import City from "../components/admin-pages/City/City";
 import Dashboard from "../components/admin-pages/Dashboard";
 import Prefernce from "../components/admin-pages/Preference/Prefernce";
 import Property from "../components/admin-pages/property/Property";
@@ -34,5 +35,10 @@ export const sideMenus = [
     id: 5,
     label: "Preference",
     component : <Prefernce />,
+  },
+  {
+    id: 6,
+    label: "City",
+    component : <City />,
   },
 ];
