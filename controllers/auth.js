@@ -51,7 +51,7 @@ exports.register = async (req, res, next) => {
     const userData = {
       email,
       mobile: req.body.mobile,
-      // role: req.body.role,
+      role: req.body.role,
       fullname: req.body.fullname,
       password: req.body.password,
       profilePicture: req?.body?.profilePicture,
@@ -109,6 +109,7 @@ exports.login = async (req, res, next) => {
       .select("+password")
       .populate("wishlist")
       .populate("preference");
+      console.log(findUser);
 
     if (
       findUser &&
@@ -374,17 +375,17 @@ exports.verifyUser = async (req, res) => {
 
   try {
     const decodedData = verifyToken(token);
-
+  console.log(decodedData);
     if (!decodedData) {
       return res
         .status(401)
         .json({ success: false, message: "Unauthorized Access" });
     }
 
-    const { id } = decodedData;
+    const { email } = decodedData;
 
     const LoggedUser = await User.findOne({
-      _id: id,
+      email: email,
       activeToken: token,
     }).select("-password -activeToken");
 

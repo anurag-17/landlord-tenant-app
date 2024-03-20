@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 
-const DeleteCategory = ({ deleteId, closeModal, refreshdata, token }) => {
+const DeleteCity = ({ deleteId, closeModal, refreshData, token }) => {
   const [isLoading, setLoading] = useState(false);
 
   const handleDelete = (e) => {
@@ -12,7 +12,7 @@ const DeleteCategory = ({ deleteId, closeModal, refreshdata, token }) => {
 
     const options = {
       method: "DELETE",
-      url: `/api/category/deleteCategory/${deleteId}`,
+      url: `/api/city/delete/${deleteId}`,
       headers: {
         Authorization: token,
         'Content-Type': 'application/json',
@@ -26,7 +26,7 @@ const DeleteCategory = ({ deleteId, closeModal, refreshdata, token }) => {
           setLoading(false);
           toast.success("Deleted successfully!");
           closeModal();
-          refreshdata();
+          refreshData();
         } else {
           setLoading(false);
           toast.error("Failed. something went wrong!");
@@ -70,4 +70,4 @@ const DeleteCategory = ({ deleteId, closeModal, refreshdata, token }) => {
   );
 };
 
-export default DeleteCategory;
+export default DeleteCity;

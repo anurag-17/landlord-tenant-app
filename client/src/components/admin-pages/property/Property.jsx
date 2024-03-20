@@ -309,7 +309,7 @@ const Property = () => {
                                 : "Not found"}{" "}
                             </td>
                             <td className="p-2">{items?.listingType}</td>
-                            <td className="p-2">{items?.city}</td>
+                            <td className="p-2">{items?.city?.name}</td>
                             {/* <td className="p-2">
                               {items?.numberOfRooms}
                             </td> */}

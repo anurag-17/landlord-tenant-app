@@ -82,7 +82,7 @@ body {
   }
 
   .outer_table {
-    @apply rounded-[10px] bg-white py-[30px] px-[20px] flexBetween mt-[20px] p-6 overflow-x-scroll;
+    @apply rounded-[10px] bg-white py-[30px] px-[20px]  mt-[20px] p-6;
   }
 
   .table_head {
@@ -159,19 +159,6 @@ body {
   /* Half-filled star color */
 }
 
-
-/* Hide scrollbar for Chrome, Safari and Opera */
-.hide-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
-/* Hide scrollbar for IE, Edge and Firefox */
-.hide-scrollbar {
-  -ms-overflow-style: none;
-  /* IE and Edge */
-  scrollbar-width: none;
-  /* Firefox */
-}
 
 
 .custom_inputt {
