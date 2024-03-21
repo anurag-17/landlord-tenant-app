@@ -15,6 +15,13 @@ const conversationSchema = new mongoose.Schema(
 				default: [],
 			},
 		],
+		propertyId:
+			{
+				type: mongoose.Schema.Types.ObjectId,
+				ref: "Property",
+				
+			},
+		
 	},
 	{ timestamps: true }
 );

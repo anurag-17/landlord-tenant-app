@@ -284,7 +284,7 @@ exports.filterProperties = async (req, res) => {
   try {
     const {
       otherPreferences, //array
-      userLocation,  //{latitude:73.44,longitude:55.222}
+      userLocation,  //userLocation:{latitude:73.44,longitude:55.222}
       city,
       address,
       state,
