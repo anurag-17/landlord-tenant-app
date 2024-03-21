@@ -71,3 +71,34 @@ exports.getMessages = async (req, res) => {
     res.status(500).json({success: false, error: "Internal server error" });
   }
 };
+exports.deleteAllMessages = async (req, res) => {
+  try {
+    const { propertyId } = req.params; // Assuming propertyId is used to identify the conversation
+    const senderId = req.user._id; // Sender ID from authenticated user
+    const receiverId = req.params.receiverId; // Receiver ID from URL params
+
+    // Find the conversation
+    const conversation = await Conversation.findOne({
+      propertyId,
+      participants: { $all: [senderId, receiverId] },
+    });
+
+    if (!conversation) {
+      return res.status(404).json({ success: false, message: "Conversation not found" });
+    }
+
+    // Delete messages associated with the conversation
+    await Message.deleteMany({
+      _id: { $in: conversation.messages }
+    });
+
+    // Optionally, you might want to remove the message references from the conversation document as well
+    conversation.messages = [];
+    await conversation.save();
+
+    res.status(200).json({ success: true, message: "All messages deleted" });
+  } catch (error) {
+    console.error("Error in deleteAllMessages controller: ", error.message);
+    res.status(500).json({ success: false, error: "Internal server error" });
+  }
+};
