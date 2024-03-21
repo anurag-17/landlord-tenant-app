@@ -343,7 +343,9 @@ exports.filterProperties = async (req, res) => {
       .populate("city")
 
     if (userLocation && userLocation.latitude && userLocation.longitude) {
+      // console.log("dasdas",userLocation);
       properties = properties.filter((property) => {
+        // console.log("akkkk", property.location);
         if (
           property.location &&
           property.location[0].latitude &&
@@ -355,7 +357,8 @@ exports.filterProperties = async (req, res) => {
             property.location[0].latitude,
             property.location[0].longitude
           );
-          return distance <= reqDistance || 10;
+          // console.log(distance <= (reqDistance || 10));
+          return distance <= (reqDistance || 10);
         } else {
           return false;
         }
