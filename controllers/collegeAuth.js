@@ -142,6 +142,7 @@ exports.getAllColleges = async (req, res) => {
       success: true,
       count: colleges.length,
       total,
+      currentPage: page,
       totalPages,
       data: colleges,
     });

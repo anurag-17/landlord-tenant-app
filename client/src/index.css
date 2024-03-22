@@ -200,4 +200,18 @@ body {
 .custom_btn {
   @apply border bg-black text-white rounded-md lg:rounded-lg 2xl:text-[20px] 2xl:p-2 2xl:m-10 2xl:mt-0 xl:text-[14px] xl:py-2 xl:px-4 xl:m-5 xl:mt-0 lg:text-[12px] lg:py-2 lg:px-3 lg:m-5 lg:mt-0 md:text-[12px] md:py-1 md:px-2 md:m-4 md:mt-0 sm:text-[11px] sm:py-1 sm:px-2 sm:m-3 sm:mt-0 text-[9px] py-[3px] px-2 m-2 mt-0;
 }
+/* 
+.recharts-surface{
+  width:1000px;
+  display: flex !important;
+ flex-flow: row ;
 
+}
+
+.recharts-legend-wrapper{
+  padding: 20px !important;
+}
+.recharts-wrapper{
+  margin-top: 20px !important;
+  position:relative !important;
+} */

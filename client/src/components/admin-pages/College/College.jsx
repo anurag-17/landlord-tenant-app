@@ -1,35 +1,32 @@
-import React, { Fragment, useState, useEffect } from "react";
-import { Dialog, Transition } from "@headlessui/react";
-import { useSelector } from "react-redux";
 import axios from "axios";
-
-// import DeleteUser from "./DeleteUser";
+import React, { useEffect, useState } from "react";
+import { Dialog, Transition } from "@headlessui/react";
+import { Fragment } from "react";
+import { useSelector } from "react-redux";
+import { ToastContainer, toast } from "react-toastify";
+import Loader from "../../loader/Index";
 import CloseIcon from "../Svg/CloseIcon";
 import Pagination from "../../pagination/Pagination";
-import Loader from "../../loader/Index";
-import { ToastContainer, toast } from "react-toastify";
-import AddCity from "./Modal/AddCity";
-import EditCity from "./Modal/EditCity";
-import DeleteCity from "./Modal/DeleteCity";
+import EditCollege from "./Modal/EditeCollege";
+import AddCollege from "./Modal/AddCollege";
+import DeleteCollege from "./Modal/DeleteCollege";
 
-export const headItems = ["S. No.", "City name", "State name", "Action"];
+export const headItems = ["S. No.", "College name", "City name", "Action"];
 
-const City = () => {
+const College = () => {
+  const { token } = useSelector((state) => state?.auth);
+  const [openDelete, setOpenDelete] = useState(false);
+  const [cities, setCity] = useState([]);
+  const [Id, setId] = useState(null);
   const [isRefresh, setRefresh] = useState(false);
-  const [allData, setAllData] = useState([]);
-  const [states, setStates] = useState([]);
   const [isLoader, setIsLoader] = useState(false);
   const [searchText, setSearchText] = useState("");
-  const [Id, setId] = useState(null);
-  const [openDelete, setOpenDelete] = useState(false);
-  const [openAdd, setOpenAdd] = useState(false);
-  const [editOpen, setEditOpen] = useState(false);
-  const [editData, setEditData] = useState([]);
-  const [isDrawerOpenO, setIsDrawerOpenO] = useState(false);
   const visiblePageCount = 10;
-  const { token } = useSelector((state) => state?.auth);
+  const [allData, setAllData] = useState([]);
+  const [editData, setEditData] = useState([]);
+  const [editOpen, setEditOpen] = useState(false);
+  const [openAdd, setOpenAdd] = useState(false);
 
-  // console.log(previewData);
   const refreshdata = () => {
     setRefresh(!isRefresh);
   };
@@ -37,7 +34,6 @@ const City = () => {
   const closeAddModal = () => {
     setOpenAdd(false);
   };
-
   // delete func ----
   const handleDelete = (del_id) => {
     setId(del_id);
@@ -53,7 +49,6 @@ const City = () => {
     setSearchText(e.target.value);
     searchDataFunc(e.target.value);
   };
-
   const handleSearch = () => {
     if (searchText) {
       searchDataFunc(searchText.trim());
@@ -70,10 +65,11 @@ const City = () => {
     refreshdata();
     setSearchText("");
   };
+
   const searchDataFunc = (search_cate) => {
     const options = {
       method: "GET",
-      url: `/api/city/getAll?search=${search_cate}`,
+      url: `/api/college/getAll?search=${search_cate}`,
       headers: {
         Authorization: token,
         "Content-Type": "multipart/form-data",
@@ -98,7 +94,7 @@ const City = () => {
   const handleEdit = async (prev_id) => {
     setIsLoader(true);
     try {
-      const res = await axios.get(`/api/city/getById/${prev_id}`, {
+      const res = await axios.get(`/api/college/getById/${prev_id}`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: token,
@@ -128,7 +124,7 @@ const City = () => {
     setIsLoader(true);
     const options = {
       method: "GET",
-      url: `/api/city/getAll?page=${pageNo}&limit=${visiblePageCount}`,
+      url: `/api/college/getAll?page=${pageNo}&limit=${visiblePageCount}`,
       headers: {
         Authorization: token,
         "Content-Type": "application/json",
@@ -141,8 +137,7 @@ const City = () => {
         if (res?.data?.success) {
           setIsLoader(false);
           setAllData(res?.data);
-          console.log(res?.data, "mmm");
-
+          console.log(res?.data,"count")
         } else {
           setIsLoader(false);
           return;
@@ -153,13 +148,12 @@ const City = () => {
         console.error("Error:", error);
       });
   };
-
   // get all data ----
-  const getAllStates = (pageNo) => {
+  const getAllCity = () => {
     setIsLoader(true);
     const options = {
       method: "GET",
-      url: `/api/state/getAll`,
+      url: `/api/city/getAll`,
       headers: {
         Authorization: token,
         "Content-Type": "application/json",
@@ -168,11 +162,11 @@ const City = () => {
     axios
       .request(options)
       .then((res) => {
-        console.log("state", res);
+        console.log("City", res);
         // return;
         if (res?.data?.success) {
           setIsLoader(false);
-          setStates(res?.data?.states);
+          setCity(res?.data?.data);
         } else {
           setIsLoader(false);
           return;
@@ -183,10 +177,9 @@ const City = () => {
         console.error("Error:", error);
       });
   };
-
   useEffect(() => {
     getAllData(1);
-    getAllStates();
+      getAllCity();
   }, [isRefresh]);
 
   return (
@@ -196,7 +189,7 @@ const City = () => {
       <section className="w-full">
         <div className=" mx-auto">
           <div className="rounded-[10px] bg-white py-[20px] flexBetween flex-col md:flex-row gap-3 px-[20px] mt-[20px] lg:mt-0">
-            <p className=" text-[22px] font-semibold">City list</p>
+            <p className=" text-[22px] font-semibold">College list</p>
             <div className="flexCenter gap-x-7 lg:gap-x-5 md:flex-auto flex-wrap gap-y-3">
               <div className="border border-primary  bg-[#302f2f82]] flexCenter h-[32px] pl-[10px] md:w-auto w-full">
                 <input
@@ -205,7 +198,7 @@ const City = () => {
                   value={searchText}
                   onChange={handleSearchInput}
                   onKeyDown={handleKeyDown}
-                  placeholder="Search by city name."
+                  placeholder="Search by college name."
                 />
                 {searchText !== "" ? (
                   <button
@@ -225,7 +218,7 @@ const City = () => {
             <div className="flex justify-end mx-4 mt-3">
               <button onClick={() => setOpenAdd(true)} className="primary_btn">
                 {" "}
-                Add new city{" "}
+                Add new College{" "}
               </button>
             </div>
           </div>
@@ -254,7 +247,9 @@ const City = () => {
                           {(allData?.currentPage - 1) * 10 + (index + 1)}
                         </td>
                         <td className="table_data capitalize">{items?.name}</td>
-                        <td className="table_data capitalize">{items?.stateId?.name}</td>
+                        <td className="table_data capitalize">
+                          {items?.stateId?.name}
+                        </td>
                         <td className="table_data">
                           <div className="table_btn_div">
                             <button
@@ -288,13 +283,13 @@ const City = () => {
               currentpage={allData?.currentPage}
               totalCount={allData?.totalPages}
               visiblePageCount={visiblePageCount}
-              getAllData={getAllData}
+              getallData={allData}
             />
           )}
         </div>
       </section>
 
-      {/* ---------Add Popup--------------- */}
+      {/* ===============Add============= */}
       <Transition appear show={openAdd} as={Fragment}>
         <Dialog as="div" className="z-10 fixed" onClose={() => {}}>
           <Transition.Child
@@ -331,10 +326,10 @@ const City = () => {
                     </button>
                   </Dialog.Title>
 
-                  <AddCity
+                  <AddCollege
                     token={token}
                     closeModal={closeAddModal}
-                    states={states}
+                    cities={cities}
                     refreshData={refreshdata}
                   />
                 </Dialog.Panel>
@@ -343,7 +338,8 @@ const City = () => {
           </div>
         </Dialog>
       </Transition>
-      {/* ---------Edit Popup--------------- */}
+
+      {/* ===============Edit============= */}
       <Transition appear show={editOpen} as={Fragment}>
         <Dialog as="div" className="z-10 fixed" onClose={() => {}}>
           <Transition.Child
@@ -382,11 +378,11 @@ const City = () => {
                       <CloseIcon />
                     </button>
                   </Dialog.Title>
-                  <EditCity
+                  <EditCollege
                     closeModal={closeEditModal}
                     refreshData={refreshdata}
                     editData={editData}
-                    states={states}
+                    cities={cities}
                     token={token}
                   />
                 </Dialog.Panel>
@@ -395,20 +391,19 @@ const City = () => {
           </div>
         </Dialog>
       </Transition>
-
-      {/*---------- Delete popup---------- */}
+      {/* ================Delete========== */}
       <Transition appear show={openDelete} as={Fragment}>
         <Dialog as="div" className="relative z-[11]" onClose={closeDeleteModal}>
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
-            enterFrom="opacity-0"
-            enterTo="opacity-100"
+            enterFrom="opacollege-0"
+            enterTo="opacollege-100"
             leave="ease-in duration-200"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
+            leaveFrom="opacollege-100"
+            leaveTo="opacollege-0"
           >
-            <div className="fixed inset-0 bg-black/70 bg-opacity-25" />
+            <div className="fixed inset-0 bg-black/70 bg-opacollege-25" />
           </Transition.Child>
 
           <div className="fixed inset-0 overflow-y-auto">
@@ -416,11 +411,11 @@ const City = () => {
               <Transition.Child
                 as={Fragment}
                 enter="ease-out duration-300"
-                enterFrom="opacity-0 scale-95"
-                enterTo="opacity-100 scale-100"
+                enterFrom="opacollege-0 scale-95"
+                enterTo="opacollege-100 scale-100"
                 leave="ease-in duration-200"
-                leaveFrom="opacity-100 scale-100"
-                leaveTo="opacity-0 scale-95"
+                leaveFrom="opacollege-100 scale-100"
+                leaveTo="opacollege-0 scale-95"
               >
                 <Dialog.Panel className="w-full max-w-[500px] transform overflow-hidden rounded-2xl bg-white 2xl:py-10 2xl:px-12 px-8 py-8  text-left align-middle shadow-xl transition-all">
                   <Dialog.Title
@@ -429,8 +424,8 @@ const City = () => {
                   >
                     Delete user
                   </Dialog.Title>
-                  <DeleteCity
-                   closeModal={closeDeleteModal}
+                  <DeleteCollege
+                    closeModal={closeDeleteModal}
                     refreshData={refreshdata}
                     deleteId={Id}
                     token={token}
@@ -445,4 +440,4 @@ const City = () => {
   );
 };
 
-export default City;
+export default College;
