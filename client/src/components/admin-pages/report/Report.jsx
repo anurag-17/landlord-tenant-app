@@ -159,8 +159,11 @@ const Report = () => {
         </div>
         <div className=" mx-auto" id="html-element">
           <div className="mt-10 ">
-            <div className="flex justify-around items-center">
+            <div className=" items-center">
               <div className="bg-white border p-4 rounded-lg">
+              <p className="flex justify-center pt-3">
+                  Tanent Without Property VS Total Property
+                </p>
                 <BarChart width={300} height={300} data={allData}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="name" />
@@ -169,12 +172,13 @@ const Report = () => {
                   {/* <Legend /> */}
                   <Bar dataKey="value" fill="#8884d8" />
                 </BarChart>
-                <p className="flex justify-center pt-3">
-                  Tanent Without Property VS Total Property
-                </p>
+               
               </div>
-              <div className="bg-white border p-4 rounded-lg">
-                <PieChart width={370} height={300}>
+              <div className="bg-white border p-4 rounded-lg my-5">
+              <p className="flex justify-center pt-3">
+                  Distribution of attributes
+                </p>
+                <PieChart className="mx-auto" width={800} height={300}>
                   <Legend />
                   <Pie
                     dataKey="value"
@@ -196,15 +200,15 @@ const Report = () => {
 
                   <Tooltip />
                 </PieChart>
-                <p className="flex justify-center pt-3">
-                  Distribution of attributes
-                </p>
+               
               </div>
             </div>
             <hr className="my-4 border border-gray-300" />
-            <div className="flex justify-around">
-              <div className="bg-white border p-4 rounded-lg">
-                <PieChart className="" width={400} height={230}>
+            <div className="">
+              <div className="bg-white border p-4 rounded-lg h-[400px] my-5 ">
+              <p className="flex justify-center pt-3">Gender Makeup</p>
+
+                <PieChart className="mx-auto" width={800} height={300}>
                   <Pie
                     dataKey="value"
                     isAnimationActive={true}
@@ -225,10 +229,12 @@ const Report = () => {
                   <Legend />
                   <Tooltip />
                 </PieChart>
-                <p className="flex justify-center pt-3">Gender Makeup</p>
               </div>
-              <div className="bg-white border p-4 rounded-lg">
-                <PieChart width={400} height={230}>
+              <div className="bg-white  border p-4 rounded-lg ">
+              <p className="flex justify-center pt-3">
+                  City specific attribute makeup
+                </p>
+                <PieChart className="mx-auto" width={800} height={350}>
                   <Pie
                     dataKey="value"
                     isAnimationActive={true}
@@ -238,6 +244,7 @@ const Report = () => {
                     outerRadius={70}
                     fill="#8884d8"
                     label
+                   
                   >
                     {prefData.map((entry, index) => (
                       <Cell
@@ -249,9 +256,7 @@ const Report = () => {
                   <Legend />
                   <Tooltip />
                 </PieChart>
-                <p className="flex justify-center pt-3">
-                  City specific attribute makeup
-                </p>
+              
               </div>
             </div>
 

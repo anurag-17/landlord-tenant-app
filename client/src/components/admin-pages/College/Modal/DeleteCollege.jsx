@@ -2,20 +2,19 @@ import axios from "axios";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 
-const DeleteCity = ({ deleteId, closeModal, refreshData, token }) => {
+const DeleteCollege = ({ deleteId, closeModal, refreshData, token }) => {
   const [isLoading, setLoading] = useState(false);
 
   const handleDelete = (e) => {
-    
     e.preventDefault();
     setLoading(true);
 
     const options = {
       method: "DELETE",
-      url: `/api/city/delete/${deleteId}`,
+      url: `/api/college/delete/${deleteId}`,
       headers: {
         Authorization: token,
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     };
 
@@ -41,7 +40,7 @@ const DeleteCity = ({ deleteId, closeModal, refreshData, token }) => {
   };
   return (
     <>
-         <div className="mt-2">
+      <div className="mt-2">
         <p className=" text-[16px] font-normal leading-[30px] text-gray-500 mt-4">
           Are you sure you want to delete this category?
         </p>
@@ -49,25 +48,22 @@ const DeleteCity = ({ deleteId, closeModal, refreshData, token }) => {
 
       <div className="mt-8">
         <div className="flex md:flex-row flex-col gap-3 justify-between gap-x-5">
-          <button
-            className="w-full secondary_btn"
-            onClick={()=>closeModal()}
-          >
+          <button className="w-full secondary_btn" onClick={() => closeModal()}>
             No, Keep It
           </button>
-        
-            <button
-              className={`w-full  delete_btn
-              ${isLoading ?  "text-[gray]" : "text-[red] hover:bg-[#efb3b38a]" }`}
-              disabled={isLoading}
-              onClick={handleDelete}
-            >
-              { isLoading ? "Loading..." : "Yes, Delete It" }
-            </button>
+
+          <button
+            className={`w-full  delete_btn
+              ${isLoading ? "text-[gray]" : "text-[red] hover:bg-[#efb3b38a]"}`}
+            disabled={isLoading}
+            onClick={handleDelete}
+          >
+            {isLoading ? "Loading..." : "Yes, Delete It"}
+          </button>
         </div>
-      </div>  
+      </div>
     </>
   );
 };
 
-export default DeleteCity;
+export default DeleteCollege;

@@ -2,7 +2,6 @@ import React, { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
-
 import dash_img from "../../assets/g2raph.svg";
 import PasswordIcon from "./Svg/PasswordIcon";
 import ProfileIcon from "./Svg/ProfileIcon";
@@ -23,10 +22,13 @@ const Dashboard = () => {
             </p>
             <p className="text-[20px] md:text-[22px] font-semibold leading-tight text-center mt-[30px] md:hidden block">
               Welcome to
-              <br/> Admin Dashboard
+              <br /> Admin Dashboard
             </p>
             <div className="flexCenter gap-x-7 lg:gap-x-5 md:flex-auto flex-wrap gap-y-3 md:justify-end">
-              <Menu as="div" className="relative text-left w-[50px] h-[50px] rounded-[50%] border p-1 flexCenter">
+              <Menu
+                as="div"
+                className="relative text-left w-[50px] h-[50px] rounded-[50%] border p-1 flexCenter"
+              >
                 <div>
                   <Menu.Button className="flexCenter w-full ">
                     <ProfileIcon className="ml-2 h-4 w-4 text-gray-700" />
@@ -45,7 +47,7 @@ const Dashboard = () => {
                 >
                   <Menu.Items className="absolute md:right-4 top-11 w-56 z-[11] mt-2 px-2 py-5 shadow-2xl rounded-lg origin-top-right border border-[#f3f3f3] bg-[white]  side-profile">
                     <div className="p-1 flex flex-col gap-4">
-                    <Menu.Item>
+                      <Menu.Item>
                         <Link
                           to="/edit-email"
                           className="flex gap-x-3 hover:underline text-gray-700 rounded  text-sm group transition-colors items-center"
@@ -83,14 +85,20 @@ const Dashboard = () => {
         <div className="px-[20px] max-h-screen overflow-y-scroll">
           <div className="md:py-[30px] py-[20px] flex justify-center gap-5 ">
             <div className="col-span-1 bg-white px-5 py-4 rounded flex items-center gap-5">
-              <div className="bg-primary h-[50px] w-[50px] flexCenter rounded-[6px]" > <UsersIcon /> </div>
+              <div className="bg-primary h-[50px] w-[50px] flexCenter rounded-[6px]">
+                {" "}
+                <UsersIcon />{" "}
+              </div>
               <div className="">
                 <h6 className="capitalize text-[15px]">Total Users</h6>
                 <h6 className="capitalize text-[16px] font-semibold pt-1">4</h6>
               </div>
             </div>
-           <div className="col-span-1 bg-white px-5 py-4 rounded flex items-center gap-5">
-              <div className="bg-primary h-[50px] w-[50px] flexCenter rounded-[6px]" > <UsersIcon /> </div>
+            <div className="col-span-1 bg-white px-5 py-4 rounded flex items-center gap-5">
+              <div className="bg-primary h-[50px] w-[50px] flexCenter rounded-[6px]">
+                {" "}
+                <UsersIcon />{" "}
+              </div>
               <div className="">
                 <h6 className="capitalize text-[15px]">Total Properties</h6>
                 <h6 className="capitalize text-[16px] font-semibold pt-2">
@@ -100,8 +108,8 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <div>
-            <Report/>
+          <div className="w-full">
+            <Report />
           </div>
         </div>
       </section>

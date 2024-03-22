@@ -1,35 +1,43 @@
-import axios from "axios";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
+import axios from "axios";
 
-const AddCity = ({ closeModal, refreshData, token, states }) => {
-  console.log(states)
-  const [formdata, setFormData] = useState({
-    name: "",
-    stateId: "",
-  });
-// const states = ["MP","UP","HP"]
+const EditState = ({
+  EditId,
+  preValue,
+  closeModal,
+  refreshData,
+  token,
+  editData,
+  states,
+}) => {
   const [isLoading, setLoading] = useState(false);
+  const [formdata, setFormData] = useState(editData);
+  console.log(formdata);
+  console.log(states);
+
+  const [title, setTitle] = useState({
+    id: EditId,
+    title: preValue,
+  });
 
   const inputHandler = (e) => {
-    // console.log(e.target.value )
+    console.log(e.target.value);
     setFormData({ ...formdata, [e.target.name]: e.target.value });
   };
 
-  const addHandler = (e) => {
+  const handleEdit = (e) => {
     e.preventDefault();
     setLoading(true);
+    console.log(formdata);
+
     axios
-      .post(
-        "/api/city/add",
-        formdata,
-        {
-          headers: {
-            Authorization: token,
-            "Content-Type": "application/json",
-          },
-        }
-      )
+      .put(`/api/state/update/${formdata?._id}`, formdata, {
+        headers: {
+          Authorization: token,
+          "Content-Type": "application/json",
+        },
+      })
       .then((res) => {
         if (res.data?.success) {
           setLoading(false);
@@ -48,49 +56,48 @@ const AddCity = ({ closeModal, refreshData, token, states }) => {
         setFormData({
           cityName: "",
           stateName: "",
-        })
+        });
       });
   };
   return (
     <>
       <div className="mt-1">
-        <p className=" xl:text-[20px] text-[18px] font-medium leading-6 text-gray-900">
-          Add new city
-        </p>
+        <p className=" text-[16px] font-normal leading-[30px] text-gray-500 mt-4"></p>
       </div>
 
-      <div className="my-2">
-        <form action="" onSubmit={addHandler}>
+      <div className="mt-2">
+        <form action="" onSubmit={handleEdit}>
           <div>
             <input
               type="text"
               name="name"
-              placeholder="Add city name"
+              placeholder="Add state name"
               required
-              onChange={inputHandler}
               value={formdata?.name}
+              onChange={inputHandler}
               className="py-3 px-3 focus-visible:outline-none border border-[gray] my-3 rounded w-full"
             />
           </div>
-          <div>
-            {/* <label htmlFor="stateSelect">Select a state:</label> */}
+          {/* <div>
             <select
               id="stateSelect"
               name="stateId"
               value={formdata?.stateId}
-              required
               onChange={inputHandler}
               className="py-3 px-3 focus-visible:outline-none border border-[gray] my-3 rounded w-full bg:white"
             >
-              <option value="" >Select a state</option>
+              <option value="" disabled>
+                Select a state
+              </option>
               {states.map((state, index) => (
                 <option key={index} value={state?._id}>
                   {state?.name}
                 </option>
               ))}
             </select>
-          </div>
-          <div className="flex md:flex-row flex-col gap-3 mt-4 mb-2 justify-between gap-x-5">
+          </div> */}
+
+          <div className="flex md:flex-row flex-col gap-3 justify-between gap-x-5">
             <button
               type="button"
               className="w-full secondary_btn"
@@ -114,4 +121,4 @@ const AddCity = ({ closeModal, refreshData, token, states }) => {
   );
 };
 
-export default AddCity;
+export default EditState;
