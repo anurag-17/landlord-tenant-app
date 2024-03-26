@@ -147,7 +147,7 @@ const State = () => {
       });
   };
 
-  const getAllStates = (pageNo) => {
+  const getAllStates = () => {
     setIsLoader(true);
     const options = {
       method: "GET",
