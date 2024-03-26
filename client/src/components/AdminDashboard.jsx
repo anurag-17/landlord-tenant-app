@@ -7,7 +7,7 @@ import axios from "axios";
 import { sideMenus } from "../config/data";
 import { removeToken, setUserDetails } from "../redux/action/authAction";
 import CloseIcon from "./admin-pages/Svg/CloseIcon";
-import dash from '../assets/dashlogo.png';
+import dash from "../assets/dashlogo.png";
 
 const AdminDashboard = () => {
   const dispatch = useDispatch();
@@ -50,7 +50,7 @@ const AdminDashboard = () => {
   };
 
   return (
-    <section className="max-h-[100vh] overflow-hidden">
+    <section className="max-h-[100vh] ">
       <div className="flex  relative lg:static">
         <div
           className="py-2 px-3  absolute top-4 left-2 flex flex-col gap-[5px] cursor-pointer lg:hidden"
@@ -62,15 +62,16 @@ const AdminDashboard = () => {
         </div>
 
         <div
-          className={` w-[300px] md:h-auto h-full z-[11] bg-theme-color text-white xl:py-[40px] xl:pt-[40px] xl:pb-[400px] px-[10px] py-[10px] transition-all duration-1000 delay-100 ease-linear
+          className={`w-[300px] md:h-auto z-[11] bg-theme-color text-white xl:py-[40px] xl:pt-[40px] xl:pb-[400px] px-[10px] py-[10px] transition-all duration-1000 delay-100 ease-linear 
                  ${
                    showDrawer
-                     ? "block  absolute top-0 left-0 min-h-screen is-show"
+                     ? "block absolute top-0 left-0 min-h-screen is-show"
                      : "hidden lg:block"
                  }`}
+          style={{ overflowY: "scroll", maxHeight: "calc(100vh)" }}
         >
           <div
-            className=" relative text-white  flex flex-col gap-[5px] cursor-pointer lg:hidden  text-right mr-3 mt-2"
+            className="relative text-white flex flex-col gap-[5px] cursor-pointer lg:hidden text-right mr-3 mt-2"
             onClick={() => setShowDrawer(false)}
           >
             <div className="">
@@ -80,10 +81,14 @@ const AdminDashboard = () => {
           </div>
           <div className="">
             <div className="flex justify-center items-center">
-             <img className="py-3 w-32 cursor-pointer"  src={dash} alt="dashboard logo"/>
+              <img
+                className="py-3 w-32 cursor-pointer"
+                src={dash}
+                alt="dashboard logo"
+              />
             </div>
             <div className="bg-white h-[1px] w-[70%] mx-auto"></div>
-            <div className="flex flex-col 2xl:gap-6 gap-5 pt-[60px]">
+            <div className="flex flex-col 2xl:gap-6 gap-5 pt-[60px] ">
               {sideMenus.map((item, index) => (
                 <div
                   key={index}
@@ -96,23 +101,24 @@ const AdminDashboard = () => {
                   onClick={() => handleClick(item.id, item.url)}
                 >
                   {/* {item?.icon} */}
-                  <p className="j capitalize whitespace-nowrap ">{item.label}</p>
+                  <p className="j capitalize whitespace-nowrap ">
+                    {item.label}
+                  </p>
                 </div>
               ))}
             </div>
-          <div
-            className={` py-3 mx-3  rounded justify-center text-center cursor-pointer my-5 flex items-center transition-colors dash-menu gap-x-3  medium-16 hover:bg-theme-secondary hover:text-primary hover:rounded-md  bg-[#0f2439] }`}
-            onClick={handleSignout}
-          >
-            {/* <LogoutIcon /> */}
+            <div
+              className={`py-3 mx-3  rounded justify-center text-center cursor-pointer my-5 flex items-center transition-colors dash-menu gap-x-3  medium-16 hover:bg-theme-secondary hover:text-primary hover:rounded-md  bg-[#0f2439] }`}
+              onClick={handleSignout}
+            >
+              {/* <LogoutIcon /> */}
               <p className="">Sign Out</p>
-            
-          </div>
+            </div>
             {/* <div className="bg-white h-[1px] w-[70%] mx-auto mt-[100px]"></div> */}
           </div>
-
         </div>
-        <div className="overflow-y-scroll h-[100vh] bg-[#f3f3f3] w-full">
+
+        <div className="overflow-y-scroll h-[100vh] bg-[#f3f3f3] w-full ">
           {sideMenus.map((item, index) => (
             <Fragment key={index}>
               {ComponentId === item.id && item.component}

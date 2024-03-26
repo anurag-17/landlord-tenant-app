@@ -2,17 +2,15 @@ import axios from "axios";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 
-const AddCity = ({ closeModal, refreshData, token, states }) => {
-  console.log(states)
+const AddState = ({ closeModal, refreshData, token, states }) => {
+  console.log(states);
   const [formdata, setFormData] = useState({
     name: "",
     stateId: "",
   });
-// const states = ["MP","UP","HP"]
   const [isLoading, setLoading] = useState(false);
 
   const inputHandler = (e) => {
-    // console.log(e.target.value )
     setFormData({ ...formdata, [e.target.name]: e.target.value });
   };
 
@@ -20,16 +18,12 @@ const AddCity = ({ closeModal, refreshData, token, states }) => {
     e.preventDefault();
     setLoading(true);
     axios
-      .post(
-        "/api/city/add",
-        formdata,
-        {
-          headers: {
-            Authorization: token,
-            "Content-Type": "application/json",
-          },
-        }
-      )
+      .post("/api/state/add", formdata, {
+        headers: {
+          Authorization: token,
+          "Content-Type": "application/json",
+        },
+      })
       .then((res) => {
         if (res.data?.success) {
           setLoading(false);
@@ -46,16 +40,15 @@ const AddCity = ({ closeModal, refreshData, token, states }) => {
         console.error(error);
         toast.error("Server error!");
         setFormData({
-          cityName: "",
-          stateName: "",
-        })
+          name: "",
+        });
       });
   };
   return (
     <>
       <div className="mt-1">
         <p className=" xl:text-[20px] text-[18px] font-medium leading-6 text-gray-900">
-          Add new city
+          Add new State
         </p>
       </div>
 
@@ -65,15 +58,15 @@ const AddCity = ({ closeModal, refreshData, token, states }) => {
             <input
               type="text"
               name="name"
-              placeholder="Add city name"
+              placeholder="Add State name"
               required
               onChange={inputHandler}
               value={formdata?.name}
               className="py-3 px-3 focus-visible:outline-none border border-[gray] my-3 rounded w-full"
             />
           </div>
-          <div>
-            {/* <label htmlFor="stateSelect">Select a state:</label> */}
+          {/* <div>
+            <label htmlFor="stateSelect">Select a state:</label>
             <select
               id="stateSelect"
               name="stateId"
@@ -89,7 +82,7 @@ const AddCity = ({ closeModal, refreshData, token, states }) => {
                 </option>
               ))}
             </select>
-          </div>
+          </div> */}
           <div className="flex md:flex-row flex-col gap-3 mt-4 mb-2 justify-between gap-x-5">
             <button
               type="button"
@@ -114,4 +107,4 @@ const AddCity = ({ closeModal, refreshData, token, states }) => {
   );
 };
 
-export default AddCity;
+export default AddState;
