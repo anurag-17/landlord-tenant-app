@@ -137,7 +137,7 @@ const College = () => {
         if (res?.data?.success) {
           setIsLoader(false);
           setAllData(res?.data);
-          console.log(res?.data,"count")
+          console.log(res?.data, "count");
         } else {
           setIsLoader(false);
           return;
@@ -179,7 +179,7 @@ const College = () => {
   };
   useEffect(() => {
     getAllData(1);
-      getAllCity();
+    getAllCity();
   }, [isRefresh]);
 
   return (
@@ -283,7 +283,8 @@ const College = () => {
               currentpage={allData?.currentPage}
               totalCount={allData?.totalPages}
               visiblePageCount={visiblePageCount}
-              getallData={allData}
+              getAllData={getAllData}
+
             />
           )}
         </div>

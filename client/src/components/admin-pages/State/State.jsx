@@ -19,11 +19,11 @@ const State = () => {
   const [states, setStates] = useState([]);
   const [Id, setId] = useState(null);
   const [searchText, setSearchText] = useState("");
-  const visiblePageCount = 10;
   const [editData, setEditData] = useState([]);
   const [openAdd, setOpenAdd] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
+  const visiblePageCount = 10;
 
   const refreshdata = () => {
     setRefresh(!isRefresh);
@@ -63,26 +63,6 @@ const State = () => {
   const handleClearSearch = () => {
     refreshdata();
     setSearchText("");
-  };
-
-  useEffect(() => {
-    defaultState();
-  }, []);
-
-  const defaultState = (pageNo) => {
-    const option = {
-      method: "GET",
-      url: `/api/state/getAll?page=${pageNo}&limit=${visiblePageCount}`,
-    };
-    axios
-      .request(option)
-      .then((response) => {
-        setAllData(response?.data?.states);
-        console.log(response?.data?.states, "State");
-      })
-      .catch((error) => {
-        console.log(error, "Error");
-      });
   };
 
   const searchDataFunc = (search_cate) => {
@@ -147,7 +127,6 @@ const State = () => {
         Authorization: token,
         "Content-Type": "application/json",
       },
-
     };
     axios
       .request(options)
@@ -156,7 +135,7 @@ const State = () => {
         if (res?.data?.success) {
           setIsLoader(false);
           setAllData(res?.data);
-          console.log(res.data,"nnn")
+          console.log(res.data, "nnn");
         } else {
           setIsLoader(false);
           return;
@@ -168,7 +147,7 @@ const State = () => {
       });
   };
 
-  const getAllStates = (pageNo) => {
+  const getAllStates = () => {
     setIsLoader(true);
     const options = {
       method: "GET",
@@ -185,7 +164,7 @@ const State = () => {
         // return;
         if (res?.data?.success) {
           setIsLoader(false);
-          setAllData(res?.data?.states);
+          setStates(res?.data?.states);
         } else {
           setIsLoader(false);
           return;
@@ -199,7 +178,7 @@ const State = () => {
 
   useEffect(() => {
     getAllData(1);
-    getAllStates();
+    // getAllStates();
   }, [isRefresh]);
 
   return (
@@ -207,7 +186,7 @@ const State = () => {
       <section className="w-full">
         <div className=" mx-auto">
           <div className="rounded-[10px] bg-white py-[20px] flexBetween flex-col md:flex-row gap-3 px-[20px] mt-[20px] lg:mt-0">
-            <p className=" text-[22px] font-semibold">Stete list</p>
+            <p className=" text-[22px] font-semibold">State list</p>
             <div className="flexCenter gap-x-7 lg:gap-x-5 md:flex-auto flex-wrap gap-y-3">
               <div className="border border-primary  bg-[#302f2f82]] flexCenter h-[32px] pl-[10px] md:w-auto w-full">
                 <input
@@ -257,9 +236,9 @@ const State = () => {
                 </thead>
 
                 <tbody>
-                  {Array.isArray(getAll) &&
-                    getAll?.length > 0 &&
-                    getAll?.map((items, index) => (
+                  {Array.isArray(getAll?.states) &&
+                    getAll?.states.length > 0 &&
+                    getAll?.states.map((items, index) => (
                       <tr key={index}>
                         <td className="table_data">
                           {(getAll?.currentPage - 1) * 10 + (index + 1)}
@@ -287,7 +266,7 @@ const State = () => {
                 </tbody>
               </table>
             </div>
-            {Array.isArray(getAll?.data) && getAll?.data?.length === 0 && (
+            {Array.isArray(getAll?.states) && getAll?.states?.length === 0 && (
               <div className="no_data">
                 <p className="text-[18px] fontsemibold">No data</p>
               </div>
@@ -297,9 +276,9 @@ const State = () => {
           {getAll?.totalPages > 1 && (
             <Pagination
               currentPage={getAll?.currentPage}
-              totalCount={getAll?.totalPages}
+              totalPages={getAll?.totalPages}
               visiblePageCount={visiblePageCount}
-              getgetAll={getAll}
+              getAllData={getAllData}
             />
           )}
         </div>
