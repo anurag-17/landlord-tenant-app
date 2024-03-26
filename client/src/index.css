@@ -216,6 +216,6 @@ body {
   position:relative !important;
 } */
 
-.recharts-rectangle{
-  width: 30px !important;
+.recharts-default-legend{
+  margin-bottom: 0px !important;
 }

@@ -284,7 +284,6 @@ const College = () => {
               totalCount={allData?.totalPages}
               visiblePageCount={visiblePageCount}
               getAllData={getAllData}
-
             />
           )}
         </div>
