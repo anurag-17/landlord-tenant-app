@@ -41,7 +41,7 @@ const Report = () => {
 
   const [fullData, setFullData] = useState([]);
   const { token } = useSelector((state) => state?.auth);
-  const [isDate, setIsDate] = useState(true)
+  const [isDate, setIsDate] = useState(true);
   const reportRef = useRef();
   // console.log(previewData);
   const refreshdata = () => {
@@ -115,7 +115,7 @@ const Report = () => {
   console.log(allData);
 
   const generatePDF = async () => {
-    setIsDate(false)
+    setIsDate(false);
     const element = document.getElementById("html-element");
     const pageBreakElements = element.getElementsByClassName("page-break");
     const pageBreakCount = pageBreakElements.length;
@@ -142,7 +142,7 @@ const Report = () => {
     // // Now you have the base64 encoded PDF
     // console.log(base64PDF);
     setTimeout(() => {
-      setIsDate(true) 
+      setIsDate(true);
     });
   };
   return (
@@ -161,7 +161,7 @@ const Report = () => {
           <div className="mt-10 ">
             <div className=" items-center">
               <div className="bg-white border p-4 rounded-lg">
-              <p className="flex justify-center pt-3">
+                <p className="flex justify-center pt-3">
                   Tanent Without Property VS Total Property
                 </p>
                 <BarChart width={300} height={300} data={allData}>
@@ -170,15 +170,14 @@ const Report = () => {
                   <YAxis />
                   <Tooltip />
                   {/* <Legend /> */}
-                  <Bar dataKey="value" fill="#8884d8" />
+                  <Bar dataKey="value" fill="#8884d8" width={100} />
                 </BarChart>
-               
               </div>
               <div className="bg-white border p-4 rounded-lg my-5">
-              <p className="flex justify-center pt-3">
+                <p className="flex justify-center pt-3">
                   Distribution of attributes
                 </p>
-                <PieChart className="mx-auto" width={800} height={300}>
+                <PieChart className="mx-auto" width={600} height={300}>
                   <Legend />
                   <Pie
                     dataKey="value"
@@ -200,13 +199,12 @@ const Report = () => {
 
                   <Tooltip />
                 </PieChart>
-               
               </div>
             </div>
-            <hr className="my-4 border border-gray-300" />
+            <hr className=" border border-gray-300" />
             <div className="">
-              <div className="bg-white border p-4 rounded-lg h-[400px] my-5 ">
-              <p className="flex justify-center pt-3">Gender Makeup</p>
+              <div className="bg-white border p-4 rounded-lg h-[400px] my-3 ">
+                <p className="flex justify-center pt-3">Gender Makeup</p>
 
                 <PieChart className="mx-auto" width={800} height={300}>
                   <Pie
@@ -231,10 +229,10 @@ const Report = () => {
                 </PieChart>
               </div>
               <div className="bg-white  border p-4 rounded-lg ">
-              <p className="flex justify-center pt-3">
+                <p className="flex justify-center pt-3">
                   City specific attribute makeup
                 </p>
-                <PieChart className="mx-auto" width={800} height={350}>
+                <PieChart className="mx-auto" width={600} height={350}>
                   <Pie
                     dataKey="value"
                     isAnimationActive={true}
@@ -244,7 +242,6 @@ const Report = () => {
                     outerRadius={70}
                     fill="#8884d8"
                     label
-                   
                   >
                     {prefData.map((entry, index) => (
                       <Cell
@@ -256,29 +253,29 @@ const Report = () => {
                   <Legend />
                   <Tooltip />
                 </PieChart>
-              
               </div>
             </div>
 
             <div className="m-3 mt-7 border p-3 bg-white mb-20">
-            <div className="flex justify-end mx-10">
-           
-            <div className="border rounded p-1 ">
-               {
-                isDate? <div>
-                  <input
-                  className="text-gray-400"
-                    type="date"
-                    name=""
-                    id=""
-                    onChange={(e) => {
-                      getAllData(e.target.value);
-                    }}
-                  />
-                </div>:""
-               }
-               </div>
-               </div>
+              <div className="flex justify-end mx-10">
+                <div className="border rounded p-1 ">
+                  {isDate ? (
+                    <div>
+                      <input
+                        className="text-gray-400"
+                        type="date"
+                        name=""
+                        id=""
+                        onChange={(e) => {
+                          getAllData(e.target.value);
+                        }}
+                      />
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                </div>
+              </div>
               <div className=" flex justify-center">
                 <table className="table-auto mt-[20px] border-collapse  border">
                   <thead className="border">
