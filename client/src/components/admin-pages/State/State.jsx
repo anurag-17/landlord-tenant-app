@@ -79,7 +79,7 @@ const State = () => {
       .then((response) => {
         console.log(response?.data);
         if (response.status === 200) {
-          setAllData(response?.data?.states);
+          setAllData(response?.data);
         } else {
           return;
         }
@@ -178,7 +178,7 @@ const State = () => {
 
   useEffect(() => {
     getAllData(1);
-    getAllStates();
+    // getAllStates();
   }, [isRefresh]);
 
   return (
@@ -186,7 +186,7 @@ const State = () => {
       <section className="w-full">
         <div className=" mx-auto">
           <div className="rounded-[10px] bg-white py-[20px] flexBetween flex-col md:flex-row gap-3 px-[20px] mt-[20px] lg:mt-0">
-            <p className=" text-[22px] font-semibold">Stete list</p>
+            <p className=" text-[22px] font-semibold">State list</p>
             <div className="flexCenter gap-x-7 lg:gap-x-5 md:flex-auto flex-wrap gap-y-3">
               <div className="border border-primary  bg-[#302f2f82]] flexCenter h-[32px] pl-[10px] md:w-auto w-full">
                 <input
@@ -236,9 +236,9 @@ const State = () => {
                 </thead>
 
                 <tbody>
-                  {Array.isArray(getAll) &&
-                    getAll?.length > 0 &&
-                    getAll?.map((items, index) => (
+                  {Array.isArray(getAll?.states) &&
+                    getAll?.states.length > 0 &&
+                    getAll?.states.map((items, index) => (
                       <tr key={index}>
                         <td className="table_data">
                           {(getAll?.currentPage - 1) * 10 + (index + 1)}
@@ -266,7 +266,7 @@ const State = () => {
                 </tbody>
               </table>
             </div>
-            {Array.isArray(getAll?.data) && getAll?.data?.length === 0 && (
+            {Array.isArray(getAll?.states) && getAll?.states?.length === 0 && (
               <div className="no_data">
                 <p className="text-[18px] fontsemibold">No data</p>
               </div>
@@ -278,7 +278,7 @@ const State = () => {
               currentPage={getAll?.currentPage}
               totalPages={getAll?.totalPages}
               visiblePageCount={visiblePageCount}
-              getAllData={getAll}
+              getAllData={getAllData}
             />
           )}
         </div>
