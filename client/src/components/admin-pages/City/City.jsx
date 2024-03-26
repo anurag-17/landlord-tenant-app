@@ -186,7 +186,7 @@ const City = () => {
 
   useEffect(() => {
     getAllData(1);
-    getAllStates();
+    // getAllStates();
   }, [isRefresh]);
 
   return (
