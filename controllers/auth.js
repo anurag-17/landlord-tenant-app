@@ -8,6 +8,9 @@ const jwt = require("jsonwebtoken");
 const uploadOnS3 = require("../utils/uploadImage");
 const Property = require("../models/Property");
 const Preference = require("../models/Preferences");
+const College = require("../models/College");
+const State = require("../models/State");
+const City = require("../models/City");
 const CsvParser = require("json2csv").Parser;
 
 exports.uploadImage = async (req, res, next) => {
@@ -562,7 +565,19 @@ exports.getaUser = async (req, res) => {
     if (!getaUser) {
       return res.status(404).json({ success: false, error: "User not found" });
     }
-    return res.status(200).json({ success: true, getaUser });
+    let universityData = null
+    let stateData =  null
+    let cityData = null
+    if (getaUser.university) {
+      universityData = await College.findById(getaUser.university)
+    }
+  if (getaUser.provinces) {
+    stateData =  await State.findById(getaUser.provinces)
+  }
+   if (getaUser.city) {
+    cityData = await City.findById(getaUser.city)
+   }
+    return res.status(200).json({ success: true, getaUser, universityData, stateData,cityData});
   } catch (error) {
     throw new Error(error);
   }

@@ -213,7 +213,7 @@ exports.searchProperties = async (req, res) => {
         // Assuming 'provinces' is an array of IDs
         propertyFilter.provinces = new mongoose.Types.ObjectId(provinces)
     }
-    if (userId) filter.userId = { $regex: new RegExp(userId), $options: "i" };
+    if (userId) filter.userId = new mongoose.Types.ObjectId(userId);
     // if (city) filter.city = { $regex: new RegExp(city), $options: "i" };
     if (address)
       filter.address = { $regex: new RegExp(address), $options: "i" };
