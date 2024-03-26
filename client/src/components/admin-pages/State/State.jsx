@@ -19,11 +19,11 @@ const State = () => {
   const [states, setStates] = useState([]);
   const [Id, setId] = useState(null);
   const [searchText, setSearchText] = useState("");
-  const visiblePageCount = 10;
   const [editData, setEditData] = useState([]);
   const [openAdd, setOpenAdd] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
+  const visiblePageCount = 10;
 
   const refreshdata = () => {
     setRefresh(!isRefresh);
@@ -65,26 +65,6 @@ const State = () => {
     setSearchText("");
   };
 
-  useEffect(() => {
-    defaultState();
-  }, []);
-
-  const defaultState = (pageNo) => {
-    const option = {
-      method: "GET",
-      url: `/api/state/getAll?page=${pageNo}&limit=${visiblePageCount}`,
-    };
-    axios
-      .request(option)
-      .then((response) => {
-        setAllData(response?.data?.states);
-        console.log(response?.data?.states, "State");
-      })
-      .catch((error) => {
-        console.log(error, "Error");
-      });
-  };
-
   const searchDataFunc = (search_cate) => {
     const options = {
       method: "GET",
@@ -99,7 +79,7 @@ const State = () => {
       .then((response) => {
         console.log(response?.data);
         if (response.status === 200) {
-          setAllData(response?.data);
+          setAllData(response?.data?.states);
         } else {
           return;
         }
@@ -147,7 +127,6 @@ const State = () => {
         Authorization: token,
         "Content-Type": "application/json",
       },
-
     };
     axios
       .request(options)
@@ -156,7 +135,7 @@ const State = () => {
         if (res?.data?.success) {
           setIsLoader(false);
           setAllData(res?.data);
-          console.log(res.data,"nnn")
+          console.log(res.data, "nnn");
         } else {
           setIsLoader(false);
           return;
@@ -297,9 +276,9 @@ const State = () => {
           {getAll?.totalPages > 1 && (
             <Pagination
               currentPage={getAll?.currentPage}
-              totalCount={getAll?.totalPages}
+              totalPages={getAll?.totalPages}
               visiblePageCount={visiblePageCount}
-              getgetAll={getAll}
+              getAllData={getAll}
             />
           )}
         </div>
