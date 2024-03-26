@@ -164,7 +164,7 @@ const State = () => {
         // return;
         if (res?.data?.success) {
           setIsLoader(false);
-          setAllData(res?.data?.states);
+          setStates(res?.data?.states);
         } else {
           setIsLoader(false);
           return;

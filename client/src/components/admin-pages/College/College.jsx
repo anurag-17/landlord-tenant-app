@@ -283,7 +283,8 @@ const College = () => {
               currentpage={allData?.currentPage}
               totalCount={allData?.totalPages}
               visiblePageCount={visiblePageCount}
-              getallData={getAllData}
+              getAllData={getAllData}
+
             />
           )}
         </div>

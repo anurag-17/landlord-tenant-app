@@ -2,7 +2,6 @@ import React, { Fragment, useState, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { useSelector } from "react-redux";
 import axios from "axios";
-
 // import DeleteUser from "./DeleteUser";
 import CloseIcon from "../Svg/CloseIcon";
 import Pagination from "../../pagination/Pagination";
