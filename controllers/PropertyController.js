@@ -348,14 +348,14 @@ exports.filterProperties = async (req, res) => {
         // console.log("akkkk", property.location);
         if (
           property.location &&
-          property.location[0].latitude &&
-          property.location[0].longitude
+          property.location[0].lat &&
+          property.location[0].long
         ) {
           const distance = calculateDistance(
             userLocation.latitude,
             userLocation.longitude,
-            property.location[0].latitude,
-            property.location[0].longitude
+            property.location[0].lat,
+            property.location[0].long
           );
           // console.log(distance <= (reqDistance || 10));
           return distance <= (reqDistance || 10);
