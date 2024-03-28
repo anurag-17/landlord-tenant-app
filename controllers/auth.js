@@ -100,7 +100,7 @@ exports.register = async (req, res, next) => {
 
 exports.login = async (req, res, next) => {
   const { email, password } = req.body;
-
+   console.log("llogin",req.body);
   if (!email || !password) {
     return res
       .status(400)
@@ -112,8 +112,7 @@ exports.login = async (req, res, next) => {
       .select("+password")
       .populate("wishlist")
       .populate("preference");
-      console.log(findUser);
-
+    
     if (
       findUser &&
       !findUser.isBlocked &&
