@@ -79,7 +79,6 @@ const Report = () => {
             value: count,
           })
         );
-
         setPrefData(transformedPrefData);
         const transformedGenderData = res?.data?.genderCounts?.map(
           ({ _id, count }) => ({
@@ -161,7 +160,7 @@ const Report = () => {
           <div className="mt-10 ">
             <div className=" items-center">
               <div className="bg-white border p-4 rounded-lg">
-                <p className="flex justify-center pt-3">
+                <p className="flex justify-center pt-3 my-2">
                   Tanent Without Property VS Total Property
                 </p>
                 <BarChart width={300} height={300} data={allData}>
@@ -170,10 +169,10 @@ const Report = () => {
                   <YAxis />
                   <Tooltip />
                   {/* <Legend /> */}
-                  <Bar dataKey="value" fill="#8884d8" width={100} />
+                  <Bar dataKey="value" fill="#8884d8" width={10} />
                 </BarChart>
               </div>
-              <div className="bg-white border p-4 rounded-lg my-5">
+              <div className="bg-white border p-4 rounded-lg ">
                 <p className="flex justify-center pt-3">
                   Distribution of attributes
                 </p>
@@ -206,13 +205,13 @@ const Report = () => {
               <div className="bg-white border p-4 rounded-lg h-[400px] my-3 ">
                 <p className="flex justify-center pt-3">Gender Makeup</p>
 
-                <PieChart className="mx-auto" width={800} height={300}>
+                <PieChart className="mx-auto" width={400} height={300}>
                   <Pie
                     dataKey="value"
                     isAnimationActive={true}
                     data={pieGender}
                     cx="50%"
-                    cy="50%"
+                    cy="40%"
                     outerRadius={70}
                     fill="#8884d8"
                     label

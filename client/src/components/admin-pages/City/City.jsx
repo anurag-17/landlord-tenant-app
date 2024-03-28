@@ -141,7 +141,6 @@ const City = () => {
           setIsLoader(false);
           setAllData(res?.data);
           console.log(res?.data, "mmm");
-
         } else {
           setIsLoader(false);
           return;
@@ -253,7 +252,9 @@ const City = () => {
                           {(allData?.currentPage - 1) * 10 + (index + 1)}
                         </td>
                         <td className="table_data capitalize">{items?.name}</td>
-                        <td className="table_data capitalize">{items?.stateId?.name}</td>
+                        <td className="table_data capitalize">
+                          {items?.stateId?.name}
+                        </td>
                         <td className="table_data">
                           <div className="table_btn_div">
                             <button
@@ -429,7 +430,7 @@ const City = () => {
                     Delete user
                   </Dialog.Title>
                   <DeleteCity
-                   closeModal={closeDeleteModal}
+                    closeModal={closeDeleteModal}
                     refreshData={refreshdata}
                     deleteId={Id}
                     token={token}
