@@ -374,10 +374,16 @@ exports.filterProperties = async (req, res) => {
     const endIndex = Math.min(startIndex + pageSize, totalProperties);
 
     const paginatedProperties = properties.slice(startIndex, endIndex);
-
+    // Adding wishlist status to each paginated property
+    const updatedPaginatedProperties = paginatedProperties.map((property) => {
+      const wishlistStatus = property.wishlist.some((userId) =>
+        userId.equals(req.user._id)
+      );
+      return { ...property.toJSON(), wishlistStatus }; // Converting mongoose document to JSON and adding the new key
+    });
     return res.status(200).json({
       success: true,
-      properties: paginatedProperties,
+      properties: updatedPaginatedProperties,
       page,
       totalPages,
       totalProperties,
@@ -401,7 +407,7 @@ exports.addToWishlist = async (req, res) => {
     if (alreadyadded) {
       // Remove the product from the wishlist
       user.wishlist = user.wishlist.filter((id) => id.toString() !== prodId);
-      console.log(property.wishlist,_id);
+      console.log(property.wishlist, _id);
       property.wishlist = property.wishlist.filter(
         (id) => id?.toString() !== _id?.toString()
       );
@@ -486,7 +492,6 @@ exports.deleteAllWishlistItems = async (req, res) => {
     });
   }
 };
-
 
 exports.propertyData = async (req, res) => {
   try {
