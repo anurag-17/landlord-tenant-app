@@ -558,8 +558,8 @@ exports.getaUser = async (req, res) => {
 
   try {
     const getaUser = await User.findById(_id)
+      .populate("preference")
       .populate("wishlist")
-      .populate("preference");
 
     if (!getaUser) {
       return res.status(404).json({ success: false, error: "User not found" });
