@@ -210,8 +210,8 @@ exports.searchProperties = async (req, res) => {
     if (city) propertyFilter.city = new mongoose.Types.ObjectId(city);
     if (state) propertyFilter.state = new mongoose.Types.ObjectId(state);
     if (provinces) {
-        // Assuming 'provinces' is an array of IDs
-        propertyFilter.provinces = new mongoose.Types.ObjectId(provinces)
+      // Assuming 'provinces' is an array of IDs
+      propertyFilter.provinces = new mongoose.Types.ObjectId(provinces);
     }
     if (userId) filter.userId = new mongoose.Types.ObjectId(userId);
     // if (city) filter.city = { $regex: new RegExp(city), $options: "i" };
@@ -284,7 +284,7 @@ exports.filterProperties = async (req, res) => {
   try {
     const {
       otherPreferences, //array
-      userLocation,  //userLocation:{latitude:73.44,longitude:55.222}
+      userLocation, //userLocation:{latitude:73.44,longitude:55.222}
       city,
       address,
       state,
@@ -293,7 +293,7 @@ exports.filterProperties = async (req, res) => {
       title,
       provinces,
       price, //{minPrice:10, maxPrice:12}
-      reqDistance //number,
+      reqDistance, //number,
     } = req.body;
     const searchQuery = req.query.search;
 
@@ -311,12 +311,13 @@ exports.filterProperties = async (req, res) => {
     // if (state) propertyFilter.state = { $regex: new RegExp(state), $options: "i" };
     if (country)
       propertyFilter.country = { $regex: new RegExp(country), $options: "i" };
-    if (title) propertyFilter.title = { $regex: new RegExp(title), $options: "i" };
-      if (city) propertyFilter.city = new mongoose.Types.ObjectId(city);
-      if (state) propertyFilter.state = new mongoose.Types.ObjectId(state);
-      if (provinces) {
-        // Assuming 'provinces' is an array of IDs
-        propertyFilter.provinces = new mongoose.Types.ObjectId(provinces)
+    if (title)
+      propertyFilter.title = { $regex: new RegExp(title), $options: "i" };
+    if (city) propertyFilter.city = new mongoose.Types.ObjectId(city);
+    if (state) propertyFilter.state = new mongoose.Types.ObjectId(state);
+    if (provinces) {
+      // Assuming 'provinces' is an array of IDs
+      propertyFilter.provinces = new mongoose.Types.ObjectId(provinces);
     }
     if (price) {
       const [minPrice, maxPrice] = price.split("-").map(Number);
@@ -340,7 +341,7 @@ exports.filterProperties = async (req, res) => {
       .populate("userId")
       .populate("state")
       .populate("provinces")
-      .populate("city")
+      .populate("city");
 
     if (userLocation && userLocation.latitude && userLocation.longitude) {
       // console.log("dasdas",userLocation);
@@ -395,11 +396,17 @@ exports.addToWishlist = async (req, res) => {
   const { _id } = req.user._id;
   try {
     const user = await User.findById(_id);
+    const property = await Property.findById(prodId);
     const alreadyadded = user.wishlist.find((id) => id.toString() === prodId);
     if (alreadyadded) {
       // Remove the product from the wishlist
       user.wishlist = user.wishlist.filter((id) => id.toString() !== prodId);
+      console.log(property.wishlist,_id);
+      property.wishlist = property.wishlist.filter(
+        (id) => id?.toString() !== _id?.toString()
+      );
       await user.save();
+      await property.save();
       res.json({
         success: true,
         message: "Product removed from wishlist",
@@ -409,7 +416,9 @@ exports.addToWishlist = async (req, res) => {
     } else {
       // Add the product to the wishlist
       user.wishlist.push(prodId);
+      property.wishlist.push(_id);
       await user.save();
+      await property.save();
       res.json({
         success: true,
         message: "Product added to wishlist",
@@ -419,42 +428,65 @@ exports.addToWishlist = async (req, res) => {
     }
   } catch (error) {
     console.error(error);
-    res
-      .status(500)
-      .json({
-        success: false,
-        error: "An error occurred while updating the wishlist",
-      });
+    res.status(500).json({
+      success: false,
+      error: "An error occurred while updating the wishlist",
+    });
   }
 };
+// exports.deleteAllWishlistItems = async (req, res) => {
+//   const { _id } = req.user._id;
+
+//   try {
+//     // Find the user by ID
+//     const user = await User.findById(_id);
+
+//     if (!user) {
+//       return res.status(404).json({ success: false, error: "User not found" });
+//     }
+
+//     // Clear the user's wishlist by setting it to an empty array
+//     user.wishlist = [];
+
+//     // Save the user to update the wishlist
+//     await user.save();
+
+//     res.json({ success: true, message: "All wishlist items deleted" });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({
+//       success: false,
+//       error: "An error occurred while deleting wishlist items",
+//     });
+//   }
+// };
 exports.deleteAllWishlistItems = async (req, res) => {
-  const { _id } = req.user._id;
+  const userId = req.user._id; // Extract user ID
 
   try {
-    // Find the user by ID
-    const user = await User.findById(_id);
+    // Update user's wishlist and remove user ID from property's wishlist in a single database operation
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: userId },
+      { $set: { wishlist: [] } }, // Set wishlist to empty array
+      { new: true } // Return updated document
+    );
 
-    if (!user) {
-      return res.status(404).json({ success: false, error: "User not found" });
-    }
-
-    // Clear the user's wishlist by setting it to an empty array
-    user.wishlist = [];
-
-    // Save the user to update the wishlist
-    await user.save();
+    // Remove user ID from property's wishlist
+    await Property.updateMany(
+      { wishlist: userId },
+      { $pull: { wishlist: userId } }
+    );
 
     res.json({ success: true, message: "All wishlist items deleted" });
   } catch (error) {
     console.error(error);
-    res
-      .status(500)
-      .json({
-        success: false,
-        error: "An error occurred while deleting wishlist items",
-      });
+    res.status(500).json({
+      success: false,
+      error: "An error occurred while deleting wishlist items",
+    });
   }
 };
+
 
 exports.propertyData = async (req, res) => {
   try {
@@ -463,18 +495,81 @@ exports.propertyData = async (req, res) => {
     var invitationData = await Property.find({});
 
     invitationData.forEach((user) => {
-      const { userId, availabilityDate, title, area, description, BedRoom, BathRoom, furnishedType, listingType, location, price, priceRecur, collegeName, address, city, state, country, pincode,totalrating} = user;
-      users.push({ userId, availabilityDate, title, area, description, BedRoom, BathRoom, furnishedType, listingType, location, price, priceRecur, collegeName, address, city, state, country, pincode,totalrating});
+      const {
+        userId,
+        availabilityDate,
+        title,
+        area,
+        description,
+        BedRoom,
+        BathRoom,
+        furnishedType,
+        listingType,
+        location,
+        price,
+        priceRecur,
+        collegeName,
+        address,
+        city,
+        state,
+        country,
+        pincode,
+        totalrating,
+      } = user;
+      users.push({
+        userId,
+        availabilityDate,
+        title,
+        area,
+        description,
+        BedRoom,
+        BathRoom,
+        furnishedType,
+        listingType,
+        location,
+        price,
+        priceRecur,
+        collegeName,
+        address,
+        city,
+        state,
+        country,
+        pincode,
+        totalrating,
+      });
     });
-    const fields = [ "userId", "availabilityDate", "title", "area", "description", "BedRoom", "BathRoom", "furnishedType", "listingType", "location", "price", "priceRecur", "collegeName", "address", "city", "state", "country", "pincode","totalrating" ];
+    const fields = [
+      "userId",
+      "availabilityDate",
+      "title",
+      "area",
+      "description",
+      "BedRoom",
+      "BathRoom",
+      "furnishedType",
+      "listingType",
+      "location",
+      "price",
+      "priceRecur",
+      "collegeName",
+      "address",
+      "city",
+      "state",
+      "country",
+      "pincode",
+      "totalrating",
+    ];
     const csvParser = new CsvParser({ fields });
     const data = csvParser.parse(users);
 
     res.setHeader("Content-Type", "text/csv");
-    res.setHeader("Content-Disposition", "attachment: filename=PropertyData.csv");
+    res.setHeader(
+      "Content-Disposition",
+      "attachment: filename=PropertyData.csv"
+    );
 
     res.status(200).end(data);
   } catch (error) {
     res.status(400).json({ msg: error.message, status: false });
   }
-}
+};

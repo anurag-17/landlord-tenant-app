@@ -6,6 +6,7 @@ const Category = require("./Category");
 const College = require("./College");
 const City = require("./City");
 const State = require("./State");
+const User = require("./User");
 
 const PropertySchema = new mongoose.Schema({
   userId: { 
@@ -54,6 +55,7 @@ const PropertySchema = new mongoose.Schema({
   price: {
     type: Number,
   },
+  wishlist:[{type:mongoose.Schema.Types.ObjectId, ref:User}],
   //like monthly or yearly
   priceRecur: {
     type: String,
