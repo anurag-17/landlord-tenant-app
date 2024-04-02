@@ -75,6 +75,7 @@ exports.register = async (req, res, next) => {
       spokenLanguage: req?.body?.spokenLanguage,
       country: req?.body?.country,
       city: req?.body?.city,
+      provider_ID:req?.body?.provider_ID
     };
 
     const newUser = await User.create(userData);
@@ -98,50 +99,44 @@ exports.register = async (req, res, next) => {
   }
 };
 
-exports.login = async (req, res, next) => {
-  const { email, password } = req.body;
-   console.log("llogin",req.body);
-  if (!email || !password) {
-    return res
-      .status(400)
-      .json({ success: false, error: "Please provide Email and Password" });
+exports.login = async (req, res) => {
+  const { email, password, provider_ID } = req.body;
+  
+  if (!email || (!password && !provider_ID)) {
+    return res.status(400).json({ success: false, error: "Please provide email and password/provider ID" });
   }
 
   try {
-    const findUser = await User.findOne({ email })
-      .select("+password")
-      .populate("wishlist")
-      .populate("preference");
-    
-    if (
-      findUser &&
-      !findUser.isBlocked &&
-      (await findUser.matchPasswords(password))
-    ) {
-      const token = generateToken({ email: findUser.email });
+    const userQuery = User.findOne({ email }).select("+password");
+    const populateOptions = ["wishlist", "preference"];
+    populateOptions.forEach(option => userQuery.populate(option));
+    const findUser = await userQuery;
 
-      await User.findByIdAndUpdate(
-        { _id: findUser._id?.toString() },
-        { activeToken: token, lastLogin: Date.now() },
-        { new: true }
-      );
-
-      const user = {
-        success: true,
-        findUser,
-        token: token,
-      };
-
-      return res.status(200).json({ success: true, user });
-    } else {
-      return res
-        .status(401)
-        .json({ success: false, error: "Invalid Credentials" });
+    if (!findUser || findUser.isBlocked) {
+      return res.status(401).json({ success: false, error: "Invalid credentials or user is blocked" });
     }
+
+    const isValidLogin = password ? await findUser.matchPasswords(password) : findUser.provider_ID === provider_ID;
+    if (!isValidLogin) {
+      return res.status(401).json({ success: false, error: "Invalid credentials" });
+    }
+
+    const token = generateToken({ email: findUser.email });
+    await User.findByIdAndUpdate(findUser._id, { activeToken: token, lastLogin: Date.now() });
+
+    res.status(200).json({
+      success: true,
+      user: {
+        findUser,
+        token
+      }
+    });
   } catch (error) {
+    console.error("Login error:", error);
     res.status(500).json({ success: false, error: error.message });
   }
 };
+
 
 exports.adminLogin = async (req, res, next) => {
   const { email, password } = req.body;

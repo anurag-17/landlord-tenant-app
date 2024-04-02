@@ -111,7 +111,13 @@ exports.getPropertyById = async (req, res) => {
     //     .json({ success: false, error: "Property is blocked." });
     // }
     // Return the property
-    return res.status(200).json({ success: true, property });
+
+    const wishlistStatus = property.wishlist.some((userId) =>
+      userId.equals(req.user._id)
+    );
+    let newProperty = { ...property.toJSON(), wishlistStatus }; // Converting mongoose document to JSON and adding the new key
+
+    return res.status(200).json({ success: true, property: newProperty });
   } catch (error) {
     // Return error response if something goes wrong
     console.error("Error getting property by ID:", error);
@@ -327,7 +333,7 @@ exports.filterProperties = async (req, res) => {
       const searchFilter = {
         $or: [
           { title: { $regex: searchQuery, $options: "i" } },
-          // { city: { $regex: searchQuery, $options: "i" } },
+          { area: { $regex: searchQuery, $options: "i" } },
           { country: { $regex: searchQuery, $options: "i" } },
           // { state: { $regex: searchQuery, $options: "i" } },
         ],
@@ -336,6 +342,7 @@ exports.filterProperties = async (req, res) => {
     }
     console.log(propertyFilter);
     let properties = await Property.find(propertyFilter)
+      .sort({ createdAt: -1 })
       .populate("category")
       .populate("preference")
       .populate("userId")
