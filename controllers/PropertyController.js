@@ -366,7 +366,7 @@ exports.filterProperties = async (req, res) => {
             property.location[0].long
           );
           // console.log(distance <= (reqDistance || 10));
-          return distance <= (reqDistance || 10);
+          return distance <= (reqDistance || 30);
         } else {
           return false;
         }
