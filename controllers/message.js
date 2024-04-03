@@ -140,6 +140,7 @@ exports.inbox = async (req, res) => {
         conversationId: conv._id,
         lastMessage,
         propertyTitle: conv.propertyId.title,
+        propertyId: conv?.propertyId?._id,
         otherParticipantId,
         updatedAt: conv.updatedAt,
       };
