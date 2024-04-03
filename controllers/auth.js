@@ -97,7 +97,25 @@ exports.register = async (req, res, next) => {
     next(error);
   }
 };
+exports.checkUserByProviderID = async (req, res) => {
+  try {
+    const { provider_ID } = req.params;
 
+    // Check if the user with the provided provider_ID exists
+    const user = await User.findOne({ provider_ID });
+
+    if (!user) {
+      // If user does not exist
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    // If user exists
+    return res.status(200).json({ success: true, user });
+  } catch (error) {
+    console.log("Error in checkUserByProviderID controller: ", error.message);
+    res.status(500).json({ success: false, error: "Internal server error" });
+  }
+};
 exports.login = async (req, res) => {
   const { email, password, provider_ID } = req.body;
 

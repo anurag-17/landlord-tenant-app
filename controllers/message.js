@@ -5,7 +5,7 @@ const { default: mongoose } = require("mongoose");
 
 exports.sendMessage = async (req, res) => {
   try {
-    const { message, propertyId } = req.body;
+    const { message, propertyId, file } = req.body || "";
     const { id: receiverId } = req.params;
     const senderId = req.user._id;
 
@@ -25,6 +25,7 @@ exports.sendMessage = async (req, res) => {
       senderId,
       receiverId,
       message,
+      file,
       propertyId,
     });
 
@@ -65,6 +66,11 @@ exports.getMessages = async (req, res) => {
     if (!conversation) return res.status(200).json([]);
 
     const messages = conversation.messages;
+     // Update isRead to true for unread messages
+     await Message.updateMany(
+      { _id: { $in: messages.map(msg => msg._id) }, isRead: false },
+      { $set: { isRead: true } }
+    );
 
     res.status(200).json({ success: true, messages });
   } catch (error) {

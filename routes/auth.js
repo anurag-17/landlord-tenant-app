@@ -18,7 +18,8 @@ const {
   verifyUser,
   graphData,
   userData,
-  updateAdminEmail
+  updateAdminEmail,
+  checkUserByProviderID
 } = require("../controllers/auth");
 const { isAuthenticatedUser, authorizeRoles } = require("../middleware/auth");
 const storage = multer.memoryStorage();
@@ -26,6 +27,7 @@ const upload = multer({ storage: storage });
 
 
 router.route("/login").post(login);
+router.route("/checkUser/:provider_ID").get(checkUserByProviderID)
 
 router.route("/adminLogin").post(adminLogin);
 
