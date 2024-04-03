@@ -98,10 +98,65 @@ exports.deleteAllMessages = async (req, res) => {
     // Optionally, you might want to remove the message references from the conversation document as well
     conversation.messages = [];
     await conversation.save();
+    // Delete the conversation itself
+    await Conversation.deleteOne({ _id: conversation._id });
 
-    res.status(200).json({ success: true, message: "All messages deleted" });
+    res.status(200).json({
+      success: true,
+      message: "Conversation and all messages deleted",
+    });
   } catch (error) {
     console.error("Error in deleteAllMessages controller: ", error.message);
+    res.status(500).json({ success: false, error: "Internal server error" });
+  }
+};
+exports.deleteAllConversations = async (req, res) => {
+  try {
+    const userId = req.user._id; // User ID from authenticated user
+
+    // Find all conversations where the user is a participant
+    const conversations = await Conversation.find({
+      participants: userId,
+    });
+
+    if (!conversations || conversations.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No conversations found for the user",
+      });
+    }
+
+    // Extract message IDs from all conversations
+    const messageIds = conversations.flatMap(
+      (conversation) => conversation.messages
+    );
+console.log(messageIds);
+    // Delete messages associated with the conversations
+    await Message.deleteMany({
+      _id: { $in: messageIds },
+    });
+    const conversationIds = conversations.map(
+      (conversation) => conversation._id
+    );
+    // Delete messages associated with the conversations
+    // await Message.deleteMany({ conversationId: { $in: conversationIds } });
+    // Delete messages associated with the conversation
+    // await Message.deleteMany({
+    //   _id: { $in: conversationMessage },
+    // });
+
+    // Delete the conversations themselves
+    await Conversation.deleteMany({ _id: { $in: conversationIds } });
+
+    res.status(200).json({
+      success: true,
+      message: "All conversations and their messages deleted for the user",
+    });
+  } catch (error) {
+    console.error(
+      "Error in deleteAllConversations controller: ",
+      error.message
+    );
     res.status(500).json({ success: false, error: "Internal server error" });
   }
 };
@@ -121,8 +176,8 @@ exports.inbox = async (req, res) => {
         populate: { path: "receiverId", select: "fullname" }, // Assuming you want to show the sender's name
       })
       .populate({
-        path: 'participants', // Path to the field you want to populate
-        select: 'fullname profilePicture' // Fields to include from the populated documents
+        path: "participants", // Path to the field you want to populate
+        select: "fullname profilePicture", // Fields to include from the populated documents
       })
       .populate("propertyId", "title") // Populate property details, adjust fields as necessary
       .sort({ updatedAt: -1 }); // Sort conversations by the most recently updated
