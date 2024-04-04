@@ -375,7 +375,7 @@ exports.filterProperties = async (req, res) => {
 
     const totalProperties = properties.length;
     const page = parseInt(req.query.page) || 1;
-    const pageSize = parseInt(req.query.limit) || 10;
+    const pageSize = parseInt(req.query.limit) || 1000000;
     const totalPages = Math.ceil(totalProperties / pageSize);
     const startIndex = (page - 1) * pageSize;
     const endIndex = Math.min(startIndex + pageSize, totalProperties);

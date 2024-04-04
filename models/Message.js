@@ -14,10 +14,12 @@ const MessageSchema = new mongoose.Schema(
     },
     message: {
       type: String,
-      required: true,
     },
     file:{
       type: String,
+    },
+    filetype:{
+      type:String
     },
     isRead:{
       type:Boolean,

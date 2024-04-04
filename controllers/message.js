@@ -5,7 +5,7 @@ const { default: mongoose } = require("mongoose");
 
 exports.sendMessage = async (req, res) => {
   try {
-    const { message, propertyId, file } = req.body || "";
+    const { message, propertyId, file, filetype } = req.body || "";
     const { id: receiverId } = req.params;
     const senderId = req.user._id;
 
@@ -26,6 +26,7 @@ exports.sendMessage = async (req, res) => {
       receiverId,
       message,
       file,
+      filetype,
       propertyId,
     });
 
@@ -66,9 +67,9 @@ exports.getMessages = async (req, res) => {
     if (!conversation) return res.status(200).json([]);
 
     const messages = conversation.messages;
-     // Update isRead to true for unread messages
-     await Message.updateMany(
-      { _id: { $in: messages.map(msg => msg._id) }, isRead: false },
+    // Update isRead to true for unread messages
+    await Message.updateMany(
+      { _id: { $in: messages.map((msg) => msg._id) }, isRead: false },
       { $set: { isRead: true } }
     );
 
@@ -136,7 +137,7 @@ exports.deleteAllConversations = async (req, res) => {
     const messageIds = conversations.flatMap(
       (conversation) => conversation.messages
     );
-console.log(messageIds);
+    console.log(messageIds);
     // Delete messages associated with the conversations
     await Message.deleteMany({
       _id: { $in: messageIds },
@@ -187,15 +188,18 @@ exports.inbox = async (req, res) => {
       })
       .populate("propertyId", "title") // Populate property details, adjust fields as necessary
       .sort({ updatedAt: -1 }); // Sort conversations by the most recently updated
-    console.log(conversations);
+
     // Transform conversations to prepare the inbox data
-    const inbox = conversations.map((conv) => {
+    const inbox = await Promise.all(conversations.map(async (conv) => {
       const lastMessage = conv.messages[0]
         ? conv.messages[0].message
         : "No messages";
       const otherParticipantId = conv.participants.find(
         (participant) => !participant.equals(userId)
       ); // Corrected participant comparison
+
+      // Count unread messages
+      const unreadCount = conv.messages.filter(msg => msg.senderId != userId && !msg.isRead).length;
 
       return {
         conversationId: conv._id,
@@ -204,8 +208,9 @@ exports.inbox = async (req, res) => {
         propertyId: conv?.propertyId?._id,
         otherParticipantId,
         updatedAt: conv.updatedAt,
+        unreadCount,
       };
-    });
+    }));
 
     res.status(200).json({ success: true, inbox });
   } catch (error) {
@@ -213,3 +218,4 @@ exports.inbox = async (req, res) => {
     res.status(500).json({ success: false, error: "Internal server error" });
   }
 };
+
