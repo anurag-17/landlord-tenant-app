@@ -424,6 +424,7 @@ exports.addToWishlist = async (req, res) => {
         success: true,
         message: "Product removed from wishlist",
         wishlist: user.wishlist,
+        property,
         added: false,
       });
     } else {
@@ -436,6 +437,7 @@ exports.addToWishlist = async (req, res) => {
         success: true,
         message: "Product added to wishlist",
         wishlist: user.wishlist,
+        property,
         added: true,
       });
     }
