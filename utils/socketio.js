@@ -17,7 +17,15 @@ exports.init = (server) => {
     console.log("A user connected",socket.id);
 
     const userId = socket.handshake.query.userId;
-	if (userId != "undefined") userSocketMap[userId] = socket.id;
+    if (userId != "undefined") {
+      if (!userSocketMap[userId]) {
+          userSocketMap[userId] = [];
+      }
+      if (!userSocketMap[userId].includes(socket.id)) {
+          userSocketMap[userId].push(socket.id);
+      }
+  }
+
 
 	// io.emit() is used to send events to all the connected clients
 	io.emit("getOnlineUsers", Object.keys(userSocketMap));
