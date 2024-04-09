@@ -111,7 +111,13 @@ exports.getPropertyById = async (req, res) => {
     //     .json({ success: false, error: "Property is blocked." });
     // }
     // Return the property
-    return res.status(200).json({ success: true, property });
+
+    const wishlistStatus = property.wishlist.some((userId) =>
+      userId.equals(req.user._id)
+    );
+    let newProperty = { ...property.toJSON(), wishlistStatus }; // Converting mongoose document to JSON and adding the new key
+
+    return res.status(200).json({ success: true, property: newProperty });
   } catch (error) {
     // Return error response if something goes wrong
     console.error("Error getting property by ID:", error);
@@ -327,7 +333,7 @@ exports.filterProperties = async (req, res) => {
       const searchFilter = {
         $or: [
           { title: { $regex: searchQuery, $options: "i" } },
-          // { city: { $regex: searchQuery, $options: "i" } },
+          { area: { $regex: searchQuery, $options: "i" } },
           { country: { $regex: searchQuery, $options: "i" } },
           // { state: { $regex: searchQuery, $options: "i" } },
         ],
@@ -336,6 +342,7 @@ exports.filterProperties = async (req, res) => {
     }
     console.log(propertyFilter);
     let properties = await Property.find(propertyFilter)
+      .sort({ createdAt: -1 })
       .populate("category")
       .populate("preference")
       .populate("userId")
@@ -359,7 +366,7 @@ exports.filterProperties = async (req, res) => {
             property.location[0].long
           );
           // console.log(distance <= (reqDistance || 10));
-          return distance <= (reqDistance || 10);
+          return distance <= (reqDistance || 30);
         } else {
           return false;
         }
@@ -368,7 +375,7 @@ exports.filterProperties = async (req, res) => {
 
     const totalProperties = properties.length;
     const page = parseInt(req.query.page) || 1;
-    const pageSize = parseInt(req.query.limit) || 10;
+    const pageSize = parseInt(req.query.limit) || 1000000;
     const totalPages = Math.ceil(totalProperties / pageSize);
     const startIndex = (page - 1) * pageSize;
     const endIndex = Math.min(startIndex + pageSize, totalProperties);
@@ -417,6 +424,7 @@ exports.addToWishlist = async (req, res) => {
         success: true,
         message: "Product removed from wishlist",
         wishlist: user.wishlist,
+        property,
         added: false,
       });
     } else {
@@ -429,6 +437,7 @@ exports.addToWishlist = async (req, res) => {
         success: true,
         message: "Product added to wishlist",
         wishlist: user.wishlist,
+        property,
         added: true,
       });
     }

@@ -32,7 +32,7 @@ exports.uploadImage = async (req, res, next) => {
 
 exports.register = async (req, res, next) => {
   const { email, mobile } = req.body;
-
+  console.log(req?.body?.provider_ID);
   try {
     const existingUser = await User.findOne({ email });
     if (mobile) {
@@ -75,12 +75,13 @@ exports.register = async (req, res, next) => {
       spokenLanguage: req?.body?.spokenLanguage,
       country: req?.body?.country,
       city: req?.body?.city,
+      provider_ID: req?.body?.provider_ID,
     };
 
     const newUser = await User.create(userData);
     const token = generateToken({ email: newUser.email });
 
-   const updatedUser =  await User.findByIdAndUpdate(
+    const updatedUser = await User.findByIdAndUpdate(
       { _id: newUser._id?.toString() },
       { activeToken: token, lastLogin: Date.now() },
       { new: true }
@@ -90,55 +91,82 @@ exports.register = async (req, res, next) => {
         .status(401)
         .json({ success: false, error: "Failed to register" });
     }
-    return res.status(200).json({ success: true, user:updatedUser, token });
+    return res.status(200).json({ success: true, user: updatedUser, token });
     //  sendToken(newUser, 201, res);
-
   } catch (error) {
     next(error);
   }
 };
+exports.checkUserByProviderID = async (req, res) => {
+  try {
+    const { provider_ID } = req.params;
 
-exports.login = async (req, res, next) => {
-  const { email, password } = req.body;
-   console.log("llogin",req.body);
-  if (!email || !password) {
+    // Check if the user with the provided provider_ID exists
+    const user = await User.findOne({ provider_ID });
+
+    if (!user) {
+      // If user does not exist
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    // If user exists
+    return res.status(200).json({ success: true, user });
+  } catch (error) {
+    console.log("Error in checkUserByProviderID controller: ", error.message);
+    res.status(500).json({ success: false, error: "Internal server error" });
+  }
+};
+exports.login = async (req, res) => {
+  const { email, password, provider_ID } = req.body;
+
+  if (!email || (!password && !provider_ID)) {
     return res
       .status(400)
-      .json({ success: false, error: "Please provide Email and Password" });
+      .json({
+        success: false,
+        error: "Please provide email and password/provider ID",
+      });
   }
 
   try {
-    const findUser = await User.findOne({ email })
-      .select("+password")
-      .populate("wishlist")
-      .populate("preference");
-    
-    if (
-      findUser &&
-      !findUser.isBlocked &&
-      (await findUser.matchPasswords(password))
-    ) {
-      const token = generateToken({ email: findUser.email });
+    const userQuery = User.findOne({ email }).select("+password");
+    const populateOptions = ["wishlist", "preference"];
+    populateOptions.forEach((option) => userQuery.populate(option));
+    const findUser = await userQuery;
 
-      await User.findByIdAndUpdate(
-        { _id: findUser._id?.toString() },
-        { activeToken: token, lastLogin: Date.now() },
-        { new: true }
-      );
-
-      const user = {
-        success: true,
-        findUser,
-        token: token,
-      };
-
-      return res.status(200).json({ success: true, user });
-    } else {
+    if (!findUser || findUser.isBlocked) {
       return res
         .status(401)
-        .json({ success: false, error: "Invalid Credentials" });
+        .json({
+          success: false,
+          error: "Invalid credentials or user is blocked",
+        });
     }
+
+    const isValidLogin = password
+      ? await findUser.matchPasswords(password)
+      : findUser.provider_ID === provider_ID;
+    if (!isValidLogin) {
+      return res
+        .status(401)
+        .json({ success: false, error: "Invalid credentials" });
+    }
+
+    const token = generateToken({ email: findUser.email });
+    await User.findByIdAndUpdate(findUser._id, {
+      activeToken: token,
+      lastLogin: Date.now(),
+    });
+
+    res.status(200).json({
+      success: true,
+      user: {
+        findUser,
+        token,
+      },
+    });
   } catch (error) {
+    console.error("Login error:", error);
     res.status(500).json({ success: false, error: error.message });
   }
 };
@@ -377,7 +405,7 @@ exports.verifyUser = async (req, res) => {
 
   try {
     const decodedData = verifyToken(token);
-  console.log(decodedData);
+    console.log(decodedData);
     if (!decodedData) {
       return res
         .status(401)
@@ -559,24 +587,26 @@ exports.getaUser = async (req, res) => {
   try {
     const getaUser = await User.findById(_id)
       .populate("preference")
-      .populate("wishlist")
+      .populate("wishlist");
 
     if (!getaUser) {
       return res.status(404).json({ success: false, error: "User not found" });
     }
-    let universityData = null
-    let stateData =  null
-    let cityData = null
+    let universityData = null;
+    let stateData = null;
+    let cityData = null;
     if (getaUser.university) {
-      universityData = await College.findById(getaUser.university)
+      universityData = await College.findById(getaUser.university);
     }
-  if (getaUser.provinces) {
-    stateData =  await State.findById(getaUser.provinces)
-  }
-   if (getaUser.city) {
-    cityData = await City.findById(getaUser.city)
-   }
-    return res.status(200).json({ success: true, getaUser, universityData, stateData,cityData});
+    if (getaUser.provinces) {
+      stateData = await State.findById(getaUser.provinces);
+    }
+    if (getaUser.city) {
+      cityData = await City.findById(getaUser.city);
+    }
+    return res
+      .status(200)
+      .json({ success: true, getaUser, universityData, stateData, cityData });
   } catch (error) {
     throw new Error(error);
   }

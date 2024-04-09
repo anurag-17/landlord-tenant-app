@@ -126,16 +126,25 @@ const UserSchema = new mongoose.Schema(
 );
 
 UserSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) {
+  if (!this.isModified("password")|| !this.password) {
     next();
   }
 
-  const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
-  next();
+  try {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+  } catch (error) {
+    next(error);
+  }
 });
 
 UserSchema.methods.matchPasswords = async function (password) {
+  if (!this.password) {
+    // Handle OAuth scenario where password is not stored
+    return false; // Or handle the logic based on your requirements
+  }
+
   return await bcrypt.compare(password, this.password);
 };
 
