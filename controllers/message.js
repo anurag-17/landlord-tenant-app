@@ -54,6 +54,7 @@ exports.sendMessage = async (req, res) => {
   }
 };
 
+
 exports.getMessages = async (req, res) => {
   try {
     const { id: userToChatId, propertyId } = req.params;
@@ -79,6 +80,7 @@ exports.getMessages = async (req, res) => {
     res.status(500).json({ success: false, error: "Internal server error" });
   }
 };
+
 exports.deleteAllMessages = async (req, res) => {
   try {
     const { propertyId } = req.params; // Assuming propertyId is used to identify the conversation
