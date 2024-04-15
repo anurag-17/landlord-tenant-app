@@ -51,7 +51,7 @@ router.route("/all-users").get(isAuthenticatedUser, authorizeRoles("admin"), get
 router.route("/getaUser").get(isAuthenticatedUser, getaUser);
 
 // Get user by ID 
-router.route("/getUserById/:id").get(isAuthenticatedUser,authorizeRoles("admin"), getUserById);
+router.route("/getUserById/:id").get(isAuthenticatedUser, getUserById);
 
 // Delete a user
 router.delete("/deleteaUser/:id",isAuthenticatedUser, authorizeRoles("admin"), deleteUser);
