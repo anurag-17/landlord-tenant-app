@@ -58,8 +58,20 @@ exports.init = (server) => {
   io.on("connection", (socket) => {
       console.log("A user connected", socket.id);
 
+
       const userId = socket.handshake.query.userId;
       const propertyId = socket.handshake.query.propertyId;
+
+ 
+    if (userId != "undefined") {
+      if (!userSocketMap[userId]) {
+          userSocketMap[userId] = [];
+      }
+      if (!userSocketMap[userId].includes(socket.id)) {
+          userSocketMap[userId].push(socket.id);
+      }
+  }
+
 
       if (userId && propertyId) {
           // Store socket ID with both user ID and property ID

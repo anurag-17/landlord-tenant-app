@@ -1,10 +1,11 @@
 const Message = require("../models/Message");
 const Conversation = require("../models/Conversation");
-const { getReceiverSocketId, io } = require("../utils/socketio.js");
+const { getReceiverSocketId, getIO } = require("../utils/socketio.js");
 const { default: mongoose } = require("mongoose");
 
 exports.sendMessage = async (req, res) => {
   try {
+    const io =  getIO()
     const { message, propertyId, file, filetype } = req.body || "";
     const { id: receiverId } = req.params;
     const senderId = req.user._id;
@@ -42,9 +43,9 @@ exports.sendMessage = async (req, res) => {
 
     // SOCKET IO FUNCTIONALITY WILL GO HERE
     const receiverSocketId = getReceiverSocketId(receiverId);
-    if (receiverSocketId) {
+    if (Array.isArray(receiverSocketId) && receiverSocketId.length>0 && receiverSocketId[0]) {
       // io.to(<socket_id>).emit() used to send events to specific client
-      io.to(receiverSocketId).emit("newMessage", newMessage);
+      io.to(receiverSocketId[0]).emit("newMessage", newMessage);
     }
 
     res.status(201).json({ success: true, newMessage });
