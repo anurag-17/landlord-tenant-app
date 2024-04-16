@@ -12,44 +12,44 @@ const userSocketMap = {}; // {userId: socketId}
 
 
 
-// exports.init = (server) => {
-//   io = socketIO(server, { cors: { origin: "*" } });
+exports.init = (server) => {
+  io = socketIO(server, { cors: { origin: "*" } });
 
-//   io.on("connection", (socket) => {
-//     console.log("A user connected",socket.id);
+  io.on("connection", (socket) => {
+    console.log("A user connected",socket.id);
 
-//     const userId = socket.handshake.query.userId;
-// 	if (userId != "undefined") userSocketMap[userId] = socket.id;
+    const userId = socket.handshake.query.userId;
+	if (userId != "undefined") userSocketMap[userId] = socket.id;
 
-// 	// io.emit() is used to send events to all the connected clients
-// 	io.emit("getOnlineUsers", Object.keys(userSocketMap));
+	// io.emit() is used to send events to all the connected clients
+	io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
-//   socket.on("typing", () => io.emit("typing"));
-//   socket.on("stop typing", () => io.emit("stop typing"));
+  socket.on("typing", () => io.emit("typing"));
+  socket.on("stop typing", () => io.emit("stop typing"));
 
-// 	// socket.on() is used to listen to the events. can be used both on client and server side
-// 	socket.on("disconnect", () => {
-// 		console.log("user disconnected", socket.id);
-// 		delete userSocketMap[userId];
-// 		io.emit("getOnlineUsers", Object.keys(userSocketMap));
-// 	});
+	// socket.on() is used to listen to the events. can be used both on client and server side
+	socket.on("disconnect", () => {
+		console.log("user disconnected", socket.id);
+		delete userSocketMap[userId];
+		io.emit("getOnlineUsers", Object.keys(userSocketMap));
+	});
 
-// //   socket.on("disconnect", () => {
-// //     console.log("User disconnected", socket.id);
-// //     // Remove user from userSocketMap
-// //     for (const [key, value] of Object.entries(userSocketMap)) {
-// //         if (value === socket.id) {
-// //             delete userSocketMap[key];
-// //             break;
-// //         }
-// //     }
-// //     // Emit updated online users list
-// //     io.emit("getOnlineUsers", Object.keys(userSocketMap));
-// // });
+//   socket.on("disconnect", () => {
+//     console.log("User disconnected", socket.id);
+//     // Remove user from userSocketMap
+//     for (const [key, value] of Object.entries(userSocketMap)) {
+//         if (value === socket.id) {
+//             delete userSocketMap[key];
+//             break;
+//         }
+//     }
+//     // Emit updated online users list
+//     io.emit("getOnlineUsers", Object.keys(userSocketMap));
+// });
 
   
-// });
-// };
+});
+};
 
 
 exports.init = (server) => {
