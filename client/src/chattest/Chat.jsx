@@ -8,18 +8,17 @@
 //   useEffect(() => {
 //     // Establish the socket connection when the component mounts
 //     const socket = io("http://localhost:4000");
-  
+
 //     // Log a message when the connection is established
 //     socket.on("connect", () => {
 //       console.log("Connected to server");
 //     });
-    
+
 //     // Remember to return a cleanup function to close the socket connection when the component unmounts
 //     return () => {
 //       socket.disconnect();
 //     };
 //   }, []);
-  
 
 //   return (
 //     <>
@@ -68,7 +67,6 @@
 
 // export default Chat;
 
-
 import React, { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import axios from "axios";
@@ -80,22 +78,23 @@ const Chat = () => {
   const [userId, setUserId] = useState("");
   //   const socket = io("http://http://localhost:4000");
   useEffect(() => {
-   
-const socket = io("http://localhost:4000", { query: { userId } });
+    const socket = io("http://localhost:4000", {
+      query: { userId, propertyId },
+    });
 
     socket.on("newMessage", (newMessage) => {
       setMessages((msgs) => [...msgs, newMessage]);
+      console.log(newMessage);
     });
 
     socket.on("getOnlineUsers", (users) => {
       console.log("Online Users:", users);
     });
-    
 
     return () => {
       socket.disconnect();
     };
-  }, [userId]);
+  }, [userId, propertyId]);
 
   const sendHandler = async (e) => {
     e.preventDefault();
@@ -182,7 +181,7 @@ const socket = io("http://localhost:4000", { query: { userId } });
                 }}
               />
             </div>
-            <input type="submit" value={`submit`}/>
+            <input type="submit" value={`submit`} />
           </form>
         </div>
       </section>
