@@ -49,6 +49,7 @@ exports.sendMessage = async (req, res) => {
           io.to(socketId).emit("sentMessage", newMessage);
       });
       }
+      console.log("isSenderOnline", senderSocketIds);
       console.log("receiverSocketIds", receiverSocketIds);
       if (isReceiverOnline) {
           // Emit the message to all sockets associated with the receiver under the specific property
@@ -218,7 +219,7 @@ exports.inbox = async (req, res) => {
       return {
         conversationId: conv._id,
         lastMessage,
-        propertyTitle: conv.propertyId.title,
+        propertyTitle: conv.propertyId?.title,
         propertyId: conv?.propertyId?._id,
         otherParticipantId,
         updatedAt: conv.updatedAt,
