@@ -42,7 +42,13 @@ exports.sendMessage = async (req, res) => {
 
       // Save both conversation and new message documents in parallel
       await Promise.all([conversation.save(), newMessage.save()]);
-
+      const senderSocketIds = getReceiverSocketId(propertyId, senderId);
+      const isSenderOnline = senderSocketIds && senderSocketIds.length > 0;
+      if (isSenderOnline) {
+        senderSocketIds.forEach(socketId => {
+          io.to(socketId).emit("sentMessage", newMessage);
+      });
+      }
       console.log("receiverSocketIds", receiverSocketIds);
       if (isReceiverOnline) {
           // Emit the message to all sockets associated with the receiver under the specific property
@@ -50,6 +56,7 @@ exports.sendMessage = async (req, res) => {
               io.to(socketId).emit("newMessage", newMessage);
           });
       }
+      
 
       res.status(201).json({ success: true, newMessage });
   } catch (error) {

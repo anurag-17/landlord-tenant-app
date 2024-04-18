@@ -86,6 +86,11 @@ const Chat = () => {
       setMessages((msgs) => [...msgs, newMessage]);
       console.log(newMessage);
     });
+    socket.on("sentMessage", (newMessage) => {
+      setMessages((msgs) => [...msgs, newMessage]);
+      console.log("sent",newMessage);
+    });
+
 
     socket.on("getOnlineUsers", (users) => {
       console.log("Online Users:", users);
