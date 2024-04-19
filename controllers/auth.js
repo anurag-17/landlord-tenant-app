@@ -584,25 +584,40 @@ exports.getaUser = async (req, res) => {
   validateMongoDbId(_id); // Ensure this throws an error if ID is invalid
 
   try {
-    const user = await User.findById(_id)
+    const getaUser = await User.findById(_id)
       .populate("preference")
       .populate("wishlist");
 
-    if (!user) {
+    if (!getaUser) {
       return res.status(404).json({ success: false, error: "User not found" });
     }
 
-    const idsToLookup = {
-      universities: user.university ? [user.university] : [],
-      provinces: user.provinces ? [user.provinces] : [],
-      cities: user.city ? [user.city] : [],
-    };
+    // const idsToLookup = {
+    //   universities: user.university ? [user.university] : [],
+    //   provinces: user.provinces ? [user.provinces] : [],
+    //   cities: user.city ? [user.city] : [],
+    // };
 
-    const [universityData, stateData, cityData] = await Promise.all([
-      College.find({ _id: { $in: idsToLookup.universities } }),
-      State.find({ _id: { $in: idsToLookup.provinces } }),
-      City.find({ _id: { $in: idsToLookup.cities } }),
-    ]);
+    // const [universityData, stateData, cityData] = await Promise.all([
+    //   College.find({ _id: { $in: idsToLookup.universities } }),
+    //   State.find({ _id: { $in: idsToLookup.provinces } }),
+    //   City.find({ _id: { $in: idsToLookup.cities } }),
+    // ]);
+
+    let universityData = null;
+    let stateData = null;
+    let cityData = null;
+    if (getaUser.university) {
+      universityData = await College.findById(getaUser.university);
+    }
+    if (getaUser.provinces) {
+      stateData = await State.findById(getaUser.provinces);
+    }
+    if (getaUser.city) {
+      cityData = await City.findById(getaUser.city);
+    }
+
+
    let unread = 0
     const conversations = await Conversation.find({ participants: _id })
       .populate({
@@ -639,7 +654,7 @@ exports.getaUser = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      user,
+      getaUser,
       universityData,
       stateData,
       cityData,
