@@ -4,10 +4,13 @@ const Conversation = require("../models/Conversation");
 const Property = require("../models/Property");
 let io;
 
-exports.getReceiverSocketId = (receiverId) => {
-	return userSocketMap[receiverId];
+exports.getReceiverSocketId = (propertyId, receiverId) => {
+  if (userSocketMap[propertyId] && userSocketMap[propertyId][receiverId]) {
+      console.log(`Retrieving socket IDs for receiverId: ${receiverId} under propertyId: ${propertyId}`, userSocketMap[propertyId][receiverId]);
+      return userSocketMap[propertyId][receiverId];
+  }
+  return [];
 };
-
 const userSocketMap = {}; // {userId: socketId}
 
 
@@ -56,54 +59,40 @@ exports.init = (server) => {
   io = socketIO(server, { cors: { origin: "*" } });
 
   io.on("connection", (socket) => {
-      console.log("A user connected", socket.id);
+    console.log("A user connected", socket.id);
+    const userId = socket.handshake.query.userId;
+    const propertyId = socket.handshake.query.propertyId;
+    console.log("socketuser", {userId, propertyId})
+    if (userId !== "undefined" && propertyId) {
+        if (!userSocketMap[propertyId]) {
+            userSocketMap[propertyId] = {};
+        }
 
+        if (!userSocketMap[propertyId][userId]) {
+            userSocketMap[propertyId][userId] = [];
+        }
 
-      const userId = socket.handshake.query.userId;
-      const propertyId = socket.handshake.query.propertyId;
+        userSocketMap[propertyId][userId].push(socket.id);
+        console.log(`Socket ID ${socket.id} added for user ${userId} under property ${propertyId}`);
+    }
 
- 
-    if (userId != "undefined") {
-      if (!userSocketMap[userId]) {
-          userSocketMap[userId] = [];
-      }
-      if (!userSocketMap[userId].includes(socket.id)) {
-          userSocketMap[userId].push(socket.id);
-      }
-  }
+    socket.on("disconnect", () => {
+        if (userSocketMap[propertyId] && userSocketMap[propertyId][userId]) {
+            const index = userSocketMap[propertyId][userId].indexOf(socket.id);
+            if (index !== -1) {
+                userSocketMap[propertyId][userId].splice(index, 1);
+                console.log(`Socket ID ${socket.id} removed from user ${userId} under property ${propertyId}`);
+            }
 
-
-      if (userId && propertyId) {
-          // Store socket ID with both user ID and property ID
-          if (!userSocketMap[propertyId]) {
-              userSocketMap[propertyId] = {};
-          }
-          userSocketMap[propertyId][userId] = socket.id;
-      }
-
-      // Emit online users for each property
-      for (const propId in userSocketMap) {
-          io.to(propId).emit("getOnlineUsers", Object.keys(userSocketMap[propId]));
-      }
-
-      socket.on("typing", () => io.emit("typing"));
-      socket.on("stop typing", () => io.emit("stop typing"));
-
-      socket.on("disconnect", () => {
-          console.log("User disconnected", socket.id);
-          // Remove user from userSocketMap based on property ID and user ID
-          for (const propId in userSocketMap) {
-              if (userSocketMap[propId][userId] === socket.id) {
-                  delete userSocketMap[propId][userId];
-                  break;
-              }
-          }
-          // Emit updated online users list for each property
-          for (const propId in userSocketMap) {
-              io.to(propId).emit("getOnlineUsers", Object.keys(userSocketMap[propId]));
-          }
-      });
-  });
+            if (userSocketMap[propertyId][userId].length === 0) {
+                delete userSocketMap[propertyId][userId];
+                if (Object.keys(userSocketMap[propertyId]).length === 0) {
+                    delete userSocketMap[propertyId];
+                }
+            }
+        }
+    });
+});
 };
 
 

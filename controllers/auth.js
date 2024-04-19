@@ -11,6 +11,7 @@ const Preference = require("../models/Preferences");
 const College = require("../models/College");
 const State = require("../models/State");
 const City = require("../models/City");
+const Conversation = require("../models/Conversation");
 const CsvParser = require("json2csv").Parser;
 
 exports.uploadImage = async (req, res, next) => {
@@ -106,7 +107,9 @@ exports.checkUserByProviderID = async (req, res) => {
 
     if (!user) {
       // If user does not exist
-      return res.status(404).json({ success: false, message: "User not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
 
     // If user exists
@@ -120,12 +123,10 @@ exports.login = async (req, res) => {
   const { email, password, provider_ID } = req.body;
 
   if (!email || (!password && !provider_ID)) {
-    return res
-      .status(400)
-      .json({
-        success: false,
-        error: "Please provide email and password/provider ID",
-      });
+    return res.status(400).json({
+      success: false,
+      error: "Please provide email and password/provider ID",
+    });
   }
 
   try {
@@ -135,12 +136,10 @@ exports.login = async (req, res) => {
     const findUser = await userQuery;
 
     if (!findUser || findUser.isBlocked) {
-      return res
-        .status(401)
-        .json({
-          success: false,
-          error: "Invalid credentials or user is blocked",
-        });
+      return res.status(401).json({
+        success: false,
+        error: "Invalid credentials or user is blocked",
+      });
     }
 
     const isValidLogin = password
@@ -582,33 +581,75 @@ exports.getAllUser = async (req, res) => {
 
 exports.getaUser = async (req, res) => {
   const { _id } = req.user;
-  validateMongoDbId(_id);
+  validateMongoDbId(_id); // Ensure this throws an error if ID is invalid
 
   try {
-    const getaUser = await User.findById(_id)
+    const user = await User.findById(_id)
       .populate("preference")
       .populate("wishlist");
 
-    if (!getaUser) {
+    if (!user) {
       return res.status(404).json({ success: false, error: "User not found" });
     }
-    let universityData = null;
-    let stateData = null;
-    let cityData = null;
-    if (getaUser.university) {
-      universityData = await College.findById(getaUser.university);
-    }
-    if (getaUser.provinces) {
-      stateData = await State.findById(getaUser.provinces);
-    }
-    if (getaUser.city) {
-      cityData = await City.findById(getaUser.city);
-    }
-    return res
-      .status(200)
-      .json({ success: true, getaUser, universityData, stateData, cityData });
+
+    const idsToLookup = {
+      universities: user.university ? [user.university] : [],
+      provinces: user.provinces ? [user.provinces] : [],
+      cities: user.city ? [user.city] : [],
+    };
+
+    const [universityData, stateData, cityData] = await Promise.all([
+      College.find({ _id: { $in: idsToLookup.universities } }),
+      State.find({ _id: { $in: idsToLookup.provinces } }),
+      City.find({ _id: { $in: idsToLookup.cities } }),
+    ]);
+   let unread = 0
+    const conversations = await Conversation.find({ participants: _id })
+      .populate({
+        path: "messages",
+        options: { sort: { createdAt: -1 } },
+        populate: [
+          { path: "senderId", select: "fullname" },
+          { path: "receiverId", select: "fullname" },
+        ],
+      })
+      .populate("participants", "fullname profilePicture")
+      .populate("propertyId", "title")
+      .sort({ updatedAt: -1 });
+
+    const inbox = conversations.map((conv) => {
+      const lastMessage = conv.messages[0]
+        ? conv.messages[0].message
+        : "No messages";
+      const otherParticipant = conv.participants.find(
+        (participant) => !participant._id.equals(_id)
+      );
+      const unreadCount = conv.messages.reduce((count, msg) => {
+        return msg.senderId.toString() !== _id.toString() && !msg.isRead
+          ? count + 1
+          : count;
+      }, 0);
+       unread += unreadCount
+      return {
+        lastMessage,
+        otherParticipant,
+        unreadCount,
+      };
+    });
+
+    res.status(200).json({
+      success: true,
+      user,
+      universityData,
+      stateData,
+      cityData,
+      inbox,
+      unread
+
+    });
   } catch (error) {
-    throw new Error(error);
+    console.error("Error in getaUser controller: ", error);
+    res.status(500).json({ success: false, error: "Internal server error" });
   }
 };
 

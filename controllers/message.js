@@ -5,55 +5,67 @@ const { default: mongoose } = require("mongoose");
 
 exports.sendMessage = async (req, res) => {
   try {
-    const io =  getIO()
-    const { message, propertyId, file, filetype } = req.body || "";
-    const { id: receiverId } = req.params;
-    const senderId = req.user._id;
-
-    let conversation = await Conversation.findOne({
-      propertyId,
-      participants: { $all: [senderId, receiverId] },
-    });
-
-    if (!conversation) {
-      conversation = await Conversation.create({
-        propertyId,
-        participants: [senderId, receiverId],
+      const io = getIO();
+      const { message, propertyId, file, filetype } = req.body;
+      const { id: receiverId } = req.params;
+      const senderId = req.user._id;
+      console.log({propertyId, senderId:senderId?.toString(),receiverId, message, file, filetype});
+      let conversation = await Conversation.findOne({
+          propertyId,
+          participants: { $all: [senderId, receiverId] },
       });
-    }
 
-    const newMessage = new Message({
-      senderId,
-      receiverId,
-      message,
-      file,
-      filetype,
-      propertyId,
-    });
+      if (!conversation) {
+          conversation = await Conversation.create({
+              propertyId,
+              participants: [senderId, receiverId],
+          });
+      }
 
-    if (newMessage) {
-      conversation.messages.push(newMessage._id);
-    }
+      // Check if the receiver is currently online
+      const receiverSocketIds = getReceiverSocketId(propertyId, receiverId);
+      const isReceiverOnline = receiverSocketIds && receiverSocketIds.length > 0;
 
-    // await conversation.save();
-    // await newMessage.save();
+      const newMessage = new Message({
+          senderId,
+          receiverId,
+          message,
+          file,
+          filetype,
+          propertyId,
+          isRead: isReceiverOnline // Set isRead based on the online status of the receiver
+      });
 
-    // this will run in parallel
-    await Promise.all([conversation.save(), newMessage.save()]);
+      if (newMessage) {
+          conversation.messages.push(newMessage._id);
+      }
 
-    // SOCKET IO FUNCTIONALITY WILL GO HERE
-    const receiverSocketId = getReceiverSocketId(receiverId);
-    if (Array.isArray(receiverSocketId) && receiverSocketId.length>0 && receiverSocketId[0]) {
-      // io.to(<socket_id>).emit() used to send events to specific client
-      io.to(receiverSocketId[0]).emit("newMessage", newMessage);
-    }
+      // Save both conversation and new message documents in parallel
+      await Promise.all([conversation.save(), newMessage.save()]);
+      const senderSocketIds = getReceiverSocketId(propertyId, senderId?.toString());
+      const isSenderOnline = senderSocketIds && senderSocketIds.length > 0;
+      if (isSenderOnline) {
+        senderSocketIds.forEach(socketId => {
+          io.to(socketId).emit("sentMessage", newMessage);
+      });
+      }
+      console.log("isSenderOnline", senderSocketIds);
+      console.log("receiverSocketIds", receiverSocketIds);
+      if (isReceiverOnline) {
+          // Emit the message to all sockets associated with the receiver under the specific property
+          receiverSocketIds.forEach(socketId => {
+              io.to(socketId).emit("newMessage", newMessage);
+          });
+      }
+      
 
-    res.status(201).json({ success: true, newMessage });
+      res.status(201).json({ success: true, newMessage });
   } catch (error) {
-    console.log("Error in sendMessage controller: ", error.message);
-    res.status(500).json({ success: false, error: "Internal server error" });
+      console.log("Error in sendMessage controller: ", error.message);
+      res.status(500).json({ success: false, error: "Internal server error" });
   }
 };
+
 
 
 exports.getMessages = async (req, res) => {
@@ -207,7 +219,7 @@ exports.inbox = async (req, res) => {
       return {
         conversationId: conv._id,
         lastMessage,
-        propertyTitle: conv.propertyId.title,
+        propertyTitle: conv.propertyId?.title,
         propertyId: conv?.propertyId?._id,
         otherParticipantId,
         updatedAt: conv.updatedAt,
