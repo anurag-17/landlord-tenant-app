@@ -62,7 +62,7 @@ exports.init = (server) => {
     console.log("A user connected", socket.id);
     const userId = socket.handshake.query.userId;
     const propertyId = socket.handshake.query.propertyId;
-
+    console.log("socketuser", {userId, propertyId})
     if (userId !== "undefined" && propertyId) {
         if (!userSocketMap[propertyId]) {
             userSocketMap[propertyId] = {};

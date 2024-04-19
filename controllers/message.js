@@ -9,7 +9,7 @@ exports.sendMessage = async (req, res) => {
       const { message, propertyId, file, filetype } = req.body;
       const { id: receiverId } = req.params;
       const senderId = req.user._id;
-      console.log({propertyId, senderId,receiverId, message, file, filetype});
+      console.log({propertyId, senderId:senderId?.toString(),receiverId, message, file, filetype});
       let conversation = await Conversation.findOne({
           propertyId,
           participants: { $all: [senderId, receiverId] },
@@ -42,7 +42,7 @@ exports.sendMessage = async (req, res) => {
 
       // Save both conversation and new message documents in parallel
       await Promise.all([conversation.save(), newMessage.save()]);
-      const senderSocketIds = getReceiverSocketId(propertyId, senderId);
+      const senderSocketIds = getReceiverSocketId(propertyId, senderId?.toString());
       const isSenderOnline = senderSocketIds && senderSocketIds.length > 0;
       if (isSenderOnline) {
         senderSocketIds.forEach(socketId => {

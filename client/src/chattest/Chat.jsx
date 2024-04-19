@@ -78,7 +78,7 @@ const Chat = () => {
   const [userId, setUserId] = useState("");
   //   const socket = io("http://http://localhost:4000");
   useEffect(() => {
-    const socket = io("http://localhost:4000", {
+    const socket = io("http://3.21.216.227:4000", {
       query: { userId, propertyId },
     });
 
