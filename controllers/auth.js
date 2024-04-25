@@ -148,9 +148,26 @@ exports.login = async (req, res) => {
       });
     }
 
-    const isValidLogin = password
-      ? await findUser.matchPasswords(password)
-      : findUser.provider_ID === provider_ID;
+    // const isValidLogin = password
+    //   ? await findUser.matchPasswords(password)
+    //   : findUser.provider_ID === provider_ID;
+
+
+      let isValidLogin = false;
+
+      if (password) {
+        console.log("password",password);
+        isValidLogin = await findUser.matchPasswords(password);
+      } else if (findUser.provider_ID === provider_ID || findUser.email === email) {
+        console.log("provider_ID",provider_ID);
+        console.log("email",email);
+
+        isValidLogin = true;
+      }
+      
+      console.log("isValidLogin",isValidLogin);
+      // return isValidLogin;
+      
     if (!isValidLogin) {
       return res
         .status(401)
