@@ -27,7 +27,7 @@ const upload = multer({ storage: storage });
 
 
 router.route("/login").post(login);
-router.route("/checkUser/:provider_ID").get(checkUserByProviderID)
+router.route("/checkUser/:provider_ID/:email").get(checkUserByProviderID)
 
 router.route("/adminLogin").post(adminLogin);
 

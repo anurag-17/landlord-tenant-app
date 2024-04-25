@@ -100,10 +100,17 @@ exports.register = async (req, res, next) => {
 };
 exports.checkUserByProviderID = async (req, res) => {
   try {
-    const { provider_ID } = req.params;
+    const { provider_ID,email } = req.params;
 
     // Check if the user with the provided provider_ID exists
-    const user = await User.findOne({ provider_ID });
+    // const user = await User.findOne({ provider_ID });
+    const user = await User.findOne({
+      $or: [
+        { provider_ID: provider_ID }, 
+        { email: email }
+      ]
+    });
+    console.log("user",user);
 
     if (!user) {
       // If user does not exist
@@ -111,7 +118,6 @@ exports.checkUserByProviderID = async (req, res) => {
         .status(404)
         .json({ success: false, message: "User not found" });
     }
-
     // If user exists
     return res.status(200).json({ success: true, user });
   } catch (error) {
