@@ -1,12 +1,16 @@
 const { default: mongoose } = require("mongoose");
 const City = require("../models/City");
 const College = require("../models/College");
+const State = require("../models/State");
+
 
 // Create a new college
 exports.createCollege = async (req, res) => {
   try {
     // Destructure all fields from req.body
     const { name, cityId, campus, address, latitude, longitude } = req.body;
+
+    //note :-  cityId is stateId
 
     // Check if the college already exists by name
     const existingCollege = await College.findOne({ name });
@@ -20,9 +24,9 @@ exports.createCollege = async (req, res) => {
     }
 
     // Validate cityId by checking if the city exists
-    const cityExists = await City.findById(cityId);
+    const cityExists = await State.findById(cityId);
     if (!cityExists) {
-      return res.status(404).json({ error: "City not found" });
+      return res.status(404).json({ error: "State not found" });
     }
 
     // Proceed to create the college with all provided details
@@ -49,14 +53,14 @@ exports.updateCollege = async (req, res) => {
   try {
     // Validate cityId as a valid MongoDB ObjectId if provided
     if (updates.cityId && !mongoose.Types.ObjectId.isValid(updates.cityId)) {
-      return res.status(400).json({ error: "Invalid cityId format" });
+      return res.status(400).json({ error: "Invalid stateId format" });
     }
 
     // Check if the city exists if cityId is provided
     if (updates.cityId) {
-      const cityExists = await City.findById(updates.cityId);
+      const cityExists = await State.findById(updates.cityId);
       if (!cityExists) {
-        return res.status(404).json({ error: "City not found" });
+        return res.status(404).json({ error: "State not found" });
       }
     }
 
