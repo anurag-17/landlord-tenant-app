@@ -10,4 +10,9 @@ router.route("/getAll").get(isAuthenticatedUser,getAllColleges)
 router.route("/getById/:id").get(isAuthenticatedUser, authorizeRoles("admin"),getCollegeById)
 router.route("/getByCity/:cityId").get(isAuthenticatedUser,getCollegesByCityId)
 
+
+// router.route("/updateCollegesByStateIds").put(updateCollegesByStateIds)
+
+
+
 module.exports = router;
