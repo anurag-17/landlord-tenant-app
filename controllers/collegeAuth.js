@@ -116,7 +116,7 @@ exports.deleteCollege = async (req, res) => {
 exports.getAllColleges = async (req, res) => {
   // Default page number and page size
   const page = parseInt(req.query.page, 10) || 1;
-  const limit = parseInt(req.query.limit, 10) || 10;
+  const limit = parseInt(req.query.limit, 2000) || 2000;
   const searchQuery = req.query.search || "";
 
   // Calculate the skipping of documents
