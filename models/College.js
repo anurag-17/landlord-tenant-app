@@ -8,7 +8,7 @@ const citySchema = new mongoose.Schema(
     },
     cityId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "State",
+      ref: "City",
     },
     campus: {
       type: String,

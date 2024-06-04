@@ -8,10 +8,11 @@ const citySchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
-    stateId:{
-         type: mongoose.Schema.Types.ObjectId,
-          ref:State,
-    }
+    // stateId:{
+    //      type: mongoose.Schema.Types.ObjectId,
+    //       ref:State,
+    // }
+    stateId: { type: mongoose.Schema.Types.ObjectId, ref: 'State' }
   },
   {
     timestamps: true,
