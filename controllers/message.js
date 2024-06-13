@@ -9,7 +9,7 @@ exports.sendMessage = async (req, res) => {
       const { message, propertyId, file, filetype } = req.body;
       const { id: receiverId } = req.params;
       const senderId = req.user._id;
-      console.log({propertyId, senderId:senderId?.toString(),receiverId, message, file, filetype});
+      // console.log({propertyId, senderId:senderId?.toString(),receiverId, message, file, filetype});
       let conversation = await Conversation.findOne({
           propertyId,
           participants: { $all: [senderId, receiverId] },
@@ -49,8 +49,8 @@ exports.sendMessage = async (req, res) => {
           io.to(socketId).emit("sentMessage", newMessage);
       });
       }
-      console.log("isSenderOnline", senderSocketIds);
-      console.log("receiverSocketIds", receiverSocketIds);
+      // console.log("isSenderOnline", senderSocketIds);
+      // console.log("receiverSocketIds", receiverSocketIds);
       if (isReceiverOnline) {
           // Emit the message to all sockets associated with the receiver under the specific property
           receiverSocketIds.forEach(socketId => {
@@ -152,7 +152,7 @@ exports.deleteAllConversations = async (req, res) => {
     const messageIds = conversations.flatMap(
       (conversation) => conversation.messages
     );
-    console.log(messageIds);
+    // console.log(messageIds);
     // Delete messages associated with the conversations
     await Message.deleteMany({
       _id: { $in: messageIds },

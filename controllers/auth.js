@@ -23,7 +23,7 @@ exports.uploadImage = async (req, res, next) => {
     let fileName = req.file.originalname;
 
     let url = await uploadOnS3(req.file.buffer, fileName);
-    console.log("URL:::=>", url);
+    // console.log("URL:::=>", url);
     return res.status(200).json({ status: true, url: url });
   } catch (error) {
     console.error(error);
@@ -33,7 +33,7 @@ exports.uploadImage = async (req, res, next) => {
 
 exports.register = async (req, res, next) => {
   const { email, mobile } = req.body;
-  console.log(req?.body?.provider_ID);
+  // console.log(req?.body?.provider_ID);
   try {
     const existingUser = await User.findOne({ email });
     if (mobile) {
@@ -110,7 +110,7 @@ exports.checkUserByProviderID = async (req, res) => {
         { email: email }
       ]
     });
-    console.log("user",user);
+    // console.log("user",user);
 
     if (!user) {
       // If user does not exist
@@ -156,16 +156,16 @@ exports.login = async (req, res) => {
       let isValidLogin = false;
 
       if (password) {
-        console.log("password",password);
+        // console.log("password",password);
         isValidLogin = await findUser.matchPasswords(password);
       } else if (findUser.provider_ID === provider_ID || findUser.email === email) {
-        console.log("provider_ID",provider_ID);
-        console.log("email",email);
+        // console.log("provider_ID",provider_ID);
+        // console.log("email",email);
 
         isValidLogin = true;
       }
       
-      console.log("isValidLogin",isValidLogin);
+      // console.log("isValidLogin",isValidLogin);
       // return isValidLogin;
       
     if (!isValidLogin) {
@@ -427,7 +427,7 @@ exports.verifyUser = async (req, res) => {
 
   try {
     const decodedData = verifyToken(token);
-    console.log(decodedData);
+    // console.log(decodedData);
     if (!decodedData) {
       return res
         .status(401)
