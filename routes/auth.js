@@ -19,7 +19,8 @@ const {
   graphData,
   userData,
   updateAdminEmail,
-  checkUserByProviderID
+  checkUserByProviderID,
+  getaUser_ById
 } = require("../controllers/auth");
 const { isAuthenticatedUser, authorizeRoles } = require("../middleware/auth");
 const storage = multer.memoryStorage();
@@ -64,5 +65,9 @@ router.route("/graphData").get(graphData);
 router.route("/userData").get(userData);
 
 router.route("/uploadImage").post(isAuthenticatedUser, upload.single('file'),uploadImage)
+router.route("/getaUser_ById").get(getaUser_ById);
+
+
+
 
 module.exports = router;

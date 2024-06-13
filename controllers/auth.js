@@ -986,3 +986,18 @@ exports.userData = async (req, res) => {
     res.status(400).json({ msg: error.message, status: false });
   }
 };
+
+
+exports.getaUser_ById = async (req, res) => {
+  const { id } = req.query;
+  validateMongoDbId(id);
+
+  try {
+    const getaUser = await User.findById(id)
+    res.json({status:true,message: "Get data successfully",data:getaUser
+    });
+  } catch (error) {
+    // throw new Error(error);
+    res.status(500).json({ status:false,message:"Internal Server Error" });
+  }
+};
