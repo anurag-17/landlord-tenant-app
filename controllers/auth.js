@@ -993,11 +993,19 @@ exports.getaUser_ById = async (req, res) => {
   validateMongoDbId(id);
 
   try {
-    const getaUser = await User.findById(id)
-    res.json({status:true,message: "Get data successfully",data:getaUser
+    // Find user by ID and exclude sensitive fields
+    const getaUser = await User.findById(id).select("-password -activeToken");
+
+    if (!getaUser) {
+      return res.status(404).json({ status: false, message: "User not found" });
+    }
+
+    res.json({
+      status: true,
+      message: "Get data successfully",
+      data: getaUser
     });
   } catch (error) {
-    // throw new Error(error);
-    res.status(500).json({ status:false,message:"Internal Server Error" });
+    res.status(500).json({ status: false, message: "Internal Server Error" });
   }
 };
