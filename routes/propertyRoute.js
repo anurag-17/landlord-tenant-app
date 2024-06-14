@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { addProperty, getPropertyById, editProperty, deletePropertyById, searchProperties, filterProperties, addToWishlist, deleteAllWishlistItems, propertyData } = require("../controllers/PropertyController");
+const { addProperty, getPropertyById, editProperty, deletePropertyById, searchProperties, filterProperties, addToWishlist, deleteAllWishlistItems, propertyData,Get_Properties_by_UserId,Get_UserProperties_by_Id } = require("../controllers/PropertyController");
 const { isAuthenticatedUser, authorizeRoles } = require("../middleware/auth");
 const { addReview, deleteReview, deleteReviewByUser } = require('../controllers/ReviewController');
 
@@ -27,5 +27,12 @@ router.route("/addToWishlist").post(isAuthenticatedUser, addToWishlist)
 router.route("/deleteAllWishlist").delete(isAuthenticatedUser,deleteAllWishlistItems)
 
 router.route("/propertyData").get(propertyData)
+
+router.route("/Get_Properties_by_UserId").post(Get_Properties_by_UserId);
+router.route("/Get_UserProperties_by_Id/:id").get(Get_UserProperties_by_Id);
+
+
+
+
 
 module.exports = router;

@@ -587,3 +587,132 @@ exports.propertyData = async (req, res) => {
     res.status(400).json({ msg: error.message, status: false });
   }
 };
+
+
+
+exports.Get_Properties_by_UserId = async (req, res) => {
+  try {
+    const {
+      title,
+      provinces,
+      userId,
+      city,
+      address,
+      state,
+      country,
+      listingType,
+      price,
+    } = req.body;
+    const searchQuery = req.query.search;
+    const page = parseInt(req.query.page) || 1;
+    const pageSize = parseInt(req.query.limit) || 10;
+
+    let filter = {};
+
+    if (title) filter.title = { $regex: new RegExp(title), $options: "i" };
+    if (city) propertyFilter.city = new mongoose.Types.ObjectId(city);
+    if (state) propertyFilter.state = new mongoose.Types.ObjectId(state);
+    if (provinces) {
+      // Assuming 'provinces' is an array of IDs
+      propertyFilter.provinces = new mongoose.Types.ObjectId(provinces);
+    }
+    if (userId) filter.userId = new mongoose.Types.ObjectId(userId);
+    // if (city) filter.city = { $regex: new RegExp(city), $options: "i" };
+    if (address)
+      filter.address = { $regex: new RegExp(address), $options: "i" };
+    // if (state) filter.state = { $regex: new RegExp(state), $options: "i" };
+    if (country)
+      filter.country = { $regex: new RegExp(country), $options: "i" };
+    if (listingType && listingType.length > 0)
+      filter.listingType = { $all: listingType };
+
+    if (price) {
+      const priceFormat = price.split("-");
+      if (
+        priceFormat.length !== 2 ||
+        !priceFormat.every((val) => !isNaN(parseFloat(val)))
+      ) {
+        return res
+          .status(400)
+          .json({ success: false, error: "Invalid price format" });
+      }
+      const [minPrice, maxPrice] = priceFormat.map(Number);
+      filter.price = { $gte: minPrice, $lte: maxPrice };
+    }
+
+    if (searchQuery) {
+      const searchFilter = {
+        $or: [
+          { title: { $regex: searchQuery, $options: "i" } },
+          // { city: { $regex: searchQuery, $options: "i" } },
+          { country: { $regex: searchQuery, $options: "i" } },
+          // { state: { $regex: searchQuery, $options: "i" } },
+        ],
+      };
+      filter = { $and: [filter, searchFilter] };
+    }
+
+    const totalProperties = await Property.countDocuments(filter);
+    const totalPages = Math.ceil(totalProperties / pageSize);
+    const skip = (page - 1) * pageSize;
+
+    const properties = await Property.find(filter)
+      .populate("category")
+      .populate("preference")
+      .populate("userId")
+      .populate("state")
+      .populate("provinces")
+      .populate("city")
+      .skip(skip)
+      .limit(pageSize);
+
+    return res.status(200).json({
+      success: true,
+      properties,
+      page,
+      totalProperties,
+      limit: pageSize,
+      totalPages,
+    });
+  } catch (error) {
+    console.error("Error searching properties:", error);
+    return res
+      .status(500)
+      .json({ success: false, error: "Failed to search properties" });
+  }
+};
+
+
+
+// Controller function to get a property by ID
+exports.Get_UserProperties_by_Id = async (req, res) => {
+  try {
+    // Extract the property ID from the request parameters
+    const { id } = req.params;
+    // Find the property in the database by its ID
+    const property = await Property.findById(id)
+      .populate("category")
+      .populate("preference")
+      .populate("userId");
+
+    // Check if the property exists
+    if (!property) {
+      return res
+        .status(404)
+        .json({ success: false, error: "Property not found" });
+    }
+
+    const wishlistStatus = property.wishlist.some((userId) =>
+      userId.equals(req.user._id)
+    );
+    let newProperty = { ...property.toJSON(), wishlistStatus }; // Converting mongoose document to JSON and adding the new key
+
+    return res.status(200).json({ success: true, property: newProperty });
+  } catch (error) {
+    // Return error response if something goes wrong
+    console.error("Error getting property by ID:", error);
+    return res
+      .status(500)
+      .json({ success: false, error: "Failed to get property by ID" });
+  }
+};
