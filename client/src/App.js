@@ -17,6 +17,8 @@ import ResetPassword from "./components/auth/ResetPassword";
 import { removeToken, setUserDetails } from "./redux/action/authAction";
 import EditEmail from "./components/auth/EditEmail";
 import Chat from "./chattest/Chat";
+import Template from "./template/template";
+
 
 function App() {
   // const navigate = useNavigate();
@@ -72,6 +74,7 @@ function App() {
           <Route path="/edit-email" element={<EditEmail/>}/>
           <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/chat" element={<Chat/>}/>
+        <Route path="/delete-account" element={<Template />} />
           <Route
             path="/admin-dashboard"
             element={<PrivateRoute element={<AdminDashboard />} />}
