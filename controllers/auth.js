@@ -992,22 +992,115 @@ exports.getaUser_ById = async (req, res) => {
   const { id } = req.query;
   validateMongoDbId(id);
 
+  // try {
+  //   // Find user by ID and exclude sensitive fields
+  //   const getaUser = await User.findById(id).select("-password -activeToken");
+
+  //   if (!getaUser) {
+  //     return res.status(404).json({ status: false, message: "User not found" });
+  //   }
+
+  //   res.json({
+  //     status: true,
+  //     message: "Get data successfully",
+  //     data: getaUser
+  //   });
+  // } catch (error) {
+  //   res.status(500).json({ status: false, message: "Internal Server Error" });
+  // }
+
+
+
+
+
+
   try {
-    // Find user by ID and exclude sensitive fields
-    const getaUser = await User.findById(id).select("-password -activeToken");
+    // const getaUser = await User.findById(_id)
+
+    const getaUser = await User.findById(id).select("-password -activeToken")
+      .populate("preference")
+      .populate("wishlist");
 
     if (!getaUser) {
-      return res.status(404).json({ status: false, message: "User not found" });
+      return res.status(404).json({ success: false, error: "User not found" });
     }
 
-    res.json({
-      status: true,
-      message: "Get data successfully",
-      data: getaUser
+    // const idsToLookup = {
+    //   universities: user.university ? [user.university] : [],
+    //   provinces: user.provinces ? [user.provinces] : [],
+    //   cities: user.city ? [user.city] : [],
+    // };
+
+    // const [universityData, stateData, cityData] = await Promise.all([
+    //   College.find({ _id: { $in: idsToLookup.universities } }),
+    //   State.find({ _id: { $in: idsToLookup.provinces } }),
+    //   City.find({ _id: { $in: idsToLookup.cities } }),
+    // ]);
+
+    let universityData = null;
+    let stateData = null;
+    let cityData = null;
+    if (getaUser.university) {
+      universityData = await College.findById(getaUser.university);
+    }
+    if (getaUser.provinces) {
+      stateData = await State.findById(getaUser.provinces);
+    }
+    if (getaUser.city) {
+      cityData = await City.findById(getaUser.city);
+    }
+
+
+   let unread = 0
+    const conversations = await Conversation.find({ participants: id })
+      .populate({
+        path: "messages",
+        options: { sort: { createdAt: -1 } },
+        populate: [
+          { path: "senderId", select: "fullname" },
+          { path: "receiverId", select: "fullname" },
+        ],
+      })
+      .populate("participants", "fullname profilePicture")
+      .populate("propertyId", "title")
+      .sort({ updatedAt: -1 });
+
+    const inbox = conversations.map((conv) => {
+      const lastMessage = conv.messages[0]
+        ? conv.messages[0].message
+        : "No messages";
+      const otherParticipant = conv.participants.find(
+        (participant) => !participant._id.equals(id)
+      );
+      const unreadCount = conv.messages.reduce((count, msg) => {
+        return msg.senderId.toString() !== id.toString() && !msg.isRead
+          ? count + 1
+          : count;
+      }, 0);
+       unread += unreadCount
+      return {
+        lastMessage,
+        otherParticipant,
+        unreadCount,
+      };
+    });
+
+    res.status(200).json({
+      success: true,
+      getaUser,
+      universityData,
+      stateData,
+      cityData,
+      inbox,
+      unread
+
     });
   } catch (error) {
-    res.status(500).json({ status: false, message: "Internal Server Error" });
+    console.error("Error in getaUser controller: ", error);
+    res.status(500).json({ success: false, error: "Internal server error" });
   }
+
+
 };
 
 
