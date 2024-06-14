@@ -20,7 +20,8 @@ const {
   userData,
   updateAdminEmail,
   checkUserByProviderID,
-  getaUser_ById
+  getaUser_ById,
+  deleteUser_by_email
 } = require("../controllers/auth");
 const { isAuthenticatedUser, authorizeRoles } = require("../middleware/auth");
 const storage = multer.memoryStorage();
@@ -66,6 +67,8 @@ router.route("/userData").get(userData);
 
 router.route("/uploadImage").post(isAuthenticatedUser, upload.single('file'),uploadImage)
 router.route("/getaUser_ById").get(getaUser_ById);
+
+router.route("/deleteUser_by_email/:email").delete(deleteUser_by_email)
 
 
 

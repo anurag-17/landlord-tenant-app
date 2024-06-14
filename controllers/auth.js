@@ -1009,3 +1009,49 @@ exports.getaUser_ById = async (req, res) => {
     res.status(500).json({ status: false, message: "Internal Server Error" });
   }
 };
+
+
+exports.deleteUser_by_email = async (req, res) => {
+  const { email } = req.params; // Assuming the user's email is securely obtained from the authenticated session
+
+  try {
+    // Validate email format
+    if (!isValidEmail(email)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid email format.",
+      });
+    }
+
+    // Attempt to delete the user by email
+    const deletedUser = await User.findOneAndDelete({ email });
+
+    // Check if a user was found and deleted
+    if (!deletedUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found.",
+      });
+    }
+
+    // Respond to the client upon successful deletion
+    return res.status(200).json({
+      success: true,
+      message: "User deleted successfully.",
+    });
+  } catch (error) {
+    // Handle possible errors during the deletion process
+    return res.status(500).json({
+      success: false,
+      message: "Server error occurred while deleting the user.",
+      error: error.message,
+    });
+  }
+};
+
+// Function to validate email format
+function isValidEmail(email) {
+  // Regular expression for basic email validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
